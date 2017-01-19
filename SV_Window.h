@@ -15,7 +15,7 @@ class SV_Widget;
 class SV_Window {
 public:
     SV_Window(int width, int height);
-    int run();
+    void run();
     void add(SV_Widget*);
     void draw(const pixel&);
     void draw(const std::vector<pixel>&);

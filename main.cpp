@@ -28,7 +28,8 @@ int main () {
 
     auto imagedisplay = SV_Image(&app);
     imagedisplay.set_image(image);
-    app.add(&imagedisplay);
 
-    return app.run();
+    app.run();
+
+    return 0;
 }

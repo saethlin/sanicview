@@ -12,16 +12,16 @@ class SV_Window;
 
 class SV_Widget {
 public:
-    void draw();
+    SV_Widget(SV_Window*);
+    virtual void draw() {};
     bool needsdraw();
     SV_Window* window();
-    void window(SV_Window* window);
     void redraw();
     std::vector<pixel>& get_changed_pixels();
     void change_pixel(int pixel_x, int pixel_y, unsigned char value);
     void clear();
     virtual bool handle(xcb_generic_event_t* event);
-    virtual void resize();
+    virtual void resize() {};
 
 private:
     SV_Window* parent_window;

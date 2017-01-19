@@ -72,6 +72,11 @@ void SV_Window::run() {
 }
 
 
+void SV_Window::add(SV_Widget* widget) {
+    this->widgets.push_back(widget);
+}
+
+
 int SV_Window::get_height() {
     return height;
 }
@@ -79,12 +84,6 @@ int SV_Window::get_height() {
 
 int SV_Window::get_width() {
     return width;
-}
-
-
-void SV_Window::add(SV_Widget* widget) {
-    widgets.push_back(widget);
-    widget->window(this);
 }
 
 
