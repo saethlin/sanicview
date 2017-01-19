@@ -1,5 +1,6 @@
 #include "SV_Window.h"
 #include "SV_Image.h"
+#include "SV_Histogram.h"
 
 #include <valarray>
 #include <CCfits/CCfits>
@@ -24,12 +25,15 @@ int main () {
 
     auto image = readImage("test.fits");
 
-    auto app = SV_Window(800, 500);
+    auto window = SV_Window(800, 500);
 
-    auto imagedisplay = SV_Image(&app);
+    auto imagedisplay = SV_Image(&window);
+    auto histogram = SV_Histogram(&window);
+
+    imagedisplay.add(&histogram);
     imagedisplay.set_image(image);
 
-    app.run();
+    window.run();
 
     return 0;
 }

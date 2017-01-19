@@ -1,5 +1,6 @@
 #include "SV_Window.h"
 #include "SV_Widget.h"
+#include <iostream>
 
 
 SV_Window::SV_Window(int width, int height) {
@@ -64,6 +65,8 @@ void SV_Window::run() {
                 flush();
                 xcb_flush (connection);
                 break;
+            case XCB_BUTTON_PRESS:
+                std::cout << "button pressed" << std::endl;
             default:
                 break;
         }
@@ -104,8 +107,7 @@ void SV_Window::flush() {
                 points[i] = {(int16_t) same_color_pixels[i].x, (int16_t) same_color_pixels[i].y};
             }
 
-            uint32_t values[1] = {(uint32_t)current_color*65793};
-            xcb_change_gc(connection, foreground, XCB_GC_FOREGROUND, values);
+            xcb_change_gc(connection, foreground, XCB_GC_FOREGROUND, &current_color);
             xcb_poly_point(connection, XCB_COORD_MODE_ORIGIN, xcb_window, foreground, same_color_pixels.size(), points);
 
             free(points);

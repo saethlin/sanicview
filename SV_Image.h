@@ -15,18 +15,17 @@ public:
     void draw() override;
     bool handle(xcb_generic_event_t*) override;
     void resize() override;
-
-    //void set_minimap(SV_MiniMap* minimap);
-    //void add(SV_MiniMap* minimap);
-    //void add(SV_Histogram* histogramdisplay);
-    //void add(SV_DirList* dirlist);
-    //void add(SV_CursorTracker* cursordisplay);
     void set_white(double white);
     void set_black(double black);
     void set_origin(int x, int  y);
+    void add(SV_MiniMap* minimap);
+    void add(SV_Histogram* histogramdisplay);
+    void add(SV_DirList* dirlist);
+    void add(SV_CursorTracker* cursordisplay);
+    double get_white();
+    double get_black();
     //void set_zoom(double zoom);
-    //double get_white();
-    //double get_black();
+
 
 private:
     CImg<double> image;
@@ -36,8 +35,8 @@ private:
     double black, white;
     int x, y, cursor_x, cursor_y, width, height;
     SV_MiniMap* minimap;
-    SV_Histogram* histogramdisplay;
-    SV_CursorTracker* cursordisplay;
+    SV_Histogram* histogram;
+    SV_CursorTracker* cursortracker;
 
 };
 

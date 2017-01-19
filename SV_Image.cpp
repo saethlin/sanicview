@@ -1,5 +1,6 @@
 #include "SV_Image.h"
 #include "SV_Window.h"
+#include "SV_Histogram.h"
 
 
 SV_Image::SV_Image(SV_Window* window) : SV_Widget(window) {
@@ -28,7 +29,7 @@ void SV_Image::set_image(CImg<double>& image) {
     //minimap->set_black(black);
     //minimap->set_origin(x, y);
 
-    //histogram->set_image(image);
+    histogram->set_image(image);
 }
 
 
@@ -36,7 +37,7 @@ void SV_Image::draw() {
     if (image.size() == 0) {
         for (auto y = 0; y < height; y++) {
             for (auto x = 0; x < width; x++) {
-                change_pixel(x, y, 0);
+                change_pixel(x, y, (unsigned char)0);
             }
         }
     }
@@ -90,6 +91,16 @@ void SV_Image::set_white(double white) {
 }
 
 
+double SV_Image::get_black() {
+    return black;
+}
+
+
+double SV_Image::get_white() {
+    return white;
+}
+
+
 void SV_Image::set_origin(int x, int y) {
 
     auto try_x = std::min(image.width() - width, std::max(x, 0));
@@ -110,4 +121,30 @@ bool SV_Image::handle(xcb_generic_event_t* event) {
 
 
 void SV_Image::resize() {
+    width = window()->get_width()-200;
+    height = window()->get_height()-50;
+    move = true;
+    redraw();
+}
+
+
+void SV_Image::add(SV_Histogram* histogram) {
+    this->histogram = histogram;
+    histogram->set_imagedisplay(this);
+}
+
+
+void SV_Image::add(SV_MiniMap* minimap) {
+    this->minimap = minimap;
+    //minimap->set_imagedisplay(this);
+}
+
+
+void SV_Image::add(SV_DirList* dirlist) {
+    //dirlist->set_imagedisplay(this);
+}
+
+
+void SV_Image::add(SV_CursorTracker* cursortracker) {
+    this->cursortracker = cursortracker;
 }

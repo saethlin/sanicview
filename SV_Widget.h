@@ -18,7 +18,8 @@ public:
     SV_Window* window();
     void redraw();
     std::vector<pixel>& get_changed_pixels();
-    void change_pixel(int pixel_x, int pixel_y, unsigned char value);
+    void change_pixel(int pixel_x, int pixel_y, const unsigned char value);
+    void change_pixel(int pixel_x, int pixel_y, const unsigned char value[3]);
     void clear();
     virtual bool handle(xcb_generic_event_t* event);
     virtual void resize() {};

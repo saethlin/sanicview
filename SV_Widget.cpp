@@ -8,7 +8,13 @@ SV_Widget::SV_Widget(SV_Window* window) {
 }
 
 
-void SV_Widget::change_pixel(int pixel_x, int pixel_y, unsigned char value) {
+void SV_Widget::change_pixel(int pixel_x, int pixel_y, const unsigned char color) {
+    changed_pixels.push_back({pixel_x, pixel_y, (uint32_t)color*65793});
+}
+
+
+void SV_Widget::change_pixel(int pixel_x, int pixel_y, const unsigned char color[3]) {
+    auto value = (uint32_t)color[0]*65536+(uint32_t)color[1]*256+(uint32_t)color[2];
     changed_pixels.push_back({pixel_x, pixel_y, value});
 }
 
