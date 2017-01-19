@@ -1,5 +1,5 @@
 #include "SV_Window.h"
-#include "Widget.h"
+#include "SV_Image.h"
 
 #include <valarray>
 #include <CCfits/CCfits>
@@ -26,7 +26,8 @@ int main () {
 
     auto app = SV_Window(800, 500);
 
-    auto imagedisplay = Widget(0, 0, image);
+    auto imagedisplay = SV_Image(&app);
+    imagedisplay.set_image(image);
     app.add(&imagedisplay);
 
     return app.run();

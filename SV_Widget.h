@@ -10,20 +10,26 @@ using namespace cimg_library;
 
 class SV_Window;
 
-class Widget {
+class SV_Widget {
 public:
-    Widget(int x, int y, CImg<double>& image);
     void draw();
     bool needsdraw();
     SV_Window* window();
     void window(SV_Window* window);
-    int handle(xcb_generic_event_t* event);
-    void draw_points(std::vector<pixel>);
+    void redraw();
+    std::vector<pixel>& get_changed_pixels();
+    void change_pixel(int pixel_x, int pixel_y, unsigned char value);
+    void clear();
+    virtual bool handle(xcb_generic_event_t* event);
+    virtual void resize();
+
 private:
     SV_Window* parent_window;
     int x, y, width, height;
-    bool redraw = true;
+    bool do_redraw = true;
     CImg<double> image;
+    std::vector<pixel> changed_pixels;
+    double black, white;
 };
 
 

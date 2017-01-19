@@ -1,9 +1,10 @@
 #include "SV_Window.h"
-#include "Widget.h"
-#include <iostream>
+#include "SV_Widget.h"
 
 
 SV_Window::SV_Window(int width, int height) {
+    this->width = width;
+    this->height = height;
     /* Open the connection to the X server */
     connection = xcb_connect(NULL, NULL);
 
@@ -17,7 +18,6 @@ SV_Window::SV_Window(int width, int height) {
     uint32_t values[2] = {screen->black_pixel, 0};
 
     xcb_create_gc(connection, foreground, xcb_window, mask, values);
-
 
     /* Create a window */
     xcb_window = xcb_generate_id(connection);
@@ -35,11 +35,11 @@ SV_Window::SV_Window(int width, int height) {
                       10,                            /* border_width        */
                       XCB_WINDOW_CLASS_INPUT_OUTPUT, /* class               */
                       screen->root_visual,           /* visual              */
-                      mask, values);                      /* masks */
+                      mask, values);                 /* masks */
 }
 
 
-int SV_Window::run() {
+void SV_Window::run() {
     // Map the window on the screen and flush
     xcb_map_window (connection, xcb_window);
     xcb_flush (connection);
@@ -52,59 +52,69 @@ int SV_Window::run() {
                     if (widget->handle(event)) break;
                 }
 
+                // If a window is queued for a redraw, add its changes to the pixels that need to be redrawn
                 for (const auto& widget : widgets) {
-                    if (widget->needsdraw()) widget->draw();
+                    if (widget->needsdraw()) {
+                        widget->draw();
+                        auto& widget_changes = widget->get_changed_pixels();
+                        draw_pixels.insert(draw_pixels.end(), widget_changes.begin(), widget_changes.end());
+                    }
                 }
 
+                flush();
                 xcb_flush (connection);
-
                 break;
             default:
                 break;
         }
-
         free(event);
     }
-
-    return 0;
-
 }
 
 
-void SV_Window::add(Widget* widget) {
+int SV_Window::get_height() {
+    return height;
+}
+
+
+int SV_Window::get_width() {
+    return width;
+}
+
+
+void SV_Window::add(SV_Widget* widget) {
     widgets.push_back(widget);
     widget->window(this);
 }
 
-void SV_Window::draw(std::vector<pixel>& all_pixels) {
 
-    std::vector<pixel> pixels;
+void SV_Window::flush() {
+    if (draw_pixels.size() == 0) return;
 
-    
+    std::sort(draw_pixels.begin(), draw_pixels.end());
 
-    auto black_pixels = std::vector<pixel>();
+    std::vector<pixel> same_color_pixels;
+    auto current_color = draw_pixels[0].color;
+    for (const auto& px : draw_pixels) {
+        if (px.color == current_color) {
+            same_color_pixels.push_back(px);
+        }
+        else {
+            xcb_point_t *points = (xcb_point_t *) malloc(same_color_pixels.size() * sizeof(xcb_point_t));
+            for (int i = 0; i < same_color_pixels.size(); i++) {
+                points[i] = {(int16_t) same_color_pixels[i].x, (int16_t) same_color_pixels[i].y};
+            }
 
-    for (const auto& px : pixels) {
-        if (px.color == 0) {
-            black_pixels.push_back(px);
+            uint32_t values[1] = {(uint32_t)current_color*65793};
+            xcb_change_gc(connection, foreground, XCB_GC_FOREGROUND, values);
+            xcb_poly_point(connection, XCB_COORD_MODE_ORIGIN, xcb_window, foreground, same_color_pixels.size(), points);
+
+            free(points);
+
+            current_color = px.color;
+            same_color_pixels.clear();
+            same_color_pixels.push_back(px);
         }
     }
-
-    xcb_point_t* points = (xcb_point_t*)malloc(black_pixels.size()*sizeof(xcb_point_t));
-    for (int i = 0; i < black_pixels.size(); i++) {
-        points[i] = {(int16_t)black_pixels[i].x, (int16_t)black_pixels[i].y};
-    }
-
-    xcb_poly_point(connection, XCB_COORD_MODE_ORIGIN, xcb_window, foreground, black_pixels.size(), points);
-
-    free(points);
-
-    exit(0);
-}
-
-void SV_Window::draw(pixel px) {
-    xcb_point_t points[] = {{(int16_t)px.x, (int16_t)px.y}};
-    //uint32_t color[] = {px.color};
-    //xcb_create_gc(connection, foreground, xcb_window, XCB_GC_FOREGROUND, color);
-    xcb_poly_point(connection, XCB_COORD_MODE_ORIGIN, xcb_window, foreground, 4, points);
+    draw_pixels.clear();
 }
