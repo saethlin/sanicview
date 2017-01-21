@@ -8,12 +8,12 @@ Sometimes you just want to take a quick look at a FITS image on a remote server,
 
 ## FITS image?
 
-Astronomy data is typically stored in FITS (Flexible Image Transport System) files, an old and uncompressed format intended to store metadata, images, and tables. These files are often annoying large; a 4096x4096 image at the standard 16 bits/pixel can be 33 MB and doesn't compress particularly well (usually by <50%). When doing telescope or camera diagnostics it's typical to require remote access to this data, sometimes over great distance and over low-bandwidth and high-latency connections.
+Astronomy data is typically stored in FITS (Flexible Image Transport System) files, an old and uncompressed format intended to store metadata, images, and tables. These files are often annoying large; a 4096x4096 image at the standard 16 bits/pixel can be 33 MB and doesn't compress particularly well (usually by <50%). When doing telescope or camera diagnostics it's common to require remote access to this data, sometimes over great distance and over low-bandwidth and high-latency connections.
 
 
 # Internal Interface
 
-`SV_Window` and `SV_Event` encapsulate xcb, an implementation of X window system, and with `SV_Widget` comprise a very small GUI library that can be extended to build applications or re-implemented to use a different window system (Mir?).
+`SV_Window` and `SV_Event` encapsulate xcb, an implementation of X window system, and together with `SV_PixelTable`, `SV_Timer`, and `SV_Widget` comprise a very small GUI library that can be extended to build applications or re-implemented to use a different window system (Mir?).
 
 ## Drawing in SanicView
 
