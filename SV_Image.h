@@ -33,7 +33,7 @@ private:
     CImg<unsigned char> cropped;
     bool clip, move;
     double black, white;
-    int x, y, cursor_x, cursor_y, width, height;
+    int cursor_x, cursor_y;
     SV_MiniMap* minimap;
     SV_Histogram* histogram;
     SV_CursorTracker* cursortracker;

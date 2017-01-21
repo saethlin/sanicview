@@ -14,7 +14,7 @@ class SV_Histogram : public SV_Widget {
 public:
     SV_Histogram(SV_Window* window);
     void draw() override;
-    //bool handle(xcb_generic_event_t* event) override;
+    bool handle(xcb_generic_event_t* event);
     void set_image(CImg<double>& image);
     void set_imagedisplay(SV_Image* imagedisplay);
 private:
@@ -26,7 +26,6 @@ private:
     int black_pos, white_pos;
     int new_black_pos, new_white_pos;
     int clicked;
-    int x, y, width, height;
     CImg<unsigned char> black_column, white_column;
 };
 

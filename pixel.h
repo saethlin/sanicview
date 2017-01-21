@@ -4,9 +4,8 @@
 struct pixel {
     int x, y;
     uint32_t color;
-    bool operator<(const pixel& other) const {
-        return color < other.color;
-    }
+    bool operator<(const pixel& other) const {return color < other.color;}
+    bool operator==(const pixel& other) const {return (other.x == x) and (other.y == y);}
 };
 
 #endif //SANICVIEW_PIXEL_H

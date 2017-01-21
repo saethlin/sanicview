@@ -6,29 +6,24 @@
 #include <vector>
 #include <xcb/xcb.h>
 #include "pixel.h"
-
-#include <CImg.h>
-using namespace cimg_library;
+#include "SV_Timer.h"
 
 class SV_Widget;
 
 class SV_Window {
 public:
     SV_Window(int width, int height);
-    void run();
     void add(SV_Widget*);
-    void draw(const pixel&);
-    void draw(const std::vector<pixel>&);
-    void draw(CImg<unsigned char>&);
-    void flush();
-    int get_width();
-    int get_height();
+    void run();
+    inline int w() {return width;};
+    inline int h() {return height;};
 private:
+    void flush();
+    SV_Timer timer = SV_Timer(std::chrono::milliseconds(166));
     int width, height;
     xcb_connection_t *connection;
     xcb_drawable_t xcb_window;
     xcb_gcontext_t foreground;
-    xcb_alloc_color_reply_t* color_table[255];
     std::vector<SV_Widget*> widgets;
     std::vector<pixel> draw_pixels;
 };

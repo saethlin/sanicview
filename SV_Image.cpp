@@ -3,12 +3,7 @@
 #include "SV_Histogram.h"
 
 
-SV_Image::SV_Image(SV_Window* window) : SV_Widget(window) {
-    this->x = 0;
-    this->y = 0;
-    this->width = window->get_width()-200;
-    this->height = window->get_height()-50;
-}
+SV_Image::SV_Image(SV_Window* window) : SV_Widget(window, 0, 0, window->w()-200, window->h()-50) {}
 
 
 void SV_Image::set_image(CImg<double>& image) {
@@ -35,8 +30,8 @@ void SV_Image::set_image(CImg<double>& image) {
 
 void SV_Image::draw() {
     if (image.size() == 0) {
-        for (auto y = 0; y < height; y++) {
-            for (auto x = 0; x < width; x++) {
+        for (auto y = 0; y < h(); y++) {
+            for (auto x = 0; x < w(); x++) {
                 change_pixel(x, y, (unsigned char)0);
             }
         }
@@ -50,19 +45,18 @@ void SV_Image::draw() {
         }
 
         if (move) {
-            cropped = clipped.get_crop(x, y, x+width, y+height);
+            cropped = clipped.get_crop(x(), y(), x()+w(), y()+h());
         }
         clip = false;
         move = false;
 
-        for (auto y = 0; y < height; y++) {
-            for (auto x = 0; x < width; x++) {
+        for (auto y = 0; y < h(); y++) {
+            for (auto x = 0; x < w(); x++) {
                 if (x >= old.width() or y >= old.height() or old(x, y) != cropped(x, y)) {
-                    change_pixel(x + this->x, y + this->y, cropped(x, y));
+                    change_pixel(x+this->x(), y+this->y(), cropped(x, y));
                 }
             }
         }
-
     }
 }
 
@@ -103,12 +97,12 @@ double SV_Image::get_white() {
 
 void SV_Image::set_origin(int x, int y) {
 
-    auto try_x = std::min(image.width() - width, std::max(x, 0));
-    auto try_y = std::min(image.height() - height, std::max(y, 0));
+    auto try_x = std::min(image.width() - w(), std::max(x, 0));
+    auto try_y = std::min(image.height() - h(), std::max(y, 0));
 
-    if ((try_x != this->x) || (try_y != this->y)) {
-        this->x = try_x;
-        this->y = try_y;
+    if ((try_x != this->x()) || (try_y != this->y())) {
+        set_x(try_x);
+        set_y(try_y);
         move = true;
         redraw();
     }
@@ -121,8 +115,8 @@ bool SV_Image::handle(xcb_generic_event_t* event) {
 
 
 void SV_Image::resize() {
-    width = window()->get_width()-200;
-    height = window()->get_height()-50;
+    set_width(window()->w()-200);
+    set_height(window()->h()-50);
     move = true;
     redraw();
 }

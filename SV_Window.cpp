@@ -15,7 +15,7 @@ SV_Window::SV_Window(int width, int height) {
     /* Create black (foreground) graphic context */
     xcb_window = screen->root;
     foreground = xcb_generate_id(connection);
-    uint32_t mask = XCB_GC_FOREGROUND | XCB_GC_GRAPHICS_EXPOSURES;
+    uint32_t mask = XCB_GC_FOREGROUND | XCB_GC_GRAPHICS_EXPOSURES ;
     uint32_t values[2] = {screen->black_pixel, 0};
 
     xcb_create_gc(connection, foreground, xcb_window, mask, values);
@@ -25,7 +25,12 @@ SV_Window::SV_Window(int width, int height) {
 
     mask = XCB_CW_BACK_PIXEL | XCB_CW_EVENT_MASK;
     values[0] = screen->white_pixel;
-    values[1] = XCB_EVENT_MASK_EXPOSURE;
+    values[1] = (XCB_EVENT_MASK_EXPOSURE |
+                 XCB_EVENT_MASK_BUTTON_PRESS |
+                 XCB_EVENT_MASK_BUTTON_RELEASE |
+                 XCB_EVENT_MASK_KEY_PRESS |
+                 XCB_EVENT_MASK_POINTER_MOTION |
+                 XCB_EVENT_MASK_BUTTON_MOTION);
 
     xcb_create_window(connection,                    /* connection          */
                       XCB_COPY_FROM_PARENT,          /* depth               */
@@ -45,31 +50,53 @@ void SV_Window::run() {
     xcb_map_window (connection, xcb_window);
     xcb_flush (connection);
 
-    xcb_generic_event_t *event;
-    while ((event = xcb_wait_for_event (connection))) {
+    xcb_generic_event_t* event;
+    xcb_button_press_event_t* bp;
+    xcb_key_press_event_t* kp;
+    timer.restart();
+    while ((event = xcb_wait_for_event(connection))) {
         switch (event->response_type & ~0x80) {
-            case XCB_EXPOSE:
-                for (const auto& widget : widgets) {
-                    if (widget->handle(event)) break;
-                }
-
-                // If a window is queued for a redraw, add its changes to the pixels that need to be redrawn
-                for (const auto& widget : widgets) {
-                    if (widget->needsdraw()) {
-                        widget->draw();
-                        auto& widget_changes = widget->get_changed_pixels();
-                        draw_pixels.insert(draw_pixels.end(), widget_changes.begin(), widget_changes.end());
+            case XCB_MOTION_NOTIFY:
+            case XCB_BUTTON_PRESS:
+            case XCB_BUTTON_RELEASE: {
+                bp = (xcb_button_press_event_t *) event;
+                for (const auto &widget : widgets) {
+                    if (widget->x() < bp->event_x and bp->event_x < widget->x() + widget->w() and
+                        widget->y() < bp->event_y and bp->event_y < widget->y() + widget->h()) {
+                        if (widget->handle(event)) {break;}
                     }
                 }
-
-                flush();
-                xcb_flush (connection);
                 break;
-            case XCB_BUTTON_PRESS:
-                std::cout << "button pressed" << std::endl;
+            }
+            case XCB_KEY_PRESS: {
+                kp = (xcb_key_press_event_t *) event;
+                if ((int) kp->detail == 9) {exit(0);}
+                for (const auto &widget : widgets) {
+                    if (widget->handle(event)) {break;}
+                }
+                break;
+            }
+            case XCB_EXPOSE: {
+                break;
+            }
             default:
                 break;
         }
+        if (timer.is_done()) {
+            timer.restart();
+            // If a window is queued for a redraw, add its changes to the pixels that need to be redrawn
+            for (const auto &widget : widgets) {
+                if (widget->needsdraw()) {
+                    widget->draw();
+                    auto &widget_changes = widget->get_changed_pixels();
+                    draw_pixels.insert(draw_pixels.end(), widget_changes.begin(), widget_changes.end());
+                    widget->clear();
+                }
+            }
+            flush();
+            xcb_flush(connection);
+        }
+
         free(event);
     }
 }
@@ -77,16 +104,6 @@ void SV_Window::run() {
 
 void SV_Window::add(SV_Widget* widget) {
     this->widgets.push_back(widget);
-}
-
-
-int SV_Window::get_height() {
-    return height;
-}
-
-
-int SV_Window::get_width() {
-    return width;
 }
 
 
