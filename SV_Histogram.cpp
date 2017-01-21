@@ -1,7 +1,9 @@
 #include "SV_Histogram.h"
 #include "SV_Image.h"
 #include <iostream>
-#include <xcb/xcb.h>
+
+
+enum ClickState {BLACK, WHITE, NONE};
 
 
 SV_Histogram::SV_Histogram(SV_Window* window) : SV_Widget(window, 0, window->h()-50, window->w()-200, 50) {}
@@ -118,11 +120,6 @@ void SV_Histogram::draw() {
                 }
             }
         }
-
-        if (get_changed_pixels().size() != 0) {
-            std::cout << get_changed_pixels().size() << std::endl;
-        }
-
     }
 }
 

@@ -3,8 +3,6 @@
 
 #include <chrono>
 
-typedef std::chrono::high_resolution_clock Clock;
-
 template <class time_type>
 class SV_Timer {
 public:
@@ -12,8 +10,9 @@ public:
     void restart();
     bool is_done();
 private:
-    std::chrono::time_point start;
+    std::chrono::high_resolution_clock::time_point start;
     time_type interval;
+    typedef std::chrono::high_resolution_clock Clock;
 };
 
 

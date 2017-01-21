@@ -42,6 +42,9 @@ SV_Window::SV_Window(int width, int height) {
                       XCB_WINDOW_CLASS_INPUT_OUTPUT, /* class               */
                       screen->root_visual,           /* visual              */
                       mask, values);                 /* masks */
+
+
+
 }
 
 
@@ -85,12 +88,20 @@ void SV_Window::run() {
         if (timer.is_done()) {
             timer.restart();
             // If a window is queued for a redraw, add its changes to the pixels that need to be redrawn
-            for (const auto &widget : widgets) {
+            for (const auto& widget : widgets) {
                 if (widget->needsdraw()) {
                     widget->draw();
-                    auto &widget_changes = widget->get_changed_pixels();
-                    draw_pixels.insert(draw_pixels.end(), widget_changes.begin(), widget_changes.end());
-                    widget->clear();
+                    /*
+                     * Inserting everything into a single pixel table makes newer widgets changes overwrite older
+                     * widgets changes. We actually need this behavior otherwise the drawing preference is
+                     * defined by the implementation of std::sort. This is more expensive in CPU and memory, but it
+                     * prevents implementation-defined behavior.
+                    */
+                    auto widget_changes = widget->get_changed_pixels();
+                    if (not widget_changes.is_empty()) {
+                        pixel_table.insert_from(widget_changes);
+                        widget->clear();
+                    }
                 }
             }
             flush();
@@ -108,13 +119,13 @@ void SV_Window::add(SV_Widget* widget) {
 
 
 void SV_Window::flush() {
-    if (draw_pixels.size() == 0) return;
+    if (pixel_table.is_empty() == 0) return;
 
-    std::sort(draw_pixels.begin(), draw_pixels.end());
+    std::sort(pixel_vector.begin(), pixel_vector.end());
 
     std::vector<pixel> same_color_pixels;
-    auto current_color = draw_pixels[0].color;
-    for (const auto& px : draw_pixels) {
+    auto current_color = pixel_vector[0].color;
+    for (const auto& px : pixel_vector) {
         if (px.color == current_color) {
             same_color_pixels.push_back(px);
         }
@@ -134,5 +145,5 @@ void SV_Window::flush() {
             same_color_pixels.push_back(px);
         }
     }
-    draw_pixels.clear();
+    pixel_vector.clear();
 }

@@ -7,6 +7,7 @@
 #include <xcb/xcb.h>
 #include "pixel.h"
 #include "SV_Timer.h"
+#include "SV_PixelTable.h"
 
 class SV_Widget;
 
@@ -19,13 +20,14 @@ public:
     inline int h() {return height;};
 private:
     void flush();
-    SV_Timer timer = SV_Timer(std::chrono::milliseconds(166));
+    SV_Timer<std::chrono::milliseconds> timer = SV_Timer<std::chrono::milliseconds>(std::chrono::milliseconds(166));
     int width, height;
     xcb_connection_t *connection;
     xcb_drawable_t xcb_window;
     xcb_gcontext_t foreground;
     std::vector<SV_Widget*> widgets;
-    std::vector<pixel> draw_pixels;
+    SV_PixelTable pixel_table;
+    std::vector<pixel> pixel_vector;
 };
 
 

@@ -1,9 +1,10 @@
 #ifndef SANICVIEW_WIDGET_H
 #define SANICVIEW_WIDGET_H
 
-#include <vector>
+#include <unordered_set>
 #include <xcb/xcb.h>
 #include "pixel.h"
+#include "SV_PixelTable.h"
 
 #include <CImg.h>
 using namespace cimg_library;
@@ -17,7 +18,7 @@ public:
     bool needsdraw();
     SV_Window* window();
     void redraw();
-    std::vector<pixel>& get_changed_pixels();
+    SV_PixelTable& get_changed_pixels();
     void change_pixel(int pixel_x, int pixel_y, const unsigned char value);
     void change_pixel(int pixel_x, int pixel_y, const unsigned char value[3]);
     void clear();
@@ -37,7 +38,7 @@ private:
     int x0, y0, width, height;
     bool do_redraw = true;
     CImg<double> image;
-    std::vector<pixel> changed_pixels;
+    SV_PixelTable changed_pixels;
     double black, white;
 };
 

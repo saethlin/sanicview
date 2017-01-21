@@ -1,11 +1,15 @@
 #ifndef SANICVIEW_PIXEL_H
 #define SANICVIEW_PIXEL_H
 
+#include <xcb/xcb.h>
+
 struct pixel {
-    int x, y;
+    int x = -1;
+    int y = -1;
     uint32_t color;
     bool operator<(const pixel& other) const {return color < other.color;}
-    bool operator==(const pixel& other) const {return (other.x == x) and (other.y == y);}
+    pixel operator=(const pixel& other) {return {x, y, color};}
 };
+
 
 #endif //SANICVIEW_PIXEL_H
