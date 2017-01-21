@@ -124,23 +124,21 @@ void SV_Histogram::draw() {
 }
 
 
-bool SV_Histogram::handle(xcb_generic_event_t* event) {
-    switch (event->response_type) {
-        case XCB_BUTTON_PRESS: {
-            xcb_button_press_event_t* bp = (xcb_button_press_event_t*)event;
-            if (abs(bp->event_x - white_pos) < 4) {
+bool SV_Histogram::handle(SV_Event event) {
+    switch (event.type()) {
+        case mouse_push: {
+            if (abs(event.x() - white_pos) < 4) {
                 clicked = WHITE;
                 return true;
             }
-            else if (abs(bp->event_x - black_pos) < 4) {
+            else if (abs(event.x() - black_pos) < 4) {
                 clicked = BLACK;
                 return true;
             }
             break;
         }
-        case XCB_MOTION_NOTIFY: {
-            xcb_motion_notify_event_t *motion = (xcb_motion_notify_event_t *) event;
-            auto cursor_pos = motion->event_x;
+        case mouse_move: {
+            auto cursor_pos = event.x();
             if (clicked == WHITE) {
                 if (cursor_pos > black_pos and cursor_pos < w()) {
                     new_white_pos = cursor_pos;
@@ -156,7 +154,7 @@ bool SV_Histogram::handle(xcb_generic_event_t* event) {
             }
             break;
         }
-        case XCB_BUTTON_RELEASE: {
+        case mouse_release: {
             if (clicked == BLACK) {
                 black_slider = (double) black_pos * (double) histogram.width() / (double) scaled.width();
                 imagedisplay->set_black(histogram_to_value[(int) black_slider]);

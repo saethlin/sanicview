@@ -5,6 +5,7 @@
 #include <xcb/xcb.h>
 #include "pixel.h"
 #include "SV_PixelTable.h"
+#include "SV_Event.h"
 
 #include <CImg.h>
 using namespace cimg_library;
@@ -14,7 +15,7 @@ class SV_Window;
 class SV_Widget {
 public:
     SV_Widget(SV_Window* window, int x0, int y0, int width, int height);
-    virtual void draw() {};
+    void draw() {};
     bool needsdraw();
     SV_Window* window();
     void redraw();
@@ -22,16 +23,16 @@ public:
     void change_pixel(int pixel_x, int pixel_y, const unsigned char value);
     void change_pixel(int pixel_x, int pixel_y, const unsigned char value[3]);
     void clear();
-    virtual bool handle(xcb_generic_event_t* event);
-    virtual void resize() {};
+    bool handle(SV_Event event);
+    void resize() {};
     inline int x() {return x0;};
+    inline void x(int x) {x0 = x;};
     inline int y() {return y0;};
+    inline void y(int y) {y0 = y;};
     inline int w() {return width;};
+    inline void w(int width) {this->width = width;};
     inline int h() {return height;};
-    inline void set_x(int x) {x0 = x;};
-    inline void set_y(int y) {y0 = y;};
-    inline void set_width(int width) {this->width = width;};
-    inline void set_height(int height) {this->height = height;};
+    inline void h(int height) {this->height = height;};
 
 private:
     SV_Window* parent_window;

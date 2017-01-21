@@ -8,7 +8,11 @@ struct pixel {
     int y = -1;
     uint32_t color;
     bool operator<(const pixel& other) const {return color < other.color;}
-    pixel operator=(const pixel& other) {return {x, y, color};}
+    void operator=(const pixel& other) {
+        x = other.x;
+        y = other.y;
+        color = other.color;
+    }
 };
 
 

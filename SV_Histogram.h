@@ -9,8 +9,8 @@ class SV_Image;
 class SV_Histogram : public SV_Widget {
 public:
     SV_Histogram(SV_Window* window);
-    void draw() override;
-    bool handle(xcb_generic_event_t* event) override;
+    void draw();
+    bool handle(SV_Event event);
     void set_image(CImg<double>& image);
     void set_imagedisplay(SV_Image* imagedisplay);
 private:

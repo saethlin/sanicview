@@ -101,8 +101,8 @@ void SV_Image::set_origin(int x, int y) {
     auto try_y = std::min(image.height() - h(), std::max(y, 0));
 
     if ((try_x != this->x()) || (try_y != this->y())) {
-        set_x(try_x);
-        set_y(try_y);
+        this->x(try_x);
+        this->y(try_y);
         move = true;
         redraw();
     }
@@ -115,8 +115,8 @@ bool SV_Image::handle(xcb_generic_event_t* event) {
 
 
 void SV_Image::resize() {
-    set_width(window()->w()-200);
-    set_height(window()->h()-50);
+    w(window()->w()-200);
+    h(window()->h()-50);
     move = true;
     redraw();
 }

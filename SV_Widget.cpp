@@ -49,4 +49,4 @@ void SV_Widget::redraw() {do_redraw = true;}
 SV_Window* SV_Widget::window() {return this->parent_window;}
 
 
-bool SV_Widget::handle(xcb_generic_event_t* event) {return false;}
+bool SV_Widget::handle(SV_Event event) {return false;}

@@ -28,9 +28,10 @@ SV_Window::SV_Window(int width, int height) {
     values[1] = (XCB_EVENT_MASK_EXPOSURE |
                  XCB_EVENT_MASK_BUTTON_PRESS |
                  XCB_EVENT_MASK_BUTTON_RELEASE |
-                 XCB_EVENT_MASK_KEY_PRESS |
                  XCB_EVENT_MASK_POINTER_MOTION |
-                 XCB_EVENT_MASK_BUTTON_MOTION);
+                 XCB_EVENT_MASK_BUTTON_MOTION |
+                 XCB_EVENT_MASK_KEY_PRESS |
+                 XCB_EVENT_MASK_KEY_RELEASE);
 
     xcb_create_window(connection,                    /* connection          */
                       XCB_COPY_FROM_PARENT,          /* depth               */
@@ -44,6 +45,7 @@ SV_Window::SV_Window(int width, int height) {
                       mask, values);                 /* masks */
 
 
+    pixel_table = SV_PixelTable(screen->width_in_pixels, screen->height_in_pixels);
 
 }
 

@@ -1,8 +1,10 @@
 #include "SV_PixelTable.h"
+#include <iostream>
 
 
 SV_PixelTable::SV_PixelTable(int max_val1, int max_val2){
     table = std::vector<pixel>(hash(max_val1, max_val2));
+    std::cout << table[0].x << std::endl;
 }
 
 

@@ -12,9 +12,9 @@ class SV_Image : public SV_Widget {
 public:
     SV_Image(SV_Window* window);
     void set_image(CImg<double>&);
-    void draw() override;
-    bool handle(xcb_generic_event_t*) override;
-    void resize() override;
+    void draw();
+    bool handle(xcb_generic_event_t*);
+    void resize();
     void set_white(double white);
     void set_black(double black);
     void set_origin(int x, int  y);

@@ -11,14 +11,20 @@ enum SV_event_type {expose,
 class SV_Event {
 public:
     SV_Event(xcb_generic_event_t* event);
-    SV_event_type get_type();
-    int get_time();
-    int event_x();
-    int event_y();
+    SV_event_type type();
+    int time();
+    int x();
+    int y();
 private:
-    int x, y;
-    int time = 0;
-    SV_event_type type;
+    int event_x = -1, event_y = -1;
+    int event_time = 0;
+    SV_event_type event_type;
+    template <typename event_type>
+    void set_event_data(event_type evt) {
+        event_x= evt->event_x;
+        event_y= evt->event_y;
+        event_time = evt->time;
+    }
 };
 
 
