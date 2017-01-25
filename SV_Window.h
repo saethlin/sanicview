@@ -5,7 +5,6 @@
 #include <stdio.h>
 #include <vector>
 #include <xcb/xcb.h>
-#include "pixel.h"
 #include "SV_Timer.h"
 #include "SV_PixelTable.h"
 
@@ -18,16 +17,17 @@ public:
     void run();
     inline int w() {return width;};
     inline int h() {return height;};
+    void draw_point(int x, int y, unsigned char r, unsigned char g, unsigned char b);
 private:
     void flush();
-    SV_Timer<std::chrono::milliseconds> timer = SV_Timer<std::chrono::milliseconds>(std::chrono::milliseconds(166));
+    SV_Timer<std::chrono::milliseconds> timer = SV_Timer<std::chrono::milliseconds>(std::chrono::milliseconds(16));
     int width, height;
     xcb_connection_t *connection;
     xcb_drawable_t xcb_window;
     xcb_gcontext_t foreground;
     std::vector<SV_Widget*> widgets;
-    SV_PixelTable pixel_table;
-    std::vector<pixel> pixel_vector;
+    SV_PixelTable drawing_buffer;
+    std::vector<xcb_point_t> color_run;
 };
 
 

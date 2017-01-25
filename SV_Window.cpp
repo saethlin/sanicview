@@ -1,3 +1,4 @@
+#include <algorithm>
 #include "SV_Window.h"
 #include "SV_Widget.h"
 #include <iostream>
@@ -24,7 +25,7 @@ SV_Window::SV_Window(int width, int height) {
     xcb_window = xcb_generate_id(connection);
 
     mask = XCB_CW_BACK_PIXEL | XCB_CW_EVENT_MASK;
-    values[0] = screen->white_pixel;
+    values[0] = screen->black_pixel;
     values[1] = (XCB_EVENT_MASK_EXPOSURE |
                  XCB_EVENT_MASK_BUTTON_PRESS |
                  XCB_EVENT_MASK_BUTTON_RELEASE |
@@ -44,9 +45,7 @@ SV_Window::SV_Window(int width, int height) {
                       screen->root_visual,           /* visual              */
                       mask, values);                 /* masks */
 
-
-    pixel_table = SV_PixelTable(screen->width_in_pixels, screen->height_in_pixels);
-
+    drawing_buffer = SV_PixelTable(screen->width_in_pixels, screen->height_in_pixels);
 }
 
 
@@ -55,62 +54,25 @@ void SV_Window::run() {
     xcb_map_window (connection, xcb_window);
     xcb_flush (connection);
 
-    xcb_generic_event_t* event;
-    xcb_button_press_event_t* bp;
-    xcb_key_press_event_t* kp;
-    timer.restart();
-    while ((event = xcb_wait_for_event(connection))) {
-        switch (event->response_type & ~0x80) {
-            case XCB_MOTION_NOTIFY:
-            case XCB_BUTTON_PRESS:
-            case XCB_BUTTON_RELEASE: {
-                bp = (xcb_button_press_event_t *) event;
-                for (const auto &widget : widgets) {
-                    if (widget->x() < bp->event_x and bp->event_x < widget->x() + widget->w() and
-                        widget->y() < bp->event_y and bp->event_y < widget->y() + widget->h()) {
-                        if (widget->handle(event)) {break;}
-                    }
-                }
-                break;
-            }
-            case XCB_KEY_PRESS: {
-                kp = (xcb_key_press_event_t *) event;
-                if ((int) kp->detail == 9) {exit(0);}
-                for (const auto &widget : widgets) {
+    xcb_generic_event_t* xcb_event_ptr;
+    while ((xcb_event_ptr = xcb_wait_for_event(connection))) {
+        auto event = SV_Event(xcb_event_ptr);
+            for (const auto &widget : widgets) {
+                if (widget->x() < event.x() and event.x() < widget->x() + widget->w() and
+                    widget->y() < event.y() and event.y() < widget->y() + widget->h()) {
                     if (widget->handle(event)) {break;}
                 }
-                break;
             }
-            case XCB_EXPOSE: {
-                break;
-            }
-            default:
-                break;
-        }
-        if (timer.is_done()) {
+        if (timer.is_done() or event.type() == expose) {
             timer.restart();
-            // If a window is queued for a redraw, add its changes to the pixels that need to be redrawn
             for (const auto& widget : widgets) {
                 if (widget->needsdraw()) {
                     widget->draw();
-                    /*
-                     * Inserting everything into a single pixel table makes newer widgets changes overwrite older
-                     * widgets changes. We actually need this behavior otherwise the drawing preference is
-                     * defined by the implementation of std::sort. This is more expensive in CPU and memory, but it
-                     * prevents implementation-defined behavior.
-                    */
-                    auto widget_changes = widget->get_changed_pixels();
-                    if (not widget_changes.is_empty()) {
-                        pixel_table.insert_from(widget_changes);
-                        widget->clear();
-                    }
                 }
             }
             flush();
-            xcb_flush(connection);
         }
-
-        free(event);
+        free(xcb_event_ptr);
     }
 }
 
@@ -120,32 +82,37 @@ void SV_Window::add(SV_Widget* widget) {
 }
 
 
+/*
+ * Get the changed pixels from the buffer, sort them,
+ * and draw to the screen in groups of the same color
+ */
 void SV_Window::flush() {
-    if (pixel_table.is_empty() == 0) return;
+    if (drawing_buffer.empty()) {return;}
 
-    std::sort(pixel_vector.begin(), pixel_vector.end());
+    auto changed_pixels = drawing_buffer.get_changed();
+    auto current_color = changed_pixels.front().color;
 
-    std::vector<pixel> same_color_pixels;
-    auto current_color = pixel_vector[0].color;
-    for (const auto& px : pixel_vector) {
-        if (px.color == current_color) {
-            same_color_pixels.push_back(px);
-        }
-        else {
-            xcb_point_t *points = (xcb_point_t *) malloc(same_color_pixels.size() * sizeof(xcb_point_t));
-            for (int i = 0; i < same_color_pixels.size(); i++) {
-                points[i] = {(int16_t) same_color_pixels[i].x, (int16_t) same_color_pixels[i].y};
-            }
+    std::stable_sort(changed_pixels.begin(), changed_pixels.end());
 
+    for (const auto& px : changed_pixels) {
+        if (px.color != current_color) {
             xcb_change_gc(connection, foreground, XCB_GC_FOREGROUND, &current_color);
-            xcb_poly_point(connection, XCB_COORD_MODE_ORIGIN, xcb_window, foreground, same_color_pixels.size(), points);
-
-            free(points);
-
+            xcb_poly_point(connection, XCB_COORD_MODE_ORIGIN, xcb_window, foreground, color_run.size(), color_run.data());
+            color_run.clear();
             current_color = px.color;
-            same_color_pixels.clear();
-            same_color_pixels.push_back(px);
         }
+        color_run.push_back({(int16_t)px.x, (int16_t)px.y});
     }
-    pixel_vector.clear();
+
+    xcb_change_gc(connection, foreground, XCB_GC_FOREGROUND, &current_color);
+    xcb_poly_point(connection, XCB_COORD_MODE_ORIGIN, xcb_window, foreground, color_run.size(), color_run.data());
+    color_run.clear();
+
+    drawing_buffer.clear();
+    xcb_flush(connection);
+}
+
+
+void SV_Window::draw_point(int x, int y, unsigned char r, unsigned char g, unsigned char b) {
+    drawing_buffer.insert(x, y, r, g, b);
 }

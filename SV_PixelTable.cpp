@@ -2,50 +2,37 @@
 #include <iostream>
 
 
-SV_PixelTable::SV_PixelTable(int max_val1, int max_val2){
-    table = std::vector<pixel>(hash(max_val1, max_val2));
-    std::cout << table[0].x << std::endl;
+SV_PixelTable::SV_PixelTable(int x_max, int y_max) {
+    table = std::vector<pixel>(x_max*y_max, {0, 0, 0, 0});
+    this->x_max = x_max;
 }
 
 
-void SV_PixelTable::insert(pixel px) {
-    auto index = hash(px.x, px.y);
-    if (index < table.size())  {
-        table[index] = px;
+void SV_PixelTable::insert(int x, int y, unsigned char r, unsigned char g, unsigned char b) {
+    auto& px = table[y*x_max + x];
+    if (px.red != r or px.green != g or px.blue != b) {
+        px = {r, g, b, 255};
+        empty_impl = false;
     }
-    else {
-        table.resize(index+1);
-        table[index] = px;
+}
+
+
+std::vector<xcb_pixel> SV_PixelTable::get_changed() {
+    std::vector<xcb_pixel> changed;
+    for (auto i = 0; i < table.size(); i++) {
+        if (table[i].alpha) {
+            changed.push_back({i%x_max, i/x_max,
+                               (uint32_t)65536*table[i].red + (uint32_t)256*table[i].green + (uint32_t)table[i].blue});
+        }
     }
-    empty = false;
+    return changed;
 }
 
 
 void SV_PixelTable::clear() {
-    for (auto& px : table) {
-        px.x = -1;
-    }
-    empty = true;
+    for (auto& px : table) {px.alpha = 0;}
+    empty_impl = true;
 }
 
 
-void SV_PixelTable::insert_from(SV_PixelTable& other) {
-    for (const auto& other_px : other.table) {
-        if (other_px.x != 1) {
-            insert(other_px);
-        }
-    }
-}
-
-
-bool SV_PixelTable::is_empty() {return empty;}
-
-
-int SV_PixelTable::hash(int x, int y) {
-    if (x < y) {
-        return y*y + x;
-    }
-    else {
-        return x*x + x + y;
-    }
-}
+bool SV_PixelTable::empty() {return empty_impl;}

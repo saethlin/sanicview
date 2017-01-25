@@ -4,49 +4,36 @@
 
 
 SV_Widget::SV_Widget(SV_Window* window, int x, int y, int width, int height) {
-    this->x0 = x;
-    this->y0 = y;
-    this->width = width;
-    this->height = height;
+    this->x(x);
+    this->y(y);
+    this->w(width);
+    this->h(height);
     this->parent_window = window;
     window->add(this);
-    this->changed_pixels = SV_PixelTable(width, height);
 }
 
 
-void SV_Widget::change_pixel(int pixel_x, int pixel_y, const unsigned char color) {
-    if (x() < pixel_x and pixel_x < x()+w() and
-        y() < pixel_y and pixel_y < y()+h()) {
-        changed_pixels.insert({pixel_x, pixel_y, (uint32_t) color * 65793});
+void SV_Widget::draw_point(int pixel_x, int pixel_y, unsigned char color) {
+    if (pixel_x >= 0 and pixel_x < w() and
+        pixel_y >= 0 and pixel_y < h()) {
+        window()->draw_point(x()+pixel_x, y()+pixel_y, color, color, color);
     }
 }
 
 
-void SV_Widget::change_pixel(int pixel_x, int pixel_y, const unsigned char color[3]) {
-    if (x() < pixel_x and pixel_x < x()+w() and
-        y() < pixel_y and pixel_y < y()+h()) {
-        auto value = (uint32_t) color[0] * 65536 + (uint32_t) color[1] * 256 + (uint32_t) color[2];
-        changed_pixels.insert({pixel_x, pixel_y, value});
+void SV_Widget::draw_point(int pixel_x, int pixel_y, unsigned char r, unsigned char g, unsigned char b) {
+    if (pixel_x >= 0 and pixel_x < w() and
+        pixel_y >= 0 and pixel_y < h()) {
+        window()->draw_point(x()+pixel_x, y()+pixel_y, r, g, b);
     }
 }
 
-
-void SV_Widget::clear() {
-    changed_pixels.clear();
-    do_redraw = false;
+bool SV_Widget::needsdraw() {
+    if (do_redraw) {
+        do_redraw = false;
+        return true;
+    }
+    else {
+        return false;
+    }
 }
-
-
-SV_PixelTable& SV_Widget::get_changed_pixels() {return changed_pixels;}
-
-
-bool SV_Widget::needsdraw() {return do_redraw;}
-
-
-void SV_Widget::redraw() {do_redraw = true;}
-
-
-SV_Window* SV_Widget::window() {return this->parent_window;}
-
-
-bool SV_Widget::handle(SV_Event event) {return false;}

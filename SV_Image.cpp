@@ -1,6 +1,7 @@
 #include "SV_Image.h"
 #include "SV_Window.h"
 #include "SV_Histogram.h"
+#include <iostream>
 
 
 SV_Image::SV_Image(SV_Window* window) : SV_Widget(window, 0, 0, window->w()-200, window->h()-50) {}
@@ -25,6 +26,7 @@ void SV_Image::set_image(CImg<double>& image) {
     //minimap->set_origin(x, y);
 
     histogram->set_image(image);
+    redraw();
 }
 
 
@@ -32,13 +34,11 @@ void SV_Image::draw() {
     if (image.size() == 0) {
         for (auto y = 0; y < h(); y++) {
             for (auto x = 0; x < w(); x++) {
-                change_pixel(x, y, (unsigned char)0);
+                draw_point(x, y, (unsigned char)0);
             }
         }
     }
     else if (clip or move) {
-        auto old = cropped;
-
         if (clip) {
             clipped = (image.get_cut(black, white) - black).normalize(0, 255);
             move = true;
@@ -52,9 +52,7 @@ void SV_Image::draw() {
 
         for (auto y = 0; y < h(); y++) {
             for (auto x = 0; x < w(); x++) {
-                if (x >= old.width() or y >= old.height() or old(x, y) != cropped(x, y)) {
-                    change_pixel(x+this->x(), y+this->y(), cropped(x, y));
-                }
+                draw_point(x, y, cropped(x, y));
             }
         }
     }
@@ -109,7 +107,7 @@ void SV_Image::set_origin(int x, int y) {
 }
 
 
-bool SV_Image::handle(xcb_generic_event_t* event) {
+bool SV_Image::handle(SV_Event event) {
     return false;
 }
 

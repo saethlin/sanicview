@@ -18,7 +18,7 @@ void SV_Histogram::set_image(CImg<double>& image) {
     std::vector<double> sortable(image.data(), image.data() + image.size());
     auto image_max = std::max_element(sortable.begin(), sortable.end());
 
-    std::vector<int> bincount((unsigned long)(ceil(*image_max)));
+    std::vector<int> bincount((unsigned long)(ceil(*image_max)+1));
     for (auto& val : sortable) {
         bincount[ceil(val)] += 1;
     }
@@ -80,8 +80,6 @@ void SV_Histogram::draw() {
         //fl_draw_box(FL_FLAT_BOX, 0, this->parent()->h() - h(), w(), h(), fl_rgb_color(255));
     }
     else {
-        auto old = scaled;
-
         if (scaled.width() != w()) {
             scaled = histogram.get_resize(w(), h(), 1, 3);
 
@@ -100,12 +98,12 @@ void SV_Histogram::draw() {
         else {
             if (new_black_pos != black_pos) {
                 scaled.draw_image(black_pos, 0, 0, 0, black_column);
-                scaled.draw_line(black_pos, 0, black_pos, h(), red);
+                scaled.draw_line(new_black_pos, 0, new_black_pos, h(), red);
                 black_column = scaled.get_column(new_black_pos);
                 black_pos = new_black_pos;
             }
             if (new_white_pos != white_pos) {
-                scaled.draw_image(white_pos, 1, 1, 1, white_column);
+                scaled.draw_image(white_pos, 0, 0, 0, white_column);
                 scaled.draw_line(new_white_pos, 0, new_white_pos, h(), red);
                 white_column = scaled.get_column(new_white_pos);
                 white_pos = new_white_pos;
@@ -114,10 +112,7 @@ void SV_Histogram::draw() {
 
         for (auto y = 0; y < h(); y++) {
             for (auto x = 0; x < w(); x++) {
-                if (x >= old.width() or y >= old.height() or old(x, y) != scaled(x, y)) {
-                    const unsigned char color[3] = {scaled(x, y, 0, 0), scaled(x, y, 0, 1), scaled(x, y, 0, 2)};
-                    change_pixel(x + this->x(), y + this->y(), color);
-                }
+                draw_point(x, y, scaled(x, y, 0, 0), scaled(x, y, 0, 1), scaled(x, y, 0, 2));
             }
         }
     }
@@ -159,10 +154,6 @@ bool SV_Histogram::handle(SV_Event event) {
                 black_slider = (double) black_pos * (double) histogram.width() / (double) scaled.width();
                 imagedisplay->set_black(histogram_to_value[(int) black_slider]);
                 clicked = NONE;
-                auto dis = CImgDisplay();
-                scaled.display(dis);
-                dis.show();
-                sleep(5);
                 return true;
             } else if (clicked == WHITE) {
                 white_slider = (double) white_pos * (double) histogram.width() / (double) scaled.width();

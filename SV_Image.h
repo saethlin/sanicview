@@ -3,6 +3,9 @@
 
 #include "SV_Widget.h"
 
+#include <CImg.h>
+using namespace cimg_library;
+
 class SV_MiniMap;
 class SV_Histogram;
 class SV_DirList;
@@ -11,10 +14,10 @@ class SV_CursorTracker;
 class SV_Image : public SV_Widget {
 public:
     SV_Image(SV_Window* window);
+    void draw() override;
+    bool handle(SV_Event event) override;
+    void resize() override;
     void set_image(CImg<double>&);
-    void draw();
-    bool handle(xcb_generic_event_t*);
-    void resize();
     void set_white(double white);
     void set_black(double black);
     void set_origin(int x, int  y);
@@ -32,11 +35,10 @@ private:
     CImg<unsigned char> clipped;
     CImg<unsigned char> cropped;
     bool clip, move;
-    double black, white;
-    int cursor_x, cursor_y;
-    SV_MiniMap* minimap;
-    SV_Histogram* histogram;
-    SV_CursorTracker* cursortracker;
+    double black = 0, white = 0;
+    SV_MiniMap* minimap = NULL;
+    SV_Histogram* histogram = NULL;
+    SV_CursorTracker* cursortracker = NULL;
 
 };
 

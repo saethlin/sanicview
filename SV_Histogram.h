@@ -4,6 +4,9 @@
 #include "SV_Window.h"
 #include "SV_Widget.h"
 
+#include <CImg.h>
+using namespace cimg_library;
+
 class SV_Image;
 
 class SV_Histogram : public SV_Widget {

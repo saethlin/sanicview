@@ -2,23 +2,38 @@
 #define SANICVIEW_SV_PIXELTABLE_H
 
 #include <vector>
-#include "pixel.h"
+#include <cstdint>
+
+struct pixel {
+    unsigned char red = 0;
+    unsigned char green = 0;
+    unsigned char blue = 0;
+    unsigned char alpha = 0;
+};
+
+
+struct xcb_pixel {
+    int x;
+    int y;
+    uint32_t color;
+    const bool operator<(const xcb_pixel& other) const {return color < other.color;}
+};
+
 
 class SV_PixelTable {
 public:
     SV_PixelTable() {}
-    SV_PixelTable(int max_val1, int max_val2);
-    void insert(pixel px);
+    SV_PixelTable(int x_max, int y_max);
+    void insert(int x, int y, unsigned char r, unsigned char g, unsigned char b);
     void clear();
-    void insert_from(SV_PixelTable& other);
-    bool is_empty();
+    bool empty();
+    std::vector<xcb_pixel> get_changed();
 
 private:
-    int hash(int x, int y);
     std::vector<pixel> table;
-    bool empty = false;
+    int x_max = 0;
+    bool empty_impl = true;
 };
-
 
 
 #endif //SANICVIEW_SV_PIXELTABLE_H
