@@ -73,6 +73,12 @@ void SV_Window::run() {
             }
             flush();
         }
+        if (event.type() == key_press) {
+            if ((int)((xcb_key_press_event_t*)xcb_event_ptr)->detail == 9) {
+                free(xcb_event_ptr);
+                exit(0);
+            }
+        }
         free(xcb_event_ptr);
     }
 }

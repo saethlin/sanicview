@@ -35,6 +35,7 @@ private:
     CImg<double> image;
     CImg<unsigned char> clipped;
     double black, white;
+    bool clicked = false;
     int x = 0, y = 0, last_x = 0, last_y = 0;
     int x0_border = 0, x1_border = 0, y0_border = 0, y1_border = 0;
     bool clip, move;

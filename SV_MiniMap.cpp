@@ -89,6 +89,9 @@ void SV_MiniMap::draw() {
 
 bool SV_MiniMap::handle(SV_Event event) {
     if (event.type() == mouse_push) {
+        clicked = true;
+    }
+    if (event.type() == mouse_push or (clicked and event.type() == mouse_move) or (clicked and event.type() == mouse_release)) {
         int map_x = (event.x() - 600) * original_width / 200.0 - imagedisplay->w() / 2;
         int map_y = event.y() * original_height / 200.0 - imagedisplay->h() / 2;
 
@@ -96,8 +99,10 @@ bool SV_MiniMap::handle(SV_Event event) {
         map_y = std::max(0, std::min(map_y, original_height - imagedisplay->h()));
 
         set_origin(map_x, map_y);
-
-        imagedisplay->set_origin(map_x, map_y);
+        if (event.type() == mouse_release) {
+            imagedisplay->set_origin(map_x, map_y);
+            clicked = false;
+        }
         return true;
     }
     return false;
