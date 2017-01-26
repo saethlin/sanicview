@@ -11,7 +11,7 @@ SV_Window::SV_Window(int width, int height) {
     connection = xcb_connect(NULL, NULL);
 
     /* Get the first screen */
-    xcb_screen_t *screen = xcb_setup_roots_iterator(xcb_get_setup(connection)).data;
+    xcb_screen_t* screen = xcb_setup_roots_iterator(xcb_get_setup(connection)).data;
 
     /* Create black (foreground) graphic context */
     xcb_window = screen->root;
@@ -51,8 +51,8 @@ SV_Window::SV_Window(int width, int height) {
 
 void SV_Window::run() {
     // Map the window on the screen and flush
-    xcb_map_window (connection, xcb_window);
-    xcb_flush (connection);
+    xcb_map_window(connection, xcb_window);
+    xcb_flush(connection);
 
     xcb_generic_event_t* xcb_event_ptr;
     while ((xcb_event_ptr = xcb_wait_for_event(connection))) {
@@ -92,7 +92,7 @@ void SV_Window::flush() {
     auto changed_pixels = drawing_buffer.get_changed();
     auto current_color = changed_pixels.front().color;
 
-    std::stable_sort(changed_pixels.begin(), changed_pixels.end());
+    std::sort(changed_pixels.begin(), changed_pixels.end());
 
     for (const auto& px : changed_pixels) {
         if (px.color != current_color) {
@@ -115,4 +115,8 @@ void SV_Window::flush() {
 
 void SV_Window::draw_point(int x, int y, unsigned char r, unsigned char g, unsigned char b) {
     drawing_buffer.insert(x, y, r, g, b);
+}
+
+SV_Window::~SV_Window() {
+    xcb_disconnect(connection);
 }

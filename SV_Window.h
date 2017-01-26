@@ -13,6 +13,7 @@ class SV_Widget;
 class SV_Window {
 public:
     SV_Window(int width, int height);
+    ~SV_Window();
     void add(SV_Widget*);
     void run();
     inline int w() {return width;};
@@ -22,7 +23,7 @@ private:
     void flush();
     SV_Timer<std::chrono::milliseconds> timer = SV_Timer<std::chrono::milliseconds>(std::chrono::milliseconds(16));
     int width, height;
-    xcb_connection_t *connection;
+    xcb_connection_t* connection;
     xcb_drawable_t xcb_window;
     xcb_gcontext_t foreground;
     std::vector<SV_Widget*> widgets;
