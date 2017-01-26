@@ -1,6 +1,7 @@
 #include "SV_Image.h"
 #include "SV_Window.h"
 #include "SV_Histogram.h"
+#include "SV_MiniMap.h"
 #include <iostream>
 
 
@@ -9,7 +10,7 @@ SV_Image::SV_Image(SV_Window* window) : SV_Widget(window, 0, 0, window->w()-200,
 
 void SV_Image::set_image(CImg<double>& image) {
     this->image = image;
-    set_origin(0, 0);
+    set_origin((image.width()-w())/2, (image.height()-w())/2);
 
     // Initialize with nice black and white clipping values
     std::vector<double> sortable(image.data(), image.data() + image.size());
@@ -20,10 +21,10 @@ void SV_Image::set_image(CImg<double>& image) {
     set_white(*white_level);
     set_black(*median);
 
-    //minimap->set_image(image);
-    //minimap->set_white(white);
-    //minimap->set_black(black);
-    //minimap->set_origin(x, y);
+    minimap->set_image(image);
+    minimap->set_white(white);
+    minimap->set_black(black);
+    minimap->set_origin(x_view, y_view);
 
     histogram->set_image(image);
     redraw();
@@ -45,7 +46,7 @@ void SV_Image::draw() {
         }
 
         if (move) {
-            cropped = clipped.get_crop(x(), y(), x()+w(), y()+h());
+            cropped = clipped.get_crop(x_view, y_view, x_view+w(), y_view+h());
         }
         clip = false;
         move = false;
@@ -65,7 +66,7 @@ void SV_Image::set_black(double black) {
         clip = true;
         redraw();
         if (minimap != NULL) {
-            //minimap->set_black(black);
+            minimap->set_black(black);
         }
     }
 }
@@ -77,7 +78,7 @@ void SV_Image::set_white(double white) {
         clip = true;
         redraw();
         if (minimap != NULL) {
-            //minimap->set_white(white);
+            minimap->set_white(white);
         }
     }
 }
@@ -98,9 +99,9 @@ void SV_Image::set_origin(int x, int y) {
     auto try_x = std::min(image.width() - w(), std::max(x, 0));
     auto try_y = std::min(image.height() - h(), std::max(y, 0));
 
-    if ((try_x != this->x()) || (try_y != this->y())) {
-        this->x(try_x);
-        this->y(try_y);
+    if ((try_x != x_view) || (try_y != y_view)) {
+        x_view = try_x;
+        y_view = try_y;
         move = true;
         redraw();
     }
@@ -128,7 +129,7 @@ void SV_Image::add(SV_Histogram* histogram) {
 
 void SV_Image::add(SV_MiniMap* minimap) {
     this->minimap = minimap;
-    //minimap->set_imagedisplay(this);
+    minimap->set_imagedisplay(this);
 }
 
 

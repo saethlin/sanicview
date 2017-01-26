@@ -12,7 +12,7 @@ class SV_Widget;
 
 class SV_Window {
 public:
-    SV_Window(int width, int height);
+    SV_Window(int width, int height, int framerate);
     ~SV_Window();
     void add(SV_Widget*);
     void run();

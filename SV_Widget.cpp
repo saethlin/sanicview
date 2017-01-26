@@ -28,6 +28,7 @@ void SV_Widget::draw_point(int pixel_x, int pixel_y, unsigned char r, unsigned c
     }
 }
 
+
 bool SV_Widget::needsdraw() {
     if (do_redraw) {
         do_redraw = false;

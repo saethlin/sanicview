@@ -4,9 +4,10 @@
 #include <iostream>
 
 
-SV_Window::SV_Window(int width, int height) {
+SV_Window::SV_Window(int width, int height, int framerate) {
     this->width = width;
     this->height = height;
+    this->timer = SV_Timer<std::chrono::milliseconds>(std::chrono::milliseconds((long)(1./framerate*1000)));
     /* Open the connection to the X server */
     connection = xcb_connect(NULL, NULL);
 
@@ -117,6 +118,5 @@ void SV_Window::draw_point(int x, int y, unsigned char r, unsigned char g, unsig
     drawing_buffer.insert(x, y, r, g, b);
 }
 
-SV_Window::~SV_Window() {
-    xcb_disconnect(connection);
-}
+
+SV_Window::~SV_Window() {xcb_disconnect(connection);}

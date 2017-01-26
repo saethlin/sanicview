@@ -74,46 +74,39 @@ void SV_Histogram::set_image(CImg<double>& image) {
 
 
 void SV_Histogram::draw() {
-    const unsigned char red[3] = {255, 0, 0};
-
-    if (this->histogram.size() == 0) {
-        //fl_draw_box(FL_FLAT_BOX, 0, this->parent()->h() - h(), w(), h(), fl_rgb_color(255));
-    }
-    else {
-        if (scaled.width() != w()) {
-            scaled = histogram.get_resize(w(), h(), 1, 3);
-
-            black_pos = black_slider * scaled.width() / histogram.width();
-            white_pos = white_slider * scaled.width() / histogram.width();
-            new_black_pos = black_pos;
-            new_white_pos = white_pos;
-
-            black_column = scaled.get_column(black_pos);
-            white_column = scaled.get_column(white_pos);
-
-            scaled.draw_line(black_pos, 0, black_pos, h(), red);
-            scaled.draw_line(white_pos, 0, white_pos, h(), red);
-
-        }
-        else {
-            if (new_black_pos != black_pos) {
-                scaled.draw_image(black_pos, 0, 0, 0, black_column);
-                scaled.draw_line(new_black_pos, 0, new_black_pos, h(), red);
-                black_column = scaled.get_column(new_black_pos);
-                black_pos = new_black_pos;
-            }
-            if (new_white_pos != white_pos) {
-                scaled.draw_image(white_pos, 0, 0, 0, white_column);
-                scaled.draw_line(new_white_pos, 0, new_white_pos, h(), red);
-                white_column = scaled.get_column(new_white_pos);
-                white_pos = new_white_pos;
-            }
-        }
+    if (scaled.width() != w()) {
+        scaled = histogram.get_resize(w(), h());
+        black_pos = black_slider * scaled.width() / histogram.width();
+        white_pos = white_slider * scaled.width() / histogram.width();
+        new_black_pos = black_pos;
+        new_white_pos = white_pos;
 
         for (auto y = 0; y < h(); y++) {
             for (auto x = 0; x < w(); x++) {
-                draw_point(x, y, scaled(x, y, 0, 0), scaled(x, y, 0, 1), scaled(x, y, 0, 2));
+                if ((x == black_pos) or (x == white_pos)) {
+                    draw_point(x, y, 255, 0, 0);
+                }
+                else {
+                    draw_point(x, y, scaled(x, y));
+                }
             }
+        }
+    }
+    else {
+        if (new_black_pos != black_pos) {
+            for (auto y = 0; y < h(); y++) {
+                draw_point(black_pos, y, scaled(black_pos, y));
+                draw_point(new_black_pos, y, 255, 0, 0);
+            }
+            black_pos = new_black_pos;
+        }
+
+        if (new_white_pos != white_pos) {
+            for (auto y = 0; y < h(); y++) {
+                draw_point(white_pos, y, scaled(white_pos, y));
+                draw_point(new_white_pos, y, 255, 0, 0);
+            }
+            white_pos = new_white_pos;
         }
     }
 }

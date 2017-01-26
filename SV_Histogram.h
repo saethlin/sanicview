@@ -3,6 +3,7 @@
 
 #include "SV_Window.h"
 #include "SV_Widget.h"
+#include "SV_Event.h"
 
 #include <CImg.h>
 using namespace cimg_library;
@@ -12,8 +13,8 @@ class SV_Image;
 class SV_Histogram : public SV_Widget {
 public:
     SV_Histogram(SV_Window* window);
-    void draw();
-    bool handle(SV_Event event);
+    void draw() override;
+    bool handle(SV_Event event) override;
     void set_image(CImg<double>& image);
     void set_imagedisplay(SV_Image* imagedisplay);
 private:
