@@ -17,7 +17,9 @@ Astronomy data is typically stored in FITS (Flexible Image Transport System) fil
 
 ## Drawing in SanicView
 
-Widgets can only draw by calling `draw_point()` to store a desired change to a single pixel on the window. `SV_Window` collects all the changes that widgets have requested and applies them to the window. Widgets should only draw to pixels that they actually want changed. At an interval no faster than the supplied framerate (default 60 frames/second) `SV_Window` will collect all changes from its widgets and draw them on the screen.
+Drawing is only done through `SV_Window::draw_point()`, which stores a desired change to a single pixel on the window. The window collects all the changes that widgets have requested and applies them to the window. At an interval no faster than the supplied framerate (default 60 frames/second) `SV_Window` will collect all changes from its widgets and draw them on the screen.
+
+`SV_Window` will ensure that only pixels that were actually changed are redrawn, but at the cost of CPU usage. If they can do so at zero cost, widgets should avoid requesting changes that do not modify the current display.
 
 Widgets are limited to drawing within the rectangular region defined by their position and dimensions. Only the most recent request to change a pixel will be honored, and younger widgets will overwrite changes by older widgets.
 
@@ -28,5 +30,5 @@ When an event of any kind is produced, an `SV_Event` is passed to every widget's
 ## Command line options
 
 ```
-[-w width] [-h height] [-f framerate]
+sanicview filename [-w width] [-h height] [-f framerate]
 ```
