@@ -15,6 +15,6 @@ set(SOURCE_FILES main.cpp
 
 link_libraries(X11 xcb cfitsio CCfits pthread)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -march=native -fno-omit-frame-pointer -O3 -funroll-loops")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -march=native -fno-omit-frame-pointer -funroll-loops -O3")
 
 add_executable(sanicview ${SOURCE_FILES})

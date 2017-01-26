@@ -46,7 +46,7 @@ SV_Window::SV_Window(int width, int height, int framerate) {
                       screen->root_visual,           /* visual              */
                       mask, values);                 /* masks */
 
-    drawing_buffer = SV_PixelTable(screen->width_in_pixels, screen->height_in_pixels);
+    drawing_buffer = SV_PixelTable(width, height);
 }
 
 

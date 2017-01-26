@@ -31,6 +31,7 @@ public:
 
 private:
     std::vector<pixel> table;
+    std::vector<int> changed_inds;
     int x_max = 0;
     bool empty_impl = true;
 };
