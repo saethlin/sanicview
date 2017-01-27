@@ -1,14 +1,16 @@
 #include "SV_Window.h"
-#include "SV_Image.h"
+#include "SV_Display.h"
 #include "SV_Histogram.h"
 #include "SV_MiniMap.h"
+#include "SV_Image.h"
 
+#include <cstring>
 #include <valarray>
 #include <CCfits/CCfits>
 using namespace CCfits;
 
 
-CImg<double> readImage(const char* filename) {
+SV_Image<double> readImage(const char* filename) {
     std::valarray<double> contents;
     FITS pInfile(filename, Read, true);
     PHDU& primary_HDU = pInfile.pHDU();
@@ -18,7 +20,7 @@ CImg<double> readImage(const char* filename) {
     auto x = primary_HDU.axis(0);
     auto y = primary_HDU.axis(1);
 
-    return CImg<double>(&contents[0], x, y);
+    return SV_Image<double>(&contents[0], x, y);
 }
 
 
@@ -39,8 +41,9 @@ int main(int argc, char* argv[]) {
         }
     }
 
-    CImg<double> image;
-    try {image = readImage(argv[1]);}
+    SV_Image<double> image;
+    try {image = readImage(argv[1]);
+    }
     catch (const std::logic_error&) {
         std::cout << "Must provide a valid fits file or path" << std::endl;
         return 1;
@@ -48,7 +51,7 @@ int main(int argc, char* argv[]) {
 
     SV_Window window(width, height, framerate);
 
-    SV_Image imagedisplay(&window);
+    SV_Display imagedisplay(&window);
     SV_Histogram histogram(&window);
     SV_MiniMap minimap(&window);
 

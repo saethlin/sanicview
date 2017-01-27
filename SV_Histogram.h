@@ -1,33 +1,34 @@
 #ifndef SANICVIEW_SV_HISTOGRAM_H
 #define SANICVIEW_SV_HISTOGRAM_H
 
+#include <algorithm>
 #include "SV_Window.h"
 #include "SV_Widget.h"
 #include "SV_Event.h"
+#include "SV_Image.h"
 
-#include <CImg.h>
-using namespace cimg_library;
-
-class SV_Image;
+class SV_Display;
 
 class SV_Histogram : public SV_Widget {
 public:
     SV_Histogram(SV_Window* window);
     void draw() override;
     bool handle(SV_Event event) override;
-    void set_image(CImg<double>& image);
-    void set_imagedisplay(SV_Image* imagedisplay);
+    void set_image(SV_Image<double>& image);
+    void set_imagedisplay(SV_Display* imagedisplay);
 private:
-    CImg<unsigned char> histogram;
-    CImg<unsigned char> scaled;
+    SV_Image<unsigned char> histogram;
+    SV_Image<unsigned char> scaled;
     std::vector<double> histogram_to_value;
-    SV_Image* imagedisplay;
+    SV_Display* imagedisplay;
     double black_slider, white_slider;
     int black_pos, white_pos;
     int new_black_pos, new_white_pos;
     int clicked;
-    CImg<unsigned char> black_column, white_column;
 };
+
+
+enum ClickState {BLACK, WHITE, NONE};
 
 
 #endif //SANICVIEW_SV_HISTOGRAM_H

@@ -7,7 +7,6 @@
 SV_Window::SV_Window(int width, int height, int framerate) {
     this->width = width;
     this->height = height;
-    this->timer = SV_Timer<std::chrono::milliseconds>(std::chrono::milliseconds((long)(1./framerate*1000)));
     /* Open the connection to the X server */
     connection = xcb_connect(NULL, NULL);
 

@@ -1,5 +1,5 @@
 #include "SV_MiniMap.h"
-#include "SV_Image.h"
+#include "SV_Display.h"
 #include <cmath>
 #include <iostream>
 
@@ -7,15 +7,22 @@
 SV_MiniMap::SV_MiniMap(SV_Window* window) : SV_Widget(window, window->w()-200, 0, 200, 200) {}
 
 
-void SV_MiniMap::set_imagedisplay(SV_Image* imagedisplay) {
+void SV_MiniMap::set_imagedisplay(SV_Display* imagedisplay) {
     this->imagedisplay = imagedisplay;
 }
 
 
-void SV_MiniMap::set_image(CImg<double>& image) {
+void SV_MiniMap::set_image(SV_Image<double>& image) {
     original_width = image.width();
     original_height = image.height();
-    this->image = image.get_resize(200, 200);
+    this->image = SV_Image<double>(w(), h());
+    this->clipped = SV_Image<unsigned char>(w(), h());
+    for (auto y = 0; y < h(); y++) {
+        for (auto x = 0; x < w(); x++) {
+            this->image(x, y) = image(x*image.width()/200, y*image.height()/200);
+        }
+    }
+    // Copy in the appropriate pixels
     clip = true;
     move = true;
     redraw();
@@ -50,7 +57,9 @@ void SV_MiniMap::draw() {
     if (this->image.size() == 0) {return;}
 
     if (clip) {
-        clipped = (image.get_cut(black, white) - black).normalize(0, 255);
+        for (auto i = 0; i < image.size(); i++) {
+            clipped[i] = (unsigned char)((clamp(black, image[i], white) - black) * (255/(white-black)));
+        }
         clip = false;
         for (auto y = 0; y < h(); y++) {
             for (auto x = 0; x < w(); x++) {

@@ -1,20 +1,18 @@
 #include "SV_Histogram.h"
-#include "SV_Image.h"
+#include "SV_Display.h"
 #include <iostream>
-
-
-enum ClickState {BLACK, WHITE, NONE};
 
 
 SV_Histogram::SV_Histogram(SV_Window* window) : SV_Widget(window, 0, window->h()-50, window->w()-200, 50) {}
 
 
-void SV_Histogram::set_imagedisplay(SV_Image* imagedisplay) {
+void SV_Histogram::set_imagedisplay(SV_Display* imagedisplay) {
     this->imagedisplay = imagedisplay;
 }
 
 
-void SV_Histogram::set_image(CImg<double>& image) {
+void SV_Histogram::set_image(SV_Image<double>& image) {
+    histogram_to_value.clear();
     std::vector<double> sortable(image.data(), image.data() + image.size());
     auto image_max = std::max_element(sortable.begin(), sortable.end());
 
@@ -22,8 +20,6 @@ void SV_Histogram::set_image(CImg<double>& image) {
     for (auto& val : sortable) {
         bincount[ceil(val)] += 1;
     }
-
-    //std::vector<double> histogram_to_value;
 
     auto max_counts = std::max_element(bincount.begin(), bincount.end());
     auto max_count = *max_counts;
@@ -59,7 +55,7 @@ void SV_Histogram::set_image(CImg<double>& image) {
     }
 
     // Create actual histogram image
-    histogram = CImg<unsigned char>(data.size(), 50, 1, 1, 255);
+    histogram = SV_Image<unsigned char>(data.size(), 50);
     for (auto x = 0; x < data.size(); x++) {
         for (auto y = 50-data[x]; y < 50; y++) {
             histogram(x, y) = 0;
@@ -75,7 +71,13 @@ void SV_Histogram::set_image(CImg<double>& image) {
 
 void SV_Histogram::draw() {
     if (scaled.width() != w()) {
-        scaled = histogram.get_resize(w(), h());
+        scaled = SV_Image<unsigned char>(w(), h());
+        for (auto y = 0; y < h(); y++) {
+            for (auto x = 0; x < w(); x++) {
+                scaled(x, y) = histogram(x*histogram.width()/w(), y*histogram.height()/h());
+            }
+        }
+
         black_pos = black_slider * scaled.width() / histogram.width();
         white_pos = white_slider * scaled.width() / histogram.width();
         new_black_pos = black_pos;
@@ -91,6 +93,8 @@ void SV_Histogram::draw() {
                 }
             }
         }
+
+
     }
     else {
         if (new_black_pos != black_pos) {

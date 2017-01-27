@@ -8,7 +8,6 @@
 #include <mutex>
 #include <chrono>
 #include <xcb/xcb.h>
-#include "SV_Timer.h"
 #include "SV_PixelTable.h"
 
 class SV_Widget;
@@ -25,7 +24,6 @@ public:
     void draw_loop();
 private:
     void flush();
-    SV_Timer<std::chrono::milliseconds> timer = SV_Timer<std::chrono::milliseconds>(std::chrono::milliseconds(16));
     int width, height;
     xcb_connection_t* connection;
     xcb_drawable_t xcb_window;
