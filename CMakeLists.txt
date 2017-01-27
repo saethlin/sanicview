@@ -11,10 +11,11 @@ set(SOURCE_FILES main.cpp
         SV_Window.cpp SV_Window.h
         SV_Widget.cpp SV_Widget.h
         SV_Image.cpp SV_Image.h
-        SV_Histogram.cpp SV_Histogram.h SV_MiniMap.cpp SV_MiniMap.h)
+        SV_Histogram.cpp SV_Histogram.h
+        SV_MiniMap.cpp SV_MiniMap.h)
 
 link_libraries(X11 xcb cfitsio CCfits pthread)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -march=native -fno-omit-frame-pointer -O3 -funroll-loops")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -march=native -fno-omit-frame-pointer -funroll-loops -O3")
 
 add_executable(sanicview ${SOURCE_FILES})
