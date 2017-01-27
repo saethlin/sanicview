@@ -50,36 +50,61 @@ SV_Window::SV_Window(int width, int height, int framerate) {
 }
 
 
+void SV_Window::draw_loop() {
+    using namespace std::chrono_literals;
+    while (true) {
+        lock.lock();
+        for (const auto& widget : widgets) {
+            if (widget->needsdraw()) {
+                widget->draw();
+            }
+        }
+        flush();
+        lock.unlock();
+        std::this_thread::sleep_for(16ms);
+    }
+}
+
+
 void SV_Window::run() {
     // Map the window on the screen and flush
     xcb_map_window(connection, xcb_window);
     xcb_flush(connection);
 
+    std::thread draw_thread(&SV_Window::draw_loop, this);
+    draw_thread.detach();
+
+    SV_Widget* has_mouse = NULL;
     xcb_generic_event_t* xcb_event_ptr;
     while ((xcb_event_ptr = xcb_wait_for_event(connection))) {
         auto event = SV_Event(xcb_event_ptr);
-            for (const auto &widget : widgets) {
-                if (widget->x() < event.x() and event.x() < widget->x() + widget->w() and
-                    widget->y() < event.y() and event.y() < widget->y() + widget->h()) {
-                    if (widget->handle(event)) {break;}
-                }
+        lock.lock();
+        if (has_mouse and (event.type() == mouse_move or event.type() == mouse_release)) {
+            has_mouse->handle(event);
+            if (event.type() == mouse_release) {
+                has_mouse = NULL;
             }
-        if (timer.is_done() or event.type() == expose) {
-            timer.restart();
-            for (const auto& widget : widgets) {
-                if (widget->needsdraw()) {
-                    widget->draw();
+        }
+        for (const auto &widget : widgets) {
+            if ((widget->x() < event.x() and event.x() < widget->x() + widget->w() and
+                widget->y() < event.y() and event.y() < widget->y() + widget->h()) or
+                event.type() == mouse_release) {
+                auto handled = widget->handle(event);
+                if (handled and event.type() == mouse_push) {
+                    has_mouse = widget;
                 }
+                if (widget->handle(event)) {break;}
             }
-            flush();
         }
         if (event.type() == key_press) {
             if ((int)((xcb_key_press_event_t*)xcb_event_ptr)->detail == 9) {
                 free(xcb_event_ptr);
-                exit(0);
+                lock.unlock();
+                return;
             }
         }
         free(xcb_event_ptr);
+        lock.unlock();
     }
 }
 

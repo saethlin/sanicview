@@ -46,11 +46,11 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    auto window = SV_Window(width, height, framerate);
+    SV_Window window(width, height, framerate);
 
-    auto imagedisplay = SV_Image(&window);
-    auto histogram = SV_Histogram(&window);
-    auto minimap = SV_MiniMap(&window);
+    SV_Image imagedisplay(&window);
+    SV_Histogram histogram(&window);
+    SV_MiniMap minimap(&window);
 
     imagedisplay.add(&histogram);
     imagedisplay.add(&minimap);
