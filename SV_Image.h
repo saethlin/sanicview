@@ -33,7 +33,6 @@ public:
 private:
     CImg<double> image;
     CImg<unsigned char> clipped;
-    CImg<unsigned char> cropped;
     int x_view = 0, y_view = 0;
     bool clip, move;
     double black = 0, white = 0;

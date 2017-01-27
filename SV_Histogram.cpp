@@ -128,17 +128,13 @@ bool SV_Histogram::handle(SV_Event event) {
         case mouse_move: {
             auto cursor_pos = event.x();
             if (clicked == WHITE) {
-                if (cursor_pos > black_pos and cursor_pos < w()) {
-                    new_white_pos = cursor_pos;
-                    redraw();
-                    return true;
-                }
+                new_white_pos = std::min(w()-1, std::max(black_pos+1, cursor_pos));
+                redraw();
+                return true;
             } else if (clicked == BLACK) {
-                if (cursor_pos < white_pos and cursor_pos > 0) {
-                    new_black_pos = cursor_pos;
-                    redraw();
-                    return true;
-                }
+                new_black_pos = std::min(white_pos-1, std::max(1, cursor_pos));
+                redraw();
+                return true;
             }
             break;
         }

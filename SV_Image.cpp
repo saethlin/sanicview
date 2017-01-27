@@ -42,18 +42,12 @@ void SV_Image::draw() {
     else if (clip or move) {
         if (clip) {
             clipped = (image.get_cut(black, white) - black).normalize(0, 255);
-            move = true;
+            clip = false;
         }
-
-        if (move) {
-            cropped = clipped.get_crop(x_view, y_view, x_view+w(), y_view+h());
-        }
-        clip = false;
-        move = false;
 
         for (auto y = 0; y < h(); y++) {
             for (auto x = 0; x < w(); x++) {
-                draw_point(x, y, cropped(x, y));
+                draw_point(x, y, clipped(x+x_view, y+y_view));
             }
         }
     }
