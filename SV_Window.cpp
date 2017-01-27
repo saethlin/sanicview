@@ -56,15 +56,24 @@ void SV_Window::run() {
     xcb_flush(connection);
 
     xcb_generic_event_t* xcb_event_ptr;
-    while ((xcb_event_ptr = xcb_wait_for_event(connection))) {
-        auto event = SV_Event(xcb_event_ptr);
+    while (true) {
+        xcb_event_ptr = xcb_poll_for_event(connection);
+        if (xcb_event_ptr != NULL) {
+            auto event = SV_Event(xcb_event_ptr);
             for (const auto &widget : widgets) {
                 if (widget->x() < event.x() and event.x() < widget->x() + widget->w() and
                     widget->y() < event.y() and event.y() < widget->y() + widget->h()) {
-                    if (widget->handle(event)) {break;}
+                    if (widget->handle(event)) { break; }
                 }
             }
-        if (timer.is_done() or event.type() == expose) {
+            if (event.type() == key_press) {
+                if ((int)((xcb_key_press_event_t*)xcb_event_ptr)->detail == 9) {
+                    free(xcb_event_ptr);
+                    exit(0);
+                }
+            }
+        }
+        if (timer.is_done()) {
             timer.restart();
             for (const auto& widget : widgets) {
                 if (widget->needsdraw()) {
@@ -72,12 +81,6 @@ void SV_Window::run() {
                 }
             }
             flush();
-        }
-        if (event.type() == key_press) {
-            if ((int)((xcb_key_press_event_t*)xcb_event_ptr)->detail == 9) {
-                free(xcb_event_ptr);
-                exit(0);
-            }
         }
         free(xcb_event_ptr);
     }
