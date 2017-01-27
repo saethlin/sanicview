@@ -56,8 +56,8 @@ void SV_Histogram::set_image(SV_Image<double>& image) {
     // Create actual histogram image
     histogram = SV_Image<unsigned char>(data.size(), 50);
     for (auto x = 0; x < data.size(); x++) {
-        for (auto y = 50-data[x]; y < 50; y++) {
-            histogram(x, y) = 0;
+        for (auto y = 0; y < 50-data[x]; y++) {
+            histogram(x, y) = 255;
         }
     }
 
