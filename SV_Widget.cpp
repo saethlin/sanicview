@@ -1,6 +1,5 @@
 #include "SV_Widget.h"
 #include "SV_Window.h"
-#include <iostream>
 
 
 SV_Widget::SV_Widget(SV_Window* window, int x, int y, int width, int height) {

@@ -1,7 +1,6 @@
 #include <algorithm>
 #include "SV_Window.h"
 #include "SV_Widget.h"
-#include <iostream>
 
 
 SV_Window::SV_Window(int width, int height, int framerate) {
@@ -45,7 +44,7 @@ SV_Window::SV_Window(int width, int height, int framerate) {
                       screen->root_visual,           /* visual              */
                       mask, values);                 /* masks */
 
-    drawing_buffer = SV_PixelTable(screen->width_in_pixels, screen->height_in_pixels);
+    drawing_buffer = SV_PixelTable(width, height);
 }
 
 
@@ -139,7 +138,6 @@ void SV_Window::flush() {
     xcb_poly_point(connection, XCB_COORD_MODE_ORIGIN, xcb_window, foreground, color_run.size(), color_run.data());
     color_run.clear();
 
-    drawing_buffer.clear();
     xcb_flush(connection);
 }
 

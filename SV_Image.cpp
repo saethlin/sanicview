@@ -1,5 +1,4 @@
 #include "SV_Image.h"
-#include <iostream>
 
 
 template <typename T>

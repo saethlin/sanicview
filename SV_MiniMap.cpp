@@ -1,7 +1,6 @@
 #include "SV_MiniMap.h"
 #include "SV_Display.h"
 #include <cmath>
-#include <iostream>
 
 
 SV_MiniMap::SV_MiniMap(SV_Window* window) : SV_Widget(window, window->w()-200, 0, 200, 200) {}

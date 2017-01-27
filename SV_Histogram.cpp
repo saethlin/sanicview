@@ -1,6 +1,5 @@
 #include "SV_Histogram.h"
 #include "SV_Display.h"
-#include <iostream>
 
 
 SV_Histogram::SV_Histogram(SV_Window* window) : SV_Widget(window, 0, window->h()-50, window->w()-200, 50) {}
