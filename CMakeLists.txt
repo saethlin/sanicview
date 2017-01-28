@@ -11,7 +11,9 @@ set(SOURCE_FILES main.cpp
         SV_Widget.cpp SV_Widget.h
         SV_Display.cpp SV_Display.h
         SV_Histogram.cpp SV_Histogram.h
-        SV_MiniMap.cpp SV_MiniMap.h SV_Image.cpp SV_Image.h)
+        SV_MiniMap.cpp SV_MiniMap.h
+        SV_Image.cpp SV_Image.h
+        SV_Display.cpp SV_Display.h)
 
 link_libraries(X11 xcb cfitsio CCfits pthread)
 

@@ -1,6 +1,6 @@
 #include "SV_Histogram.h"
 #include "SV_Display.h"
-
+#include <iostream>
 
 SV_Histogram::SV_Histogram(SV_Window* window) : SV_Widget(window, 0, window->h()-50, window->w()-200, 50) {}
 
@@ -12,46 +12,45 @@ void SV_Histogram::set_imagedisplay(SV_Display* imagedisplay) {
 
 void SV_Histogram::set_image(SV_Image<double>& image) {
     histogram_to_value.clear();
-    std::vector<double> sortable(image.data(), image.data() + image.size());
-    auto image_max = std::max_element(sortable.begin(), sortable.end());
+    // Find the max of the image so that we can know how many bins are required
+    auto image_max = std::max_element(image.begin(), image.end());
 
-    std::vector<int> bincount((unsigned long)(ceil(*image_max)+1));
-    for (auto& val : sortable) {
+    // Digitize the image
+    std::vector<int> bincount((unsigned long)ceil(*image_max)+1);
+    for (auto& val : image) {
         bincount[ceil(val)] += 1;
     }
 
-    auto max_counts = std::max_element(bincount.begin(), bincount.end());
-    auto max_count = *max_counts;
+    // Find the value in the largest bin to normalize the data
+    auto max_count = *std::max_element(bincount.begin(), bincount.end());
 
-    auto data = std::vector<unsigned char>();
+    // Drop all the zero values
+    std::vector<unsigned char> data;
     data.reserve(bincount.size());
 
-    double closest_black_distance = imagedisplay->get_black();
-    double closest_white_distance = imagedisplay->get_white();
-    black_slider = 0.0;
-    white_slider = 0.0;
-
+    auto black = -1;
+    auto white = -1;
+    auto num_seen = 0;
     for (auto i = 0; i < bincount.size(); i++) {
         auto val = bincount[i];
         if (val != 0) {
-
             histogram_to_value.push_back(i);
             data.push_back(50*(double)val/(double)max_count);
 
-            auto test_black = fabs(i - imagedisplay->get_black());
-            if (test_black < closest_black_distance) {
-                closest_black_distance = test_black;
+            num_seen += val;
+            if (black == -1 and num_seen > image.size()/2.) {
+                black = i;
                 black_slider = data.size();
             }
-
-            auto test_white = fabs(i - imagedisplay->get_white());
-            if (test_white < closest_white_distance) {
-                closest_white_distance = test_white;
+            if (white == -1 and num_seen > 0.997*image.size()) {
+                white = i;
                 white_slider = data.size();
             }
-
         }
     }
+
+    imagedisplay->set_black(black);
+    imagedisplay->set_white(white);
 
     // Create actual histogram image
     histogram = SV_Image<unsigned char>(data.size(), 50);
@@ -60,11 +59,7 @@ void SV_Histogram::set_image(SV_Image<double>& image) {
             histogram(x, y) = 255;
         }
     }
-
-    clicked = NONE;
-
     redraw();
-
 }
 
 

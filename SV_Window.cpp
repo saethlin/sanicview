@@ -1,11 +1,13 @@
 #include <algorithm>
 #include "SV_Window.h"
 #include "SV_Widget.h"
+#include <iostream>
 
 
 SV_Window::SV_Window(int width, int height, int framerate) {
     this->width = width;
     this->height = height;
+    this->framerate = std::chrono::duration<float, std::milli>(1/(double)framerate);
     /* Open the connection to the X server */
     connection = xcb_connect(NULL, NULL);
 
@@ -49,18 +51,16 @@ SV_Window::SV_Window(int width, int height, int framerate) {
 
 
 void SV_Window::draw_loop() {
-    using namespace std::chrono_literals;
-    while (true) {
-        lock.lock();
-        for (const auto& widget : widgets) {
-            if (widget->needsdraw()) {
-                widget->draw();
-            }
+    std::this_thread::sleep_for(framerate);
+    lock.lock();
+    for (const auto& widget : widgets) {
+        if (widget->needsdraw()) {
+            widget->draw();
         }
-        flush();
-        lock.unlock();
-        std::this_thread::sleep_for(16ms);
     }
+    flush();
+    thread_alive = false;
+    lock.unlock();
 }
 
 
@@ -69,31 +69,34 @@ void SV_Window::run() {
     xcb_map_window(connection, xcb_window);
     xcb_flush(connection);
 
-    std::thread draw_thread(&SV_Window::draw_loop, this);
-    draw_thread.detach();
-
+    bool was_handled = false;
     SV_Widget* has_mouse = NULL;
     xcb_generic_event_t* xcb_event_ptr;
     while ((xcb_event_ptr = xcb_wait_for_event(connection))) {
         auto event = SV_Event(xcb_event_ptr);
         lock.lock();
+        // Special case for mouse events; redirect them to any widget that has grabbed the mouse focus
         if (has_mouse and (event.type() == mouse_move or event.type() == mouse_release)) {
             has_mouse->handle(event);
+            was_handled = true;
             if (event.type() == mouse_release) {
                 has_mouse = NULL;
             }
         }
-        for (const auto &widget : widgets) {
-            if ((widget->x() < event.x() and event.x() < widget->x() + widget->w() and
-                widget->y() < event.y() and event.y() < widget->y() + widget->h()) or
-                event.type() == mouse_release) {
-                auto handled = widget->handle(event);
-                if (handled and event.type() == mouse_push) {
-                    has_mouse = widget;
+        if (!was_handled) {
+            for (const auto &widget : widgets) {
+                if ((widget->x() < event.x() and event.x() < widget->x() + widget->w() and
+                     widget->y() < event.y() and event.y() < widget->y() + widget->h())) {
+                    was_handled = widget->handle(event);
+                    if (was_handled and event.type() == mouse_push) {
+                        has_mouse = widget;
+                    }
+                    if (was_handled) { break; }
                 }
-                if (widget->handle(event)) {break;}
             }
         }
+
+        // Clean up and close if esc is pressed
         if (event.type() == key_press) {
             if ((int)((xcb_key_press_event_t*)xcb_event_ptr)->detail == 9) {
                 free(xcb_event_ptr);
@@ -101,6 +104,22 @@ void SV_Window::run() {
                 return;
             }
         }
+
+        // If no thread is alive, launch one to check if any widgets needs to be redrawn
+
+        if (event.type() == expose) {
+            for (const auto& widget : widgets) {
+                widget->redraw();
+            }
+            was_handled = true;
+        }
+
+        if ((!thread_alive and was_handled)) {
+            thread_alive = true;
+            std::thread draw_thread(&SV_Window::draw_loop, this);
+            draw_thread.detach();
+        }
+        was_handled = false;
         free(xcb_event_ptr);
         lock.unlock();
     }
@@ -138,7 +157,6 @@ void SV_Window::flush() {
     xcb_poly_point(connection, XCB_COORD_MODE_ORIGIN, xcb_window, foreground, color_run.size(), color_run.data());
     color_run.clear();
 
-    drawing_buffer.clear();
     xcb_flush(connection);
 }
 

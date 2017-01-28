@@ -6,7 +6,9 @@
 #include <vector>
 #include <thread>
 #include <mutex>
+#include <future>
 #include <chrono>
+#include <ratio>
 #include <xcb/xcb.h>
 #include "SV_PixelTable.h"
 
@@ -32,6 +34,8 @@ private:
     SV_PixelTable drawing_buffer;
     std::vector<xcb_point_t> color_run;
     std::mutex lock;
+    bool thread_alive = false;
+    std::chrono::duration<float, std::milli> framerate;
 };
 
 

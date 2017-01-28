@@ -7,6 +7,8 @@
 #include "SV_Event.h"
 #include "SV_Image.h"
 
+enum ClickState {BLACK, WHITE, NONE};
+
 class SV_Display;
 
 class SV_Histogram : public SV_Widget {
@@ -24,11 +26,8 @@ private:
     double black_slider, white_slider;
     int black_pos, white_pos;
     int new_black_pos, new_white_pos;
-    int clicked;
+    int clicked = NONE;
 };
-
-
-enum ClickState {BLACK, WHITE, NONE};
 
 
 #endif //SANICVIEW_SV_HISTOGRAM_H

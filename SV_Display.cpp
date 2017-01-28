@@ -10,24 +10,14 @@ SV_Display::SV_Display(SV_Window* window) : SV_Widget(window, 0, 0, window->w()-
 void SV_Display::set_image(SV_Image<double>& image) {
     this->image = image;
     this->clipped = SV_Image<unsigned char>(image.width(), image.height());
-    set_origin((image.width()-w())/2, (image.height()-w())/2);
+    set_origin((image.width()-w())/2, (image.height()-h())/2);
 
-    // Initialize with nice black and white clipping values
-    std::vector<double> sortable(image.begin(), image.end());
-    auto median = sortable.begin() + (sortable.size()/2);
-    auto white_level = sortable.begin() + sortable.size()*0.997;
-    std::nth_element(sortable.begin(), median, sortable.end());
-    std::nth_element(sortable.begin(), white_level, sortable.end());
-
-    set_white(*white_level);
-    set_black(*median);
+    histogram->set_image(image);
 
     minimap->set_image(image);
     minimap->set_white(white);
     minimap->set_black(black);
     minimap->set_origin(x_view, y_view);
-
-    histogram->set_image(image);
 }
 
 
