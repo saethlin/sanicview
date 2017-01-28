@@ -13,7 +13,7 @@ Astronomy data is typically stored in FITS (Flexible Image Transport System) fil
 
 # Internal Interface
 
-`SV_Window` and `SV_Event` encapsulate xcb, an implementation of X window system, and together with `SV_PixelTable`, `SV_Timer`, and `SV_Widget` comprise a very small GUI library that can be extended to build applications or re-implemented to use a different window system (Mir?).
+`SV_Window` and `SV_Event` encapsulate xcb, an implementation of X window system, and together with `SV_PixelTable`, `SV_Widget`, and `SV_Image` comprise a very small GUI library that can be extended to build applications or re-implemented to use a different window system (Mir?).
 
 ## Drawing in SanicView
 
