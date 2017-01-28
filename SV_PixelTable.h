@@ -26,11 +26,13 @@ public:
     SV_PixelTable(int x_max, int y_max);
     void insert(int x, int y, unsigned char r, unsigned char g, unsigned char b);
     bool empty();
-    std::vector<xcb_pixel> get_changed();
+    std::vector<xcb_pixel>& get_changed();
 
 private:
     std::vector<pixel> table;
     std::vector<int> changed_inds;
+    std::vector<xcb_pixel> changed;
+    std::vector<std::vector<int> > changed_by_color = std::vector<std::vector<int> >(256, std::vector<int>(256, 0));
     int x_max = 0;
 };
 

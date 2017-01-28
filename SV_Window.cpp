@@ -88,7 +88,7 @@ void SV_Window::run() {
                 has_mouse = NULL;
             }
         }
-        if (!was_handled) {
+        else {
             for (const auto &widget : widgets) {
                 if ((widget->x() < event.x() and event.x() < widget->x() + widget->w() and
                      widget->y() < event.y() and event.y() < widget->y() + widget->h())) {
@@ -96,7 +96,7 @@ void SV_Window::run() {
                     if (was_handled and event.type() == mouse_push) {
                         has_mouse = widget;
                     }
-                    if (was_handled) { break; }
+                    if (was_handled) {break;}
                 }
             }
         }
@@ -111,15 +111,7 @@ void SV_Window::run() {
         }
 
         // If no thread is alive, launch one to check if any widgets needs to be redrawn
-
-        if (event.type() == expose) {
-            for (const auto& widget : widgets) {
-                widget->redraw();
-            }
-            was_handled = true;
-        }
-
-        if ((!thread_alive and was_handled)) {
+        if ((!thread_alive and was_handled) or event.type() == expose) {
             thread_alive = true;
             std::thread draw_thread(&SV_Window::draw_loop, this);
             draw_thread.detach();
@@ -143,7 +135,7 @@ void SV_Window::add(SV_Widget* widget) {
 void SV_Window::flush() {
     if (drawing_buffer.empty()) {return;}
 
-    auto changed_pixels = drawing_buffer.get_changed();
+    auto& changed_pixels = drawing_buffer.get_changed();
     auto current_color = changed_pixels.front().color;
 
     for (const auto& px : changed_pixels) {
