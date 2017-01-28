@@ -9,7 +9,7 @@
 #include <future>
 #include <chrono>
 #include <ratio>
-#include <xcb/xcb.h>
+#include <xcb/xcb_icccm.h>
 #include "SV_PixelTable.h"
 
 class SV_Widget;

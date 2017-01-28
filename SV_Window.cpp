@@ -1,7 +1,6 @@
 #include <algorithm>
 #include "SV_Window.h"
 #include "SV_Widget.h"
-#include <iostream>
 
 
 SV_Window::SV_Window(int width, int height, int framerate) {
@@ -45,6 +44,12 @@ SV_Window::SV_Window(int width, int height, int framerate) {
                       XCB_WINDOW_CLASS_INPUT_OUTPUT, /* class               */
                       screen->root_visual,           /* visual              */
                       mask, values);                 /* masks */
+
+    // Prevent resizing
+    xcb_size_hints_t hints;
+    xcb_icccm_size_hints_set_min_size(&hints, width, height);
+    xcb_icccm_size_hints_set_max_size(&hints, width, height);
+    xcb_icccm_set_wm_size_hints(connection, xcb_window, XCB_ATOM_WM_NORMAL_HINTS, &hints);
 
     drawing_buffer = SV_PixelTable(width, height);
 }
@@ -140,8 +145,6 @@ void SV_Window::flush() {
 
     auto changed_pixels = drawing_buffer.get_changed();
     auto current_color = changed_pixels.front().color;
-
-    std::sort(changed_pixels.begin(), changed_pixels.end());
 
     for (const auto& px : changed_pixels) {
         if (px.color != current_color) {

@@ -15,7 +15,7 @@ set(SOURCE_FILES main.cpp
         SV_Image.cpp SV_Image.h
         SV_Display.cpp SV_Display.h)
 
-link_libraries(X11 xcb cfitsio CCfits pthread)
+link_libraries(X11 xcb xcb-icccm cfitsio CCfits pthread)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -march=native -fno-omit-frame-pointer -funroll-loops -O3")
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -march=native -fno-omit-frame-pointer")
