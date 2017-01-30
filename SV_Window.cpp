@@ -56,7 +56,6 @@ SV_Window::SV_Window(int width, int height, int framerate) {
 
 
 void SV_Window::draw_loop() {
-    std::this_thread::sleep_for(framerate);
     lock.lock();
     for (const auto& widget : widgets) {
         if (widget->needsdraw()) {
@@ -64,8 +63,9 @@ void SV_Window::draw_loop() {
         }
     }
     flush();
-    thread_alive = false;
     lock.unlock();
+    std::this_thread::sleep_for(framerate);
+    thread_alive = false;
 }
 
 
@@ -78,7 +78,7 @@ void SV_Window::run() {
     SV_Widget* has_mouse = NULL;
     xcb_generic_event_t* xcb_event_ptr;
     while ((xcb_event_ptr = xcb_wait_for_event(connection))) {
-        auto event = SV_Event(xcb_event_ptr);
+        SV_Event event(xcb_event_ptr);
         lock.lock();
         // Special case for mouse events; redirect them to any widget that has grabbed the mouse focus
         if (has_mouse and (event.type() == mouse_move or event.type() == mouse_release)) {
@@ -128,10 +128,6 @@ void SV_Window::add(SV_Widget* widget) {
 }
 
 
-/*
- * Get the changed pixels from the buffer, sort them,
- * and draw to the screen in groups of the same color
- */
 void SV_Window::flush() {
     if (drawing_buffer.empty()) {return;}
 
