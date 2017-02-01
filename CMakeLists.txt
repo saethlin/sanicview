@@ -1,8 +1,8 @@
-cmake_minimum_required(VERSION 3.6)
+cmake_minimum_required(VERSION 3.0)
 project(sanicview)
 
-set(CMAKE_CXX_STANDARD 14)
-set(CMAKE_CXX_COMPILER /usr/bin/clang++)
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_COMPILER /usr/bin/g++)
 
 set(SOURCE_FILES main.cpp
         SV_Event.cpp SV_Event.h
@@ -17,7 +17,6 @@ set(SOURCE_FILES main.cpp
 
 link_libraries(X11 xcb xcb-icccm cfitsio CCfits pthread)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -march=native -fno-omit-frame-pointer -funroll-loops -O3")
-#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -march=native -fno-omit-frame-pointer")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall -fno-omit-frame-pointer -funroll-loops -O3")
 
 add_executable(sanicview ${SOURCE_FILES})

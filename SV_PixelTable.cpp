@@ -1,8 +1,13 @@
 #include "SV_PixelTable.h"
-
+#include <vector>
+#include <iostream>
 
 SV_PixelTable::SV_PixelTable(int x_max, int y_max) {
-    table = std::vector<pixel>(x_max*y_max, {0, 0, 0, 0});
+    table = std::vector<pixel>(x_max*y_max);
+    // Because I can't figure out how to initialize the vector with g++
+    for (auto& px : table) {
+        px.alpha = 0;
+    }
     this->x_max = x_max;
 }
 
@@ -10,8 +15,13 @@ SV_PixelTable::SV_PixelTable(int x_max, int y_max) {
 void SV_PixelTable::insert(int x, int y, unsigned char r, unsigned char g, unsigned char b) {
     auto& px = table[y*x_max + x];
     if (px.red != r or px.green != g or px.blue != b) {
-        if (px.alpha == 0) {changed_inds.push_back(y*x_max + x);}
-        px = {r, g, b, 255};
+        if (px.alpha == 0) {
+            changed_inds.push_back(y*x_max + x);
+        }
+        px.red = r;
+        px.green = g;
+        px.blue = b;
+        px.alpha = 255;
     }
 }
 
@@ -30,7 +40,6 @@ std::vector<xcb_pixel>& SV_PixelTable::get_changed() {
         for (const auto& ind : section) {
             changed.push_back({ind%x_max, ind/x_max, (uint32_t)65536*table[ind].red + (uint32_t)256*table[ind].green + (uint32_t)table[ind].blue});
         }
-        section.resize(table.size()/256);
         section.clear();
     }
 
@@ -38,4 +47,4 @@ std::vector<xcb_pixel>& SV_PixelTable::get_changed() {
 }
 
 
-bool SV_PixelTable::empty() {return changed_inds.empty();}
+bool SV_PixelTable::empty() const {return changed_inds.empty();}

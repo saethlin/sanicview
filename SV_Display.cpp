@@ -46,7 +46,7 @@ void SV_Display::draw() {
 }
 
 
-void SV_Display::set_black(double black) {
+void SV_Display::set_black(const double black) {
     if (black != this->black) {
         this->black = black;
         clip = true;
@@ -58,7 +58,7 @@ void SV_Display::set_black(double black) {
 }
 
 
-void SV_Display::set_white(double white) {
+void SV_Display::set_white(const double white) {
     if (white != this->white) {
         this->white = white;
         clip = true;
@@ -80,7 +80,7 @@ double SV_Display::get_white() {
 }
 
 
-void SV_Display::set_origin(int x, int y) {
+void SV_Display::set_origin(const int x, const int y) {
 
     auto try_x = std::min(image.width() - w(), std::max(x, 0));
     auto try_y = std::min(image.height() - h(), std::max(y, 0));
@@ -88,13 +88,12 @@ void SV_Display::set_origin(int x, int y) {
     if ((try_x != x_view) || (try_y != y_view)) {
         x_view = try_x;
         y_view = try_y;
-        move = true;
         redraw();
     }
 }
 
 
-bool SV_Display::handle(SV_Event event) {
+bool SV_Display::handle(const SV_Event event) {
     return false;
 }
 
@@ -102,7 +101,6 @@ bool SV_Display::handle(SV_Event event) {
 void SV_Display::resize() {
     w(window()->w()-200);
     h(window()->h()-50);
-    move = true;
     redraw();
 }
 

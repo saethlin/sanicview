@@ -20,8 +20,8 @@ public:
     ~SV_Window();
     void add(SV_Widget*);
     void run();
-    inline int w() {return width;};
-    inline int h() {return height;};
+    int w() const {return width;};
+    int h() const {return height;};
     void draw_point(int x, int y, unsigned char r, unsigned char g, unsigned char b);
     void draw_loop();
 private:

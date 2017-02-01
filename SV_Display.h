@@ -13,12 +13,12 @@ class SV_Display : public SV_Widget {
 public:
     SV_Display(SV_Window* window);
     void draw() override;
-    bool handle(SV_Event event) override;
+    bool handle(const SV_Event event) override;
     void resize() override;
     void set_image(SV_Image<double>&);
-    void set_white(double white);
-    void set_black(double black);
-    void set_origin(int x, int  y);
+    void set_white(const double white);
+    void set_black(const double black);
+    void set_origin(const int x, const int  y);
     void add(SV_MiniMap* minimap);
     void add(SV_Histogram* histogramdisplay);
     void add(SV_DirList* dirlist);
@@ -32,12 +32,11 @@ private:
     SV_Image<double> image;
     SV_Image<unsigned char> clipped;
     int x_view = 0, y_view = 0;
-    bool clip, move;
+    bool clip;
     double black = 0, white = 0;
     SV_MiniMap* minimap = NULL;
     SV_Histogram* histogram = NULL;
     SV_CursorTracker* cursortracker = NULL;
-
 };
 
 

@@ -9,8 +9,8 @@ public:
     SV_Image();
     SV_Image(T* data, int width, int height);
     SV_Image(int width, int height);
-    int width();
-    int height();
+    int width() const;
+    int height() const;
     T operator()(int x, int y) const {return std::vector<T>::operator[](y*width_impl+x);}
     T& operator()(int x, int y) {return std::vector<T>::operator[](y*width_impl+x);}
 

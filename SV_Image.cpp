@@ -20,11 +20,11 @@ SV_Image<T>::SV_Image() {std::vector<T>();}
 
 
 template <typename T>
-int SV_Image<T>::width() {return width_impl;}
+int SV_Image<T>::width() const {return width_impl;}
 
 
 template <typename T>
-int SV_Image<T>::height() {return height_impl;}
+int SV_Image<T>::height() const {return height_impl;}
 
 
 template class SV_Image<double>;
