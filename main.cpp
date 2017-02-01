@@ -4,6 +4,7 @@
 #include "SV_MiniMap.h"
 #include "SV_Image.h"
 
+#include <iostream>
 #include <cstring>
 #include <valarray>
 #include <CCfits/CCfits>
