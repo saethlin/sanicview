@@ -1,9 +1,11 @@
 #ifndef SANICVIEW_WIDGET_H
 #define SANICVIEW_WIDGET_H
 
-#include <xcb/xcb.h>
+
 #include "SV_PixelTable.h"
 #include "SV_Event.h"
+#include <xcb/xcb.h>
+
 
 class SV_Window;
 
@@ -11,7 +13,7 @@ class SV_Widget {
 public:
     SV_Widget(SV_Window* window, int x0, int y0, int width, int height);
     virtual void draw() {};
-    virtual bool handle(SV_Event event) {return false;}
+    virtual bool handle(const SV_Event& event) {return false;}
     virtual void resize() {};
     void draw_point(int pixel_x, int pixel_y, unsigned char value);
     void draw_point(int pixel_x, int pixel_y, unsigned char r, unsigned char g, unsigned char b);

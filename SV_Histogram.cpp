@@ -1,6 +1,7 @@
 #include "SV_Histogram.h"
 #include "SV_Display.h"
-#include <iostream>
+#include "SV_Window.h"
+
 
 SV_Histogram::SV_Histogram(SV_Window* window) : SV_Widget(window, 0, window->h()-50, window->w()-200, 50) {}
 
@@ -110,7 +111,7 @@ void SV_Histogram::draw() {
 }
 
 
-bool SV_Histogram::handle(SV_Event event) {
+bool SV_Histogram::handle(const SV_Event& event) {
     switch (event.type()) {
         case mouse_push: {
             if (abs(event.x() - white_pos) < 4) {

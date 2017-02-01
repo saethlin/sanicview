@@ -1,6 +1,8 @@
 #ifndef SANICVIEW_WINDOW_H
 #define SANICVIEW_WINDOW_H
 
+#include "SV_PixelTable.h"
+#include <xcb/xcb_icccm.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <vector>
@@ -9,8 +11,7 @@
 #include <future>
 #include <chrono>
 #include <ratio>
-#include <xcb/xcb_icccm.h>
-#include "SV_PixelTable.h"
+
 
 class SV_Widget;
 

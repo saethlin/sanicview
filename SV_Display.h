@@ -4,6 +4,8 @@
 #include "SV_Widget.h"
 #include "SV_Image.h"
 
+class SV_Window;
+class SV_Event;
 class SV_MiniMap;
 class SV_Histogram;
 class SV_DirList;
@@ -13,7 +15,7 @@ class SV_Display : public SV_Widget {
 public:
     SV_Display(SV_Window* window);
     void draw() override;
-    bool handle(const SV_Event event) override;
+    bool handle(const SV_Event& event) override;
     void resize() override;
     void set_image(SV_Image<double>&);
     void set_white(const double white);
@@ -32,11 +34,12 @@ private:
     SV_Image<double> image;
     SV_Image<unsigned char> clipped;
     int x_view = 0, y_view = 0;
-    bool clip;
+    bool clip, move;
     double black = 0, white = 0;
     SV_MiniMap* minimap = NULL;
     SV_Histogram* histogram = NULL;
     SV_CursorTracker* cursortracker = NULL;
+
 };
 
 

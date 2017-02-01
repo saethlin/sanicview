@@ -93,7 +93,7 @@ void SV_Display::set_origin(const int x, const int y) {
 }
 
 
-bool SV_Display::handle(const SV_Event event) {
+bool SV_Display::handle(const SV_Event& event) {
     return false;
 }
 

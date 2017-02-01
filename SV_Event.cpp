@@ -1,5 +1,5 @@
-#include <xcb/xcb.h>
 #include "SV_Event.h"
+#include <xcb/xcb.h>
 
 
 SV_Event::SV_Event(const xcb_generic_event_t *event) {

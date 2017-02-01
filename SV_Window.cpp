@@ -1,6 +1,6 @@
-#include <algorithm>
 #include "SV_Window.h"
 #include "SV_Widget.h"
+#include <algorithm>
 
 
 SV_Window::SV_Window(int width, int height, int framerate) {

@@ -95,7 +95,7 @@ void SV_MiniMap::draw() {
 }
 
 
-bool SV_MiniMap::handle(SV_Event event) {
+bool SV_MiniMap::handle(const SV_Event& event) {
     if (event.type() == mouse_push) {
         clicked = true;
     }

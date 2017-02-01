@@ -1,6 +1,6 @@
 #include "SV_PixelTable.h"
 #include <vector>
-#include <iostream>
+
 
 SV_PixelTable::SV_PixelTable(int x_max, int y_max) {
     table = std::vector<pixel>(x_max*y_max);

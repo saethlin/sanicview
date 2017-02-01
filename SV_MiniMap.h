@@ -16,6 +16,7 @@ public:
     SV_MiniMap(SV_Window* window);
     void set_imagedisplay(SV_Display* imagedisplay);
     void draw() override;
+    bool handle(const SV_Event& event) override;
     void set_image(SV_Image<double>& image);
     void set_black(double black);
     void set_white(double white);
@@ -23,7 +24,6 @@ public:
     void set_height(int height);
     void set_origin(int x, int y);
     void set_zoom(double zoom);
-    bool handle(SV_Event event) override;
 
 private:
     SV_Image<double> image;
