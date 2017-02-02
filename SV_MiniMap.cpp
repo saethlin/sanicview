@@ -1,5 +1,7 @@
 #include "SV_MiniMap.h"
+#include "SV_Event.h"
 #include "SV_Display.h"
+#include "SV_Image.h"
 #include <cmath>
 
 

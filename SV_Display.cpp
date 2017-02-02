@@ -1,7 +1,9 @@
 #include "SV_Display.h"
+#include "SV_Event.h"
 #include "SV_Window.h"
 #include "SV_Histogram.h"
 #include "SV_MiniMap.h"
+#include "SV_Image.h"
 
 
 SV_Display::SV_Display(SV_Window* window) : SV_Widget(window, 0, 0, window->w()-200, window->h()-50) {}

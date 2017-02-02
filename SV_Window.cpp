@@ -1,5 +1,6 @@
 #include "SV_Window.h"
 #include "SV_Widget.h"
+#include "SV_PixelTable.h"
 #include <algorithm>
 
 
