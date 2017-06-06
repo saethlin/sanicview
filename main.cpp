@@ -3,6 +3,8 @@
 #include "SV_Histogram.h"
 #include "SV_MiniMap.h"
 #include "SV_Image.h"
+#include "SV_Dirlist.h"
+#include "SV_CursorTracker.h"
 
 #include <iostream>
 #include <cstring>
@@ -55,10 +57,14 @@ int main(int argc, char* argv[]) {
     SV_Display imagedisplay(&window);
     SV_Histogram histogram(&window);
     SV_MiniMap minimap(&window);
+    SV_Dirlist dirlist(&window);
+    SV_CursorTracker cursordisplay(&window);
 
     imagedisplay.add(&histogram);
     imagedisplay.add(&minimap);
     imagedisplay.set_image(image);
+    imagedisplay.add(&dirlist);
+    imagedisplay.add(&cursordisplay);
 
     window.run();
 

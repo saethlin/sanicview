@@ -3,12 +3,13 @@
 
 #include "SV_Widget.h"
 #include "SV_Image.h"
+#include "SV_CursorTracker.h"
 
 class SV_Window;
 class SV_Event;
 class SV_MiniMap;
 class SV_Histogram;
-class SV_DirList;
+class SV_Dirlist;
 class SV_CursorTracker;
 
 class SV_Display : public SV_Widget {
@@ -23,7 +24,7 @@ public:
     void set_origin(const int x, const int  y);
     void add(SV_MiniMap* minimap);
     void add(SV_Histogram* histogramdisplay);
-    void add(SV_DirList* dirlist);
+    void add(SV_Dirlist* dirlist);
     void add(SV_CursorTracker* cursordisplay);
     double get_white();
     double get_black();

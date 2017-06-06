@@ -96,6 +96,10 @@ void SV_Display::set_origin(const int x, const int y) {
 
 
 bool SV_Display::handle(const SV_Event& event) {
+    if (event.type() == mouse_move) {
+        cursortracker->set_location(event.x()+x_view, event.y()+y_view);
+        return true;
+    }
     return false;
 }
 
@@ -119,7 +123,7 @@ void SV_Display::add(SV_MiniMap* minimap) {
 }
 
 
-void SV_Display::add(SV_DirList* dirlist) {
+void SV_Display::add(SV_Dirlist* dirlist) {
     //dirlist->set_imagedisplay(this);
 }
 

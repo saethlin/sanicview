@@ -1,5 +1,4 @@
 #include "SV_PixelTable.h"
-#include <vector>
 
 
 SV_PixelTable::SV_PixelTable(int x_max, int y_max) {

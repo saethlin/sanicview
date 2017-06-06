@@ -2,6 +2,7 @@
 #include "SV_Widget.h"
 #include "SV_PixelTable.h"
 #include <algorithm>
+#include <iostream>
 
 
 SV_Window::SV_Window(int width, int height, int framerate) {
@@ -57,14 +58,15 @@ SV_Window::SV_Window(int width, int height, int framerate) {
 
 
 void SV_Window::draw_loop() {
-    lock.lock();
-    for (const auto& widget : widgets) {
-        if (widget->needsdraw()) {
-            widget->draw();
+    { // Special scope for the lock guard
+        std::lock_guard<std::mutex> guard(lock);
+        for (const auto& widget : widgets) {
+            if (widget->needsdraw()) {
+                widget->draw();
+            }
         }
+        flush();
     }
-    flush();
-    lock.unlock();
     std::this_thread::sleep_for(framerate);
     thread_alive = false;
 }
@@ -90,7 +92,7 @@ void SV_Window::run() {
             }
         }
         else {
-            for (const auto &widget : widgets) {
+            for (const auto& widget : widgets) {
                 if ((widget->x() < event.x() and event.x() < widget->x() + widget->w() and
                      widget->y() < event.y() and event.y() < widget->y() + widget->h())) {
                     was_handled = widget->handle(event);

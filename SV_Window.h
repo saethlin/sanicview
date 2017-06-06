@@ -35,7 +35,7 @@ private:
     SV_PixelTable drawing_buffer;
     std::vector<xcb_point_t> color_run;
     std::mutex lock;
-    bool thread_alive = false;
+    std::atomic_bool thread_alive;
     std::chrono::duration<float, std::milli> framerate;
 };
 
