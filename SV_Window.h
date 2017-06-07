@@ -11,6 +11,7 @@
 #include <future>
 #include <chrono>
 #include <ratio>
+#include <algorithm>
 
 
 class SV_Widget;

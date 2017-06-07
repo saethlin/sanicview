@@ -135,24 +135,23 @@ void SV_Window::flush() {
     if (drawing_buffer.empty()) {return;}
 
     auto& changed_pixels = drawing_buffer.get_changed();
+    if (is_first_draw) {
+        changed_pixels.erase(std::remove_if(changed_pixels.begin(), changed_pixels.end(), [](xcb_pixel p){return p.color == 0;}), changed_pixels.end());
+    }
     auto current_color = changed_pixels.front().color;
 
     for (const auto& px : changed_pixels) {
         if (px.color != current_color) {
-            if (!is_first_draw || current_color != 0) {
-                xcb_change_gc(connection, foreground, XCB_GC_FOREGROUND, &current_color);
-                xcb_poly_point(connection, XCB_COORD_MODE_ORIGIN, xcb_window, foreground, color_run.size(), color_run.data());
-            }
+            xcb_change_gc(connection, foreground, XCB_GC_FOREGROUND, &current_color);
+            xcb_poly_point(connection, XCB_COORD_MODE_ORIGIN, xcb_window, foreground, color_run.size(), color_run.data());
             color_run.clear();
             current_color = px.color;
         }
         color_run.push_back({(int16_t)px.x, (int16_t)px.y});
     }
 
-    if (!is_first_draw || current_color != 0) {
-        xcb_change_gc(connection, foreground, XCB_GC_FOREGROUND, &current_color);
-        xcb_poly_point(connection, XCB_COORD_MODE_ORIGIN, xcb_window, foreground, color_run.size(), color_run.data());
-    }
+    xcb_change_gc(connection, foreground, XCB_GC_FOREGROUND, &current_color);
+    xcb_poly_point(connection, XCB_COORD_MODE_ORIGIN, xcb_window, foreground, color_run.size(), color_run.data());
     color_run.clear();
 
     xcb_flush(connection);

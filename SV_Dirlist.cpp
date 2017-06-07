@@ -15,17 +15,42 @@ void SV_Dirlist::resize() {
     redraw();
 }
 
+
 bool sorted_lower(const fs::directory_entry& lhs, const fs::directory_entry& rhs) {
     std::string a = lhs.path().filename().generic_string();
     std::string b = rhs.path().filename().generic_string();
     return std::tolower(a[0]=='.' ? a[1] : a[0]) < std::tolower(b[0]=='.' ? b[1] : b[0]);
 }
 
+
 void SV_Dirlist::draw() {
+    int spacing = 20;
+    if (selection_index >= (display_start + h()/spacing)) {
+        display_start = selection_index - h()/spacing + 1;
+    }
+    if (selection_index < display_start) {
+        display_start = selection_index;
+    }
+
+    for (int x = 0; x < w(); x++) {
+        for (int y = 0; y < h(); y++) {
+            draw_point(x, y, 0);
+        }
+    }
+
+    for (int x = 0; x < w(); x++) {
+        draw_point(x, (spacing*(selection_index-display_start)) + 5, 0, 0, 200); // top bar
+        draw_point(x, spacing*(selection_index+1-display_start) + 4, 0, 0, 200); // bottom bar
+    }
+
     for (int i = 0; i < entries.size(); i++) {
-        draw_text(entries[i].path().filename().generic_string(), 0, 16*(i+1), 12);
+        if ((spacing*(i + 1)) > h()) {
+            break;
+        }
+        draw_text(entries[i+display_start].path().filename().generic_string(), 0, spacing*(i+1), 12);
     }
 }
+
 
 void SV_Dirlist::change_dir(const fs::path& target_path) {
     current_dir = target_path;
@@ -34,7 +59,9 @@ void SV_Dirlist::change_dir(const fs::path& target_path) {
         entries.push_back(entry);
     }
     std::sort(entries.begin(), entries.end(), sorted_lower);
+    selection_index = 0;
 }
+
 
 bool SV_Dirlist::handle(const SV_Event& event) {
     if (event.type() == key_press) {
@@ -49,7 +76,7 @@ bool SV_Dirlist::handle(const SV_Event& event) {
         // right arrow
         else if (event.key() == 114) {
             if (fs::is_directory(entries[selection_index])) {
-                current_dir = entries[selection_index].path();
+                change_dir(entries[selection_index].path());
                 redraw();
             }
             return true;
@@ -67,7 +94,7 @@ bool SV_Dirlist::handle(const SV_Event& event) {
         }
         // down arrow
         else if (event.key() == 116) {
-            if (selection_index < entries.size()-2) {
+            if (selection_index < entries.size()-1) {
                 selection_index += 1;
             }
             else {
