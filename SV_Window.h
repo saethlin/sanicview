@@ -27,6 +27,7 @@ public:
     void draw_loop();
 private:
     void flush();
+    bool is_first_draw = true;
     int width, height;
     xcb_connection_t* connection;
     xcb_drawable_t xcb_window;

@@ -139,19 +139,24 @@ void SV_Window::flush() {
 
     for (const auto& px : changed_pixels) {
         if (px.color != current_color) {
-            xcb_change_gc(connection, foreground, XCB_GC_FOREGROUND, &current_color);
-            xcb_poly_point(connection, XCB_COORD_MODE_ORIGIN, xcb_window, foreground, color_run.size(), color_run.data());
+            if (!is_first_draw || current_color != 0) {
+                xcb_change_gc(connection, foreground, XCB_GC_FOREGROUND, &current_color);
+                xcb_poly_point(connection, XCB_COORD_MODE_ORIGIN, xcb_window, foreground, color_run.size(), color_run.data());
+            }
             color_run.clear();
             current_color = px.color;
         }
         color_run.push_back({(int16_t)px.x, (int16_t)px.y});
     }
 
-    xcb_change_gc(connection, foreground, XCB_GC_FOREGROUND, &current_color);
-    xcb_poly_point(connection, XCB_COORD_MODE_ORIGIN, xcb_window, foreground, color_run.size(), color_run.data());
+    if (!is_first_draw || current_color != 0) {
+        xcb_change_gc(connection, foreground, XCB_GC_FOREGROUND, &current_color);
+        xcb_poly_point(connection, XCB_COORD_MODE_ORIGIN, xcb_window, foreground, color_run.size(), color_run.data());
+    }
     color_run.clear();
 
     xcb_flush(connection);
+    is_first_draw = false;
 }
 
 
