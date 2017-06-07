@@ -59,3 +59,6 @@ int SV_Event::x() const {return event_x;}
 
 
 int SV_Event::y() const {return event_y;}
+
+
+int SV_Event::key() const {return event_key;};

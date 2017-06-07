@@ -10,7 +10,7 @@ void SV_CursorTracker::resize() {
 
 
 void SV_CursorTracker::draw() {
-    for (int x = 100; x < w(); x++) {
+    for (int x = 0; x < w(); x++) {
         for (int y = 0; y < h(); y++) {
             draw_point(x, y, 0);
         }
@@ -19,11 +19,16 @@ void SV_CursorTracker::draw() {
     buf << "Cursor x,y: " << x << "," << y;
     std::string s(std::istreambuf_iterator<char>(buf), {});
     draw_text(s, 0, 15, 12);
+
+    buf << "Value: " << value;
+    std::string ss(std::istreambuf_iterator<char>(buf), {});
+    draw_text(ss, 0, 33, 12);
 }
 
 
-void SV_CursorTracker::set_location(int x, int y) {
+void SV_CursorTracker::set_location(int x, int y, double value) {
     this->x = x;
     this->y = y;
+    this->value = value;
     redraw();
 }

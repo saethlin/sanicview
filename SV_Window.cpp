@@ -84,7 +84,7 @@ void SV_Window::run() {
         SV_Event event(xcb_event_ptr);
         lock.lock();
         // Special case for mouse events; redirect them to any widget that has grabbed the mouse focus
-        if (has_mouse and (event.type() == mouse_move or event.type() == mouse_release)) {
+        if (has_mouse && (event.type() == mouse_move || event.type() == mouse_release)) {
             has_mouse->handle(event);
             was_handled = true;
             if (event.type() == mouse_release) {
@@ -93,10 +93,10 @@ void SV_Window::run() {
         }
         else {
             for (const auto& widget : widgets) {
-                if ((widget->x() < event.x() and event.x() < widget->x() + widget->w() and
-                     widget->y() < event.y() and event.y() < widget->y() + widget->h())) {
+                if (event.type() == key_press || (widget->x() < event.x() && event.x() < widget->x() + widget->w() &&
+                     widget->y() < event.y() && event.y() < widget->y() + widget->h())) {
                     was_handled = widget->handle(event);
-                    if (was_handled and event.type() == mouse_push) {
+                    if (was_handled && event.type() == mouse_push) {
                         has_mouse = widget;
                     }
                     if (was_handled) {break;}

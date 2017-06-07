@@ -11,10 +11,11 @@ public:
     SV_CursorTracker(SV_Window* window);
     void draw() override;
     void resize() override;
-    void set_location(int x, int y);
+    void set_location(int x, int y, double value);
 
 private:
     int x, y;
+    double value;
     std::stringstream buf;
     std::string display_string;
 };

@@ -97,7 +97,7 @@ void SV_Display::set_origin(const int x, const int y) {
 
 bool SV_Display::handle(const SV_Event& event) {
     if (event.type() == mouse_move) {
-        cursortracker->set_location(event.x()+x_view, event.y()+y_view);
+        cursortracker->set_location(event.x()+x_view, event.y()+y_view, image(event.x()+x_view, event.y()+y_view));
         return true;
     }
     return false;
