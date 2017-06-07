@@ -159,3 +159,8 @@ bool SV_Histogram::handle(const SV_Event& event) {
     }
     return false;
 }
+
+void SV_Histogram::resize() {
+    y(window()->h()-50);
+    w(window()->w()-200);
+}

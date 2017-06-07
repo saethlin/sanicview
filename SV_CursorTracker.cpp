@@ -16,7 +16,7 @@ void SV_CursorTracker::draw() {
         }
     }
 
-    buf << "Cursor x,y: " << x << "," << y;
+    buf << "Cursor view_x,y: " << x << "," << y;
     std::string s(std::istreambuf_iterator<char>(buf), {});
     draw_text(s, 0, 15, 12);
 

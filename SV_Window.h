@@ -22,8 +22,10 @@ public:
     ~SV_Window();
     void add(SV_Widget*);
     void run();
-    int w() const {return width;};
-    int h() const {return height;};
+    int w() const {return width;}
+    int h() const {return height;}
+    void w(int width) {this->width = width;}
+    void h(int height) {this->height = height;}
     void draw_point(int x, int y, unsigned char r, unsigned char g, unsigned char b);
     void draw_loop();
 private:

@@ -3,6 +3,7 @@
 #include "SV_PixelTable.h"
 #include <algorithm>
 #include <iostream>
+#include <xcb/xcb.h>
 
 
 SV_Window::SV_Window(int width, int height, int framerate) {
@@ -34,18 +35,29 @@ SV_Window::SV_Window(int width, int height, int framerate) {
                  XCB_EVENT_MASK_POINTER_MOTION |
                  XCB_EVENT_MASK_BUTTON_MOTION |
                  XCB_EVENT_MASK_KEY_PRESS |
-                 XCB_EVENT_MASK_KEY_RELEASE);
+                 XCB_EVENT_MASK_KEY_RELEASE
+    );
 
     xcb_create_window(connection,                    /* connection          */
                       XCB_COPY_FROM_PARENT,          /* depth               */
                       xcb_window,                    /* window Id           */
                       screen->root,                  /* parent window       */
-                      0, 0,                          /* x, y                */
+                      0, 0,                          /* view_x, y                */
                       width, height,                 /* width, height       */
                       10,                            /* border_width        */
                       XCB_WINDOW_CLASS_INPUT_OUTPUT, /* class               */
                       screen->root_visual,           /* visual              */
                       mask, values);                 /* masks */
+
+    const char* title = "sanicview";
+    xcb_change_property(connection,
+                        XCB_PROP_MODE_REPLACE,
+                        xcb_window,
+                        XCB_ATOM_WM_NAME,
+                        XCB_ATOM_STRING,
+                        8,
+                        strlen(title),
+                        title);
 
     // Prevent resizing
     xcb_size_hints_t hints;

@@ -17,6 +17,7 @@ public:
     SV_Histogram(SV_Window* window);
     void draw() override;
     bool handle(const SV_Event& event) override;
+    void resize() override;
     void set_image(SV_Image<double>& image);
     void set_imagedisplay(SV_Display* imagedisplay);
 private:

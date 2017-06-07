@@ -17,6 +17,7 @@ public:
     void set_imagedisplay(SV_Display* imagedisplay);
     void draw() override;
     bool handle(const SV_Event& event) override;
+    void resize() override;
     void set_image(SV_Image<double>& image);
     void set_black(double black);
     void set_white(double white);
@@ -30,7 +31,7 @@ private:
     SV_Image<unsigned char> clipped;
     double black, white;
     bool clicked = false;
-    int x = 0, y = 0, last_x = 0, last_y = 0;
+    int view_x = 0, view_y = 0, last_x = 0, last_y = 0;
     int x0_border = 0, x1_border = 0, y0_border = 0, y1_border = 0;
     bool clip, move;
     int original_width, original_height;

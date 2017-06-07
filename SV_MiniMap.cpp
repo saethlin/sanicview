@@ -45,9 +45,9 @@ void SV_MiniMap::set_black(double black) {
 
 
 void SV_MiniMap::set_origin(int new_x, int new_y) {
-    if (new_x != x or new_y != y) {
-        x = new_x;
-        y = new_y;
+    if (new_x != view_x or new_y != view_y) {
+        view_x = new_x;
+        view_y = new_y;
         move = true;
         redraw();
     }
@@ -80,8 +80,8 @@ void SV_MiniMap::draw() {
             draw_point(x1_border, y, clipped(x1_border, y));
         }
 
-        x0_border = floor((double) x * 200 / original_width);
-        y0_border = floor((double) y * 200 / original_height);
+        x0_border = floor((double) view_x * 200 / original_width);
+        y0_border = floor((double) view_y * 200 / original_height);
         x1_border = floor(x0_border + ((window()->w() - 200.0) * 200 / original_width)) - 1;
         y1_border = floor(y0_border + ((window()->h() - 50) * 200 / original_height)) - 1;
 
@@ -118,4 +118,6 @@ bool SV_MiniMap::handle(const SV_Event& event) {
     return false;
 }
 
-
+void SV_MiniMap::resize() {
+    x(window()->w()-200);
+}
