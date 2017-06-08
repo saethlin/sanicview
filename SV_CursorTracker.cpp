@@ -16,7 +16,7 @@ void SV_CursorTracker::draw() {
         }
     }
 
-    buf << "Cursor view_x,y: " << x << "," << y;
+    buf << "Cursor x,y: " << x << "," << y;
     std::string s(std::istreambuf_iterator<char>(buf), {});
     draw_text(s, 0, 15, 12);
 
@@ -27,8 +27,10 @@ void SV_CursorTracker::draw() {
 
 
 void SV_CursorTracker::set_location(int x, int y, double value) {
-    this->x = x;
-    this->y = y;
-    this->value = value;
-    redraw();
+    if (x != this->x || x != this->y || value != this->value) {
+        this->x = x;
+        this->y = y;
+        this->value = value;
+        redraw();
+    }
 }

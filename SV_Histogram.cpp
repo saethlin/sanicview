@@ -68,6 +68,9 @@ void SV_Histogram::set_image(SV_Image<double>& image) {
 
 
 void SV_Histogram::draw() {
+    if (histogram.size() == 0) {
+        return;
+    }
     if (scaled.width() != w()) {
         scaled = SV_Image<unsigned char>(w(), h());
         for (auto y = 0; y < h(); y++) {

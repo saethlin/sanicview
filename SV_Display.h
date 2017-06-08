@@ -28,13 +28,14 @@ public:
     void add(SV_CursorTracker* cursordisplay);
     double get_white();
     double get_black();
-    //void set_zoom(double zoom);
+    void set_zoom(int zoom);
 
 
 private:
     SV_Image<double> image;
     SV_Image<unsigned char> clipped;
     int x_view = 0, y_view = 0;
+    int zoom = 1;
     bool clip, move;
     double black = 0, white = 0;
     SV_MiniMap* minimap = NULL;

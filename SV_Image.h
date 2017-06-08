@@ -42,4 +42,4 @@ inline double clamp(double lower, double num, double upper) {
 }
 
 
-#endif //SANICVIEW_SV_IMAGE_H
+#endif

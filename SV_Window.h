@@ -2,7 +2,6 @@
 #define SANICVIEW_WINDOW_H
 
 #include "SV_PixelTable.h"
-#include <xcb/xcb_icccm.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <vector>
@@ -12,6 +11,9 @@
 #include <chrono>
 #include <ratio>
 #include <algorithm>
+#include <xcb/xcb_icccm.h>
+#include <ft2build.h>
+#include FT_FREETYPE_H
 
 
 class SV_Widget;
@@ -27,6 +29,9 @@ public:
     void w(int width) {this->width = width;}
     void h(int height) {this->height = height;}
     void draw_point(int x, int y, unsigned char r, unsigned char g, unsigned char b);
+    void draw_point(int x, int y, unsigned char color);
+    void draw_text(std::string text, int x, int y, int pt);
+    void draw_bitmap(const FT_Bitmap& bitmap, FT_Int x_min, FT_Int y_min);
     void draw_loop();
 private:
     void flush();
@@ -41,7 +46,9 @@ private:
     std::mutex lock;
     std::atomic_bool thread_alive;
     std::chrono::duration<float, std::milli> framerate;
+    FT_Library library;
+    FT_Face face;
 };
 
 
-#endif //SANICVIEW_WINDOW_H
+#endif

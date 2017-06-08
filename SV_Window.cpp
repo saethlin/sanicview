@@ -66,6 +66,11 @@ SV_Window::SV_Window(int width, int height, int framerate) {
     xcb_icccm_set_wm_size_hints(connection, xcb_window, XCB_ATOM_WM_NORMAL_HINTS, &hints);
 
     drawing_buffer = SV_PixelTable(width, height);
+
+    // Load font
+    auto filename = "/usr/share/fonts/truetype/ubuntu-font-family/UbuntuMono-R.ttf";
+    FT_Init_FreeType(&library);
+    FT_New_Face(library, filename, 0, &face);
 }
 
 
@@ -75,6 +80,7 @@ void SV_Window::draw_loop() {
         for (const auto& widget : widgets) {
             if (widget->needsdraw()) {
                 widget->draw();
+                widget->clear_draw();
             }
         }
         flush();
@@ -89,7 +95,6 @@ void SV_Window::run() {
     xcb_map_window(connection, xcb_window);
     xcb_flush(connection);
 
-    bool was_handled = false;
     SV_Widget* has_mouse = NULL;
     xcb_generic_event_t* xcb_event_ptr;
     while ((xcb_event_ptr = xcb_wait_for_event(connection))) {
@@ -98,13 +103,13 @@ void SV_Window::run() {
         // Special case for mouse events; redirect them to any widget that has grabbed the mouse focus
         if (has_mouse && (event.type() == mouse_move || event.type() == mouse_release)) {
             has_mouse->handle(event);
-            was_handled = true;
             if (event.type() == mouse_release) {
                 has_mouse = NULL;
             }
         }
         else {
             for (const auto& widget : widgets) {
+                bool was_handled;
                 if (event.type() == key_press || (widget->x() < event.x() && event.x() < widget->x() + widget->w() &&
                      widget->y() < event.y() && event.y() < widget->y() + widget->h())) {
                     was_handled = widget->handle(event);
@@ -125,13 +130,12 @@ void SV_Window::run() {
             }
         }
 
-        // If no thread is alive, launch one to check if any widgets needs to be redrawn
-        if ((!thread_alive and was_handled) or event.type() == expose) {
+        // If no thread is alive, check if any widgets need to be redrawn and launch one to draw them
+        if (event.type() == expose || (!thread_alive && std::any_of(widgets.begin(), widgets.end(), [](SV_Widget* w){return w->needsdraw();}))) {
             thread_alive = true;
             std::thread draw_thread(&SV_Window::draw_loop, this);
             draw_thread.detach();
         }
-        was_handled = false;
         free(xcb_event_ptr);
         lock.unlock();
     }
@@ -176,4 +180,46 @@ void SV_Window::draw_point(int x, int y, unsigned char r, unsigned char g, unsig
 }
 
 
-SV_Window::~SV_Window() {xcb_disconnect(connection);}
+void SV_Window::draw_point(int x, int y, unsigned char color) {
+    draw_point(x, y, color, color, color);
+}
+
+
+void SV_Window::draw_text(std::string text, int x, int y, int pt) {
+    int dpi = 100;
+    FT_Set_Char_Size(face, pt*64, 0, dpi, 0);
+
+    // Identity matrix transformation, does this even do anything?
+    FT_Matrix matrix {0x10000L, 0,
+                      0, 0x10000L};
+    FT_Vector pen {0, 0};
+
+    auto slot = face->glyph;
+    for (const auto &chr : text) {
+        FT_Set_Transform(face, &matrix, &pen);
+
+        FT_Load_Char(face, chr, FT_LOAD_RENDER);
+
+        draw_bitmap(slot->bitmap, slot->bitmap_left+x, y-slot->bitmap_top);
+
+        pen.x += slot->advance.x;
+        pen.y += slot->advance.y;
+    }
+}
+
+
+void SV_Window::draw_bitmap(const FT_Bitmap& bitmap, FT_Int x_min, FT_Int y_min) {
+    for (FT_Int x = 0; x < bitmap.width; x++) {
+        for (FT_Int y = 0; y < bitmap.rows; y++) {
+            draw_point(x+x_min, y+y_min, bitmap.buffer[y * bitmap.width + x]);
+        }
+    }
+}
+
+
+
+SV_Window::~SV_Window() {
+    xcb_disconnect(connection);
+    FT_Done_Face(face);
+    FT_Done_FreeType(library);
+}

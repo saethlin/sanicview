@@ -48,8 +48,8 @@ int main(int argc, char* argv[]) {
     try {image = readImage(argv[1]);
     }
     catch (const std::logic_error&) {
-        std::cout << "Must provide a valid fits file or path" << std::endl;
-        return 1;
+        //std::cout << "Must provide a valid fits file or path" << std::endl;
+        //return 1;
     }
 
     SV_Window window(width, height, framerate);
@@ -62,9 +62,10 @@ int main(int argc, char* argv[]) {
 
     imagedisplay.add(&histogram);
     imagedisplay.add(&minimap);
-    imagedisplay.set_image(image);
     imagedisplay.add(&dirlist);
     imagedisplay.add(&cursordisplay);
+
+    imagedisplay.set_image(image);
 
     window.run();
 

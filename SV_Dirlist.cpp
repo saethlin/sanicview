@@ -4,6 +4,7 @@
 SV_Dirlist::SV_Dirlist(SV_Window* window) : SV_Widget(window, window->w()-200, 250, 200, window->h()-250) {
     current_dir = fs::current_path();
     change_dir(current_dir);
+    redraw();
 }
 
 
@@ -39,8 +40,8 @@ void SV_Dirlist::draw() {
     }
 
     for (int x = 0; x < w(); x++) {
-        draw_point(x, (spacing*(selection_index-display_start)) + 5, 0, 0, 200); // top bar
-        draw_point(x, spacing*(selection_index+1-display_start) + 4, 0, 0, 200); // bottom bar
+        draw_point(x, (spacing*(selection_index-display_start)) + 5, 0, 255, 255); // top bar
+        draw_point(x, spacing*(selection_index+1-display_start) + 4, 0, 255, 255); // bottom bar
     }
 
     for (int i = 0; i < entries.size(); i++) {

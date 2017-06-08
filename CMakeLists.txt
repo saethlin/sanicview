@@ -21,6 +21,6 @@ include_directories(/usr/include/freetype2)
 
 link_libraries(X11 xcb xcb-icccm cfitsio CCfits pthread freetype stdc++fs)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -O3 -fno-omit-frame-pointer")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wno-sign-compare -O3 -fno-omit-frame-pointer")
 
 add_executable(sanicview ${SOURCE_FILES})

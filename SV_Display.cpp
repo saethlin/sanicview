@@ -10,6 +10,9 @@ SV_Display::SV_Display(SV_Window* window) : SV_Widget(window, 0, 0, window->w()-
 
 
 void SV_Display::set_image(SV_Image<double>& image) {
+    if (image.size() == 0) {
+        return;
+    }
     this->image = image;
     this->clipped = SV_Image<unsigned char>(image.width(), image.height());
     set_origin((image.width()-w())/2, (image.height()-h())/2);
@@ -27,7 +30,7 @@ void SV_Display::draw() {
     if (image.size() == 0) {
         for (auto y = 0; y < h(); y++) {
             for (auto x = 0; x < w(); x++) {
-                draw_point(x, y, (unsigned char)0);
+                draw_point(x, y, 0);
             }
         }
     }
@@ -96,11 +99,44 @@ void SV_Display::set_origin(const int x, const int y) {
 
 
 bool SV_Display::handle(const SV_Event& event) {
+
+    if (image.size() == 0) {
+        return false;
+    }
+
     if (event.type() == mouse_move) {
-        cursortracker->set_location(event.x()+x_view, event.y()+y_view, image(event.x()+x_view, event.y()+y_view));
-        return true;
+        int x_loc = event.x() + x_view;
+        int y_loc = event.y() + y_view;
+        if ((x_loc < image.width()) && (y_loc < image.height())) {
+            cursortracker->set_location(event.x()+x_view, event.y()+y_view, image(event.x()+x_view, event.y()+y_view));
+            return true;
+        }
+        else {
+            // Turns out we didn't want the event
+            return false;
+        }
+    }
+    else if (event.type() == key_press) {
+        if (event.key() == 21) {
+            // zoom in
+            set_zoom(zoom*2);
+            return true;
+        }
+        if (event.key() == 20) {
+            // zoom out
+            set_zoom(zoom/2);
+            return true;
+        }
     }
     return false;
+}
+
+
+void SV_Display::set_zoom(int zoom) {
+    if (this->zoom != zoom || zoom >= 1 || zoom <= 8 || zoom % 2 == 0) {
+        this->zoom = zoom;
+        redraw();
+    }
 }
 
 
