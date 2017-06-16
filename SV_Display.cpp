@@ -127,6 +127,12 @@ bool SV_Display::handle(const SV_Event& event) {
             set_zoom(zoom/2);
             return true;
         }
+        if (event.key() == 'h') {
+            SV_Window header_window(w(), h(), 60);
+            std::vector<std::string> cards;
+            SV_Header header(&header_window, cards);
+            header_window.run();
+        }
     }
     return false;
 }

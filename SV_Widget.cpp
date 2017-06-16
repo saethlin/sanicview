@@ -13,18 +13,12 @@ SV_Widget::SV_Widget(SV_Window* window, int x, int y, int width, int height) {
 
 
 void SV_Widget::draw_point(int pixel_x, int pixel_y, unsigned char color) {
-    if (pixel_x >= 0 and pixel_x < w() and
-        pixel_y >= 0 and pixel_y < h()) {
-        window()->draw_point(x()+pixel_x, y()+pixel_y, color, color, color);
-    }
+    window()->draw_point(x()+pixel_x, y()+pixel_y, color, color, color);
 }
 
 
 void SV_Widget::draw_point(int pixel_x, int pixel_y, unsigned char r, unsigned char g, unsigned char b) {
-    if (pixel_x >= 0 and pixel_x < w() and
-        pixel_y >= 0 and pixel_y < h()) {
-        window()->draw_point(x()+pixel_x, y()+pixel_y, r, g, b);
-    }
+    window()->draw_point(x()+pixel_x, y()+pixel_y, r, g, b);
 }
 
 

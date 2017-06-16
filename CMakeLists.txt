@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.0)
 project(sanicview)
 
 set(CMAKE_CXX_STANDARD 14)
-set(CMAKE_CXX_COMPILER /usr/bin/g++)
+set(CMAKE_CXX_COMPILER /usr/bin/clang++)
 
 set(SOURCE_FILES main.cpp
         SV_Event.cpp SV_Event.h
@@ -15,7 +15,9 @@ set(SOURCE_FILES main.cpp
         SV_Image.h
         SV_Display.cpp SV_Display.h
         SV_Dirlist.cpp SV_Dirlist.h
-        SV_CursorTracker.cpp SV_CursorTracker.h)
+        SV_CursorTracker.cpp SV_CursorTracker.h
+        SV_Header.cpp SV_Header.h
+)
 
 include_directories(/usr/include/freetype2)
 

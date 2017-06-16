@@ -10,13 +10,27 @@ SV_Window::SV_Window(int width, int height, int framerate) {
     this->width = width;
     this->height = height;
     this->framerate = std::chrono::duration<float, std::milli>(1/(double)framerate);
-    /* Open the connection to the X server */
+    // Open the connection to the X server
     connection = xcb_connect(NULL, NULL);
+    if (!connection) {
+        std::cout << "unable to connect to display" << std::endl;
+        exit(1);
+    }
 
-    /* Get the first screen */
-    xcb_screen_t* screen = xcb_setup_roots_iterator(xcb_get_setup(connection)).data;
+    // Get the first screen
+    auto setup = xcb_get_setup(connection);
+    if (!setup) {
+        std::cout << "unable to connect to display" << std::endl;
+        exit(1);
+    }
 
-    /* Create black (foreground) graphic context */
+    xcb_screen_t* screen = xcb_setup_roots_iterator(setup).data;
+    if (!screen) {
+        std::cout << "unable to connect to display" << std::endl;
+        exit(1);
+    }
+
+    // Create black (foreground) graphic context
     xcb_window = screen->root;
     foreground = xcb_generate_id(connection);
     uint32_t mask = XCB_GC_FOREGROUND | XCB_GC_GRAPHICS_EXPOSURES ;
@@ -24,7 +38,7 @@ SV_Window::SV_Window(int width, int height, int framerate) {
 
     xcb_create_gc(connection, foreground, xcb_window, mask, values);
 
-    /* Create a window */
+    // Create a window
     xcb_window = xcb_generate_id(connection);
 
     mask = XCB_CW_BACK_PIXEL | XCB_CW_EVENT_MASK;

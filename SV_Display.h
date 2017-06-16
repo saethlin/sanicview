@@ -4,6 +4,7 @@
 #include "SV_Widget.h"
 #include "SV_Image.h"
 #include "SV_CursorTracker.h"
+#include "SV_Header.h"
 
 class SV_Window;
 class SV_Event;

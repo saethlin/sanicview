@@ -2,6 +2,7 @@
 #define SANICVIEW_SV_PIXELTABLE_H
 
 #include <vector>
+#include <algorithm>
 #include <cstdint>
 
 struct pixel {
@@ -29,12 +30,11 @@ public:
     std::vector<xcb_pixel>& get_changed();
 
 private:
-    std::vector<pixel> table;
-    std::vector<int> changed_inds;
+    std::vector<uint32_t> current;
+    std::vector<uint32_t> changes;
     std::vector<xcb_pixel> changed;
-    std::vector<std::vector<int> > changed_by_color = std::vector<std::vector<int> >(256, std::vector<int>());
     int x_max = 0;
 };
 
 
-#endif //SANICVIEW_SV_PIXELTABLE_H
+#endif
