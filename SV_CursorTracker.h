@@ -14,8 +14,8 @@ public:
     void set_location(int x, int y, double value);
 
 private:
-    int x, y;
-    double value;
+    int image_x, image_y;
+    double image_value;
     std::stringstream buf;
     std::string display_string;
 };

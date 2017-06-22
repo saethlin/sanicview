@@ -41,7 +41,7 @@ void SV_Dirlist::draw() {
 
     for (int x = 0; x < w(); x++) {
         draw_point(x, (spacing*(selection_index-display_start)) + 5, 0, 255, 255); // top bar
-        draw_point(x, spacing*(selection_index+1-display_start) + 4, 0, 255, 255); // bottom bar
+        draw_point(x, spacing*(selection_index+1-display_start) + 5, 0, 255, 255); // bottom bar
     }
 
     for (int i = 0; i < entries.size(); i++) {

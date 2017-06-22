@@ -49,7 +49,9 @@ SV_Window::SV_Window(int width, int height, int framerate) {
                  XCB_EVENT_MASK_POINTER_MOTION |
                  XCB_EVENT_MASK_BUTTON_MOTION |
                  XCB_EVENT_MASK_KEY_PRESS |
-                 XCB_EVENT_MASK_KEY_RELEASE
+                 XCB_EVENT_MASK_KEY_RELEASE |
+                 XCB_EVENT_MASK_RESIZE_REDIRECT |
+                 XCB_EVENT_MASK_FOCUS_CHANGE | XCB_EVENT_MASK_OWNER_GRAB_BUTTON
     );
 
     xcb_create_window(connection,                    /* connection          */
@@ -73,7 +75,7 @@ SV_Window::SV_Window(int width, int height, int framerate) {
                         strlen(title),
                         title);
 
-    // Prevent resizing
+    // Disable resizing
     xcb_size_hints_t hints;
     xcb_icccm_size_hints_set_min_size(&hints, width, height);
     xcb_icccm_size_hints_set_max_size(&hints, width, height);
@@ -114,6 +116,7 @@ void SV_Window::run() {
     while ((xcb_event_ptr = xcb_wait_for_event(connection))) {
         SV_Event event(xcb_event_ptr);
         lock.lock();
+
         // Special case for mouse events; redirect them to any widget that has grabbed the mouse focus
         if (has_mouse && (event.type() == mouse_move || event.type() == mouse_release)) {
             has_mouse->handle(event);
@@ -165,9 +168,9 @@ void SV_Window::flush() {
     if (drawing_buffer.empty()) {return;}
 
     auto& changed_pixels = drawing_buffer.get_changed();
-    if (is_first_draw) {
-        changed_pixels.erase(std::remove_if(changed_pixels.begin(), changed_pixels.end(), [](xcb_pixel p){return p.color == 0;}), changed_pixels.end());
-    }
+
+    if (changed_pixels.empty()) {return;}
+
     auto current_color = changed_pixels.front().color;
 
     for (const auto& px : changed_pixels) {
@@ -185,7 +188,6 @@ void SV_Window::flush() {
     color_run.clear();
 
     xcb_flush(connection);
-    is_first_draw = false;
 }
 
 
@@ -209,7 +211,7 @@ void SV_Window::draw_text(std::string text, int x, int y, int pt) {
     FT_Vector pen {0, 0};
 
     auto slot = face->glyph;
-    for (const auto &chr : text) {
+    for (const auto& chr : text) {
         FT_Set_Transform(face, &matrix, &pen);
 
         FT_Load_Char(face, chr, FT_LOAD_RENDER);
@@ -225,11 +227,12 @@ void SV_Window::draw_text(std::string text, int x, int y, int pt) {
 void SV_Window::draw_bitmap(const FT_Bitmap& bitmap, FT_Int x_min, FT_Int y_min) {
     for (FT_Int x = 0; x < bitmap.width; x++) {
         for (FT_Int y = 0; y < bitmap.rows; y++) {
-            draw_point(x+x_min, y+y_min, bitmap.buffer[y * bitmap.width + x]);
+            if (x+x_min < width && y+y_min < height) {
+                draw_point(x+x_min, y+y_min, bitmap.buffer[y * bitmap.width + x]);
+            }
         }
     }
 }
-
 
 
 SV_Window::~SV_Window() {

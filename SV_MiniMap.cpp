@@ -61,7 +61,9 @@ void SV_MiniMap::draw() {
         for (auto i = 0; i < image.size(); i++) {
             clipped[i] = (unsigned char)((clamp(black, image[i], white) - black) * (255/(white-black)));
         }
-        clip = false;
+    }
+
+    if (clip || do_resize) {
         for (auto y = 0; y < h(); y++) {
             for (auto x = 0; x < w(); x++) {
                 draw_point(x, y, clipped(x, y));
@@ -69,8 +71,7 @@ void SV_MiniMap::draw() {
         }
     }
 
-    if (move) {
-
+    if (clip || move || do_resize) {
         for (auto x = x0_border; x < x1_border; x++) {
             draw_point(x, y0_border, clipped(x, y0_border));
             draw_point(x, y1_border, clipped(x, y1_border));
@@ -94,6 +95,9 @@ void SV_MiniMap::draw() {
             draw_point(x1_border, y, 255, 0, 0);
         }
     }
+    clip = false;
+    do_resize = false;
+    move = false;
 }
 
 
@@ -118,6 +122,9 @@ bool SV_MiniMap::handle(const SV_Event& event) {
     return false;
 }
 
+
 void SV_MiniMap::resize() {
     x(window()->w()-200);
+    do_resize = true;
+    redraw();
 }

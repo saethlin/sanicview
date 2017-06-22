@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.0)
 project(sanicview)
 
 set(CMAKE_CXX_STANDARD 14)
-set(CMAKE_CXX_COMPILER /usr/bin/clang++)
+set(CMAKE_CXX_COMPILER /usr/bin/g++)
 
 set(SOURCE_FILES main.cpp
         SV_Event.cpp SV_Event.h
@@ -17,12 +17,12 @@ set(SOURCE_FILES main.cpp
         SV_Dirlist.cpp SV_Dirlist.h
         SV_CursorTracker.cpp SV_CursorTracker.h
         SV_Header.cpp SV_Header.h
-)
+        read_header.h)
 
 include_directories(/usr/include/freetype2)
 
-link_libraries(X11 xcb xcb-icccm cfitsio CCfits pthread freetype stdc++fs)
+link_libraries(X11 xcb xcb-icccm cfitsio CCfits pthread stdc++fs freetype)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wno-sign-compare -O3 -fno-omit-frame-pointer")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wno-sign-compare -O3 -fno-omit-frame-pointer -s")
 
 add_executable(sanicview ${SOURCE_FILES})

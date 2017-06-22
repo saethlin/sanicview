@@ -4,7 +4,7 @@
 #include "SV_Histogram.h"
 #include "SV_MiniMap.h"
 #include "SV_Image.h"
-
+#include "read_header.h"
 
 SV_Display::SV_Display(SV_Window* window) : SV_Widget(window, 0, 0, window->w()-200, window->h()-50) {}
 
@@ -127,9 +127,10 @@ bool SV_Display::handle(const SV_Event& event) {
             set_zoom(zoom/2);
             return true;
         }
-        if (event.key() == 'h') {
-            SV_Window header_window(w(), h(), 60);
-            std::vector<std::string> cards;
+        // h key
+        if (event.key() == 43) {
+            SV_Window header_window(780, 500, 60);
+            auto cards = read_header("/home/ben/sanicview/build/test.fits", 0);
             SV_Header header(&header_window, cards);
             header_window.run();
         }
@@ -147,9 +148,13 @@ void SV_Display::set_zoom(int zoom) {
 
 
 void SV_Display::resize() {
-    w(window()->w()-200);
-    h(window()->h()-50);
-    redraw();
+    int new_w = window()->w()-200;
+    int new_h = window()->h()-50;
+    if (new_w > w() || new_h > h()) {
+        redraw();
+    }
+    w(new_w);
+    h(new_h);
 }
 
 

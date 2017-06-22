@@ -6,8 +6,6 @@
 #include "SV_Dirlist.h"
 #include "SV_CursorTracker.h"
 
-#include <iostream>
-#include <cstring>
 #include <valarray>
 #include <CCfits/CCfits>
 using namespace CCfits;
@@ -19,7 +17,6 @@ SV_Image<double> readImage(const char* filename) {
     PHDU& primary_HDU = pInfile.pHDU();
 
     primary_HDU.read(contents);
-
     auto x = primary_HDU.axis(0);
     auto y = primary_HDU.axis(1);
 
@@ -47,10 +44,7 @@ int main(int argc, char* argv[]) {
     SV_Image<double> image;
     try {image = readImage(argv[1]);
     }
-    catch (const std::logic_error&) {
-        //std::cout << "Must provide a valid fits file or path" << std::endl;
-        //return 1;
-    }
+    catch (const std::logic_error&) {}
 
     SV_Window window(width, height, framerate);
 

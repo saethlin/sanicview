@@ -63,6 +63,10 @@ void SV_Histogram::set_image(SV_Image<double>& image) {
             histogram(x, y) = 255;
         }
     }
+
+    black_pos = black_slider * w() / histogram.width();
+    white_pos = white_slider * w() / histogram.width();
+
     redraw();
 }
 
@@ -75,44 +79,20 @@ void SV_Histogram::draw() {
         scaled = SV_Image<unsigned char>(w(), h());
         for (auto y = 0; y < h(); y++) {
             for (auto x = 0; x < w(); x++) {
-                scaled(x, y) = histogram(x*histogram.width()/w(), y*histogram.height()/h());
+                scaled(x, y) = histogram(x * histogram.width() / w(), y * histogram.height() / h());
             }
         }
-
-        black_pos = black_slider * scaled.width() / histogram.width();
-        white_pos = white_slider * scaled.width() / histogram.width();
-        new_black_pos = black_pos;
-        new_white_pos = white_pos;
-
-        for (auto y = 0; y < h(); y++) {
-            for (auto x = 0; x < w(); x++) {
-                if ((x == black_pos) or (x == white_pos)) {
-                    draw_point(x, y, 255, 0, 0);
-                }
-                else {
-                    draw_point(x, y, scaled(x, y));
-                }
-            }
-        }
-
-
     }
-    else {
-        if (new_black_pos != black_pos) {
-            for (auto y = 0; y < h(); y++) {
-                draw_point(black_pos, y, scaled(black_pos, y));
-                draw_point(new_black_pos, y, 255, 0, 0);
-            }
-            black_pos = new_black_pos;
-        }
 
-        if (new_white_pos != white_pos) {
-            for (auto y = 0; y < h(); y++) {
-                draw_point(white_pos, y, scaled(white_pos, y));
-                draw_point(new_white_pos, y, 255, 0, 0);
-            }
-            white_pos = new_white_pos;
+    for (auto y = 0; y < h(); y++) {
+        for (auto x = 0; x < w(); x++) {
+            draw_point(x, y, scaled(x, y));
         }
+    }
+
+    for (auto y = 0; y < h(); y++) {
+        draw_point(black_pos, y, 255, 0, 0);
+        draw_point(white_pos, y, 255, 0, 0);
     }
 }
 
@@ -133,11 +113,11 @@ bool SV_Histogram::handle(const SV_Event& event) {
         case mouse_move: {
             auto cursor_pos = event.x();
             if (clicked == WHITE) {
-                new_white_pos = std::min(w()-1, std::max(black_pos+1, cursor_pos));
+                white_pos = std::min(w()-1, std::max(black_pos+1, cursor_pos));
                 redraw();
                 return true;
             } else if (clicked == BLACK) {
-                new_black_pos = std::min(white_pos-1, std::max(1, cursor_pos));
+                black_pos = std::min(white_pos-1, std::max(1, cursor_pos));
                 redraw();
                 return true;
             }
@@ -163,7 +143,9 @@ bool SV_Histogram::handle(const SV_Event& event) {
     return false;
 }
 
+
 void SV_Histogram::resize() {
     y(window()->h()-50);
     w(window()->w()-200);
+    redraw();
 }

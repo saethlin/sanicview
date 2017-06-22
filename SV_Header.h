@@ -8,6 +8,7 @@
 #include "SV_Window.h"
 #include "SV_Widget.h"
 
+char char_from_keycode(int keycode);
 
 class SV_Header : public SV_Widget {
 public:
