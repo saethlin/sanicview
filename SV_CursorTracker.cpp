@@ -11,8 +11,8 @@ void SV_CursorTracker::resize() {
 
 
 void SV_CursorTracker::draw() {
-    for (int x = 0; x < w(); x++) {
-        for (int y = 0; y < h(); y++) {
+    for (int y = 0; y < h(); y++) {
+        for (int x = 0; x < w(); x++) {
             draw_point(x, y, 0);
         }
     }

@@ -5,6 +5,8 @@
 #include "SV_Event.h"
 #include "SV_Image.h"
 #include <algorithm>
+#include <vector>
+#include <cmath>
 
 
 enum ClickState {BLACK, WHITE, NONE};
@@ -21,8 +23,8 @@ public:
     void set_image(SV_Image<double>& image);
     void set_imagedisplay(SV_Display* imagedisplay);
 private:
-    SV_Image<unsigned char> histogram;
-    SV_Image<unsigned char> scaled;
+    SV_Image<uint8_t> histogram;
+    SV_Image<uint8_t> scaled;
     std::vector<double> histogram_to_value;
     SV_Display* imagedisplay;
     double black_slider, white_slider;

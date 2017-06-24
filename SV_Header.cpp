@@ -1,5 +1,4 @@
 #include "SV_Header.h"
-#include <iostream>
 
 SV_Header::SV_Header(SV_Window* window, std::vector<std::string> cards):
 SV_Widget(window, 0, 0, window->w(), window->h()) {
@@ -21,34 +20,53 @@ void SV_Header::resize() {
 
 
 void SV_Header::draw() {
-    for (int x = 0; x < w(); x++) {
-        for (int y = 0; y < h(); y++) {
-            draw_point(x, y, 0);
+    for (int y = 0; y < h(); y++) {
+        for (int x = 0; x < w(); x++) {
+            draw_point(x, y, 0, 0, 0);
         }
     }
 
-    for (int i = 0; i < display_cards.size()-display_start; i++) {
-        // If next line would run into the horizontal bar
-        if ((spacing*(i + 1)) > (h()-spacing-3)) {
-            break;
-        }
+    int displayable_cards = (h()-spacing-3)/spacing;
+    for (int i = 0; i < std::min(displayable_cards, (int)display_cards.size()); i++) {
         draw_text(*(display_cards[i+display_start]), 0, spacing*(i+1) - 3, 12);
+    }
+    // Scroll bar
+    double segment_size = h()/(double)display_cards.size();
+    int bar_start = floor(segment_size * display_start);
+    int bar_end = ceil(segment_size * displayable_cards + bar_start);
+    if (display_cards.size() == 0 || displayable_cards >= display_cards.size()) {
+        bar_start = 0;
+        bar_end = h();
+    }
+    for (int y = bar_start; y < bar_end; y++) {
+        draw_point(w()-1, y, 255, 255, 255);
+        draw_point(w()-2, y, 255, 255, 255);
+        draw_point(w()-3, y, 255, 255, 255);
     }
     // Horizontal bar
     for (int x = 0; x < w(); x++) {
-        draw_point(x, h()-spacing-4, 255, 255, 0);
+        draw_point(x, h()-spacing-4, 255, 255, 255);
     }
     // Current search term
     draw_text("search> "+pattern, 0, h()-5, 12);
     // Cursor
-    for (int y = h()-spacing-3; y < h(); y++) {
-        draw_point((pattern.size()+8)*9, y, 255, 0, 0);
+    for (int y = h()-spacing-3+1; y < h()-1; y++) {
+        draw_point((pattern.size()+8)*9, y, 255, 255, 255);
+        draw_point((pattern.size()+8)*9+1, y, 255, 255, 255);
     }
 }
 
 
 bool SV_Header::handle(const SV_Event& event) {
+    if (event.type() == key_release) {
+        if (event.key() == 50 || event.key() == 62) {
+            shift = false;
+        }
+    }
     if (event.type() == key_press) {
+        if (event.key() == 50 || event.key() == 62) {
+            shift = true;
+        }
         // up arrow
         if (event.key() == 111) {
             if (display_start > 0) {
@@ -76,9 +94,13 @@ bool SV_Header::handle(const SV_Event& event) {
         else {
             char key_char = char_from_keycode(event.key());
             if (key_char) {
+                if (shift) {
+                    key_char = toupper(key_char);
+                }
                 pattern.push_back(key_char);
                 update_matches();
                 redraw();
+                display_start = 0;
                 return true;
             }
         }

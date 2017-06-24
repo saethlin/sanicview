@@ -6,22 +6,10 @@
 #include "SV_Dirlist.h"
 #include "SV_CursorTracker.h"
 
+#include <cstring>
 #include <valarray>
 #include <CCfits/CCfits>
 using namespace CCfits;
-
-
-SV_Image<double> readImage(const char* filename) {
-    std::valarray<double> contents;
-    FITS pInfile(filename, Read, true);
-    PHDU& primary_HDU = pInfile.pHDU();
-
-    primary_HDU.read(contents);
-    auto x = primary_HDU.axis(0);
-    auto y = primary_HDU.axis(1);
-
-    return SV_Image<double>(&contents[0], x, y);
-}
 
 
 int main(int argc, char* argv[]) {
@@ -41,11 +29,6 @@ int main(int argc, char* argv[]) {
         }
     }
 
-    SV_Image<double> image;
-    try {image = readImage(argv[1]);
-    }
-    catch (const std::logic_error&) {}
-
     SV_Window window(width, height, framerate);
 
     SV_Display imagedisplay(&window);
@@ -59,8 +42,9 @@ int main(int argc, char* argv[]) {
     imagedisplay.add(&dirlist);
     imagedisplay.add(&cursordisplay);
 
-    imagedisplay.set_image(image);
-
+    if (argc > 1) {
+        imagedisplay.open(argv[1], 0);
+    }
     window.run();
 
     return 0;

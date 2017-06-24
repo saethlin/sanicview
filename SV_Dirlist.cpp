@@ -1,4 +1,6 @@
 #include "SV_Dirlist.h"
+#include "SV_Window.h"
+#include "SV_Display.h"
 
 
 SV_Dirlist::SV_Dirlist(SV_Window* window) : SV_Widget(window, window->w()-200, 250, 200, window->h()-250) {
@@ -26,6 +28,9 @@ bool sorted_lower(const fs::directory_entry& lhs, const fs::directory_entry& rhs
 
 void SV_Dirlist::draw() {
     int spacing = 20;
+
+    auto old_display_start = display_start;
+
     if (selection_index >= (display_start + h()/spacing)) {
         display_start = selection_index - h()/spacing + 1;
     }
@@ -33,22 +38,36 @@ void SV_Dirlist::draw() {
         display_start = selection_index;
     }
 
-    for (int x = 0; x < w(); x++) {
+    if (display_start != old_display_start || first) {
         for (int y = 0; y < h(); y++) {
-            draw_point(x, y, 0);
+            for (int x = 0; x < w(); x++) {
+                draw_point(x, y, 0);
+            }
         }
-    }
 
-    for (int x = 0; x < w(); x++) {
-        draw_point(x, (spacing*(selection_index-display_start)) + 5, 0, 255, 255); // top bar
-        draw_point(x, spacing*(selection_index+1-display_start) + 5, 0, 255, 255); // bottom bar
-    }
-
-    for (int i = 0; i < entries.size(); i++) {
-        if ((spacing*(i + 1)) > h()) {
-            break;
+        for (int x = 0; x < w(); x++) {
+            draw_point(x, (spacing * (selection_index - display_start)) + 5, 0, 255, 255); // top bar
+            draw_point(x, spacing * (selection_index + 1 - display_start) + 5, 0, 255, 255); // bottom bar
         }
-        draw_text(entries[i+display_start].path().filename().generic_string(), 0, spacing*(i+1), 12);
+
+        for (int i = 0; i < entries.size(); i++) {
+            if ((spacing * (i + 1)) > h()) {
+                break;
+            }
+            draw_text(entries[i + display_start].path().filename().generic_string(), 0, spacing * (i + 1), 12);
+        }
+        first = false;
+    }
+    else {
+        for (int y = 5; y < h(); y += spacing) {
+            for (int x = 0; x < w(); x++) {
+                draw_point(x, y, 0, 0, 0);
+            }
+        }
+        for (int x = 0; x < w(); x++) {
+            draw_point(x, (spacing * (selection_index - display_start)) + 5, 0, 255, 255); // top bar
+            draw_point(x, spacing * (selection_index + 1 - display_start) + 5, 0, 255, 255); // bottom bar
+        }
     }
 }
 
@@ -67,7 +86,7 @@ void SV_Dirlist::change_dir(const fs::path& target_path) {
 bool SV_Dirlist::handle(const SV_Event& event) {
     if (event.type() == key_press) {
         // left arrow
-        if (event.key() == 113) {
+        if (event.key() == 113 || event.key() == 22) {
             if (current_dir != current_dir.root_name()) {
                 change_dir(current_dir.parent_path());
                 redraw();
@@ -75,10 +94,13 @@ bool SV_Dirlist::handle(const SV_Event& event) {
             return true;
         }
         // right arrow
-        else if (event.key() == 114) {
+        else if (event.key() == 114 || event.key() == 36) {
             if (fs::is_directory(entries[selection_index])) {
                 change_dir(entries[selection_index].path());
                 redraw();
+            }
+            else if (fs::is_regular_file(entries[selection_index])) {
+                imagedisplay->open(entries[selection_index].path().generic_string(), 0);
             }
             return true;
         }
@@ -106,4 +128,9 @@ bool SV_Dirlist::handle(const SV_Event& event) {
         }
     }
     return false;
+}
+
+
+void SV_Dirlist::set_imagedisplay(SV_Display* display) {
+    this->imagedisplay = display;
 }

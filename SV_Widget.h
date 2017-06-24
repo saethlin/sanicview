@@ -5,8 +5,14 @@
 #include "SV_Event.h"
 #include <string>
 #include <xcb/xcb.h>
+#include <array>
 
 class SV_Window;
+
+struct color {
+    uint8_t r, g, b;
+};
+
 
 class SV_Widget {
 public:
@@ -14,8 +20,8 @@ public:
     virtual void draw() {};
     virtual bool handle(const SV_Event& event) {return false;}
     virtual void resize() {};
-    void draw_point(int pixel_x, int pixel_y, unsigned char value);
-    void draw_point(int pixel_x, int pixel_y, unsigned char r, unsigned char g, unsigned char b);
+    void draw_point(int pixel_x, int pixel_y, uint8_t value);
+    void draw_point(int pixel_x, int pixel_y, uint8_t r, uint8_t g, uint8_t b);
     void draw_text(std::string text, int x, int y, int pt);
     SV_Window* window() const {return parent_window;}
     int x() const {return x_impl;}
@@ -35,6 +41,5 @@ private:
     int x_impl, y_impl, width, height;
     bool do_redraw = true;
 };
-
 
 #endif

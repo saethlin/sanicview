@@ -16,8 +16,7 @@ set(SOURCE_FILES main.cpp
         SV_Display.cpp SV_Display.h
         SV_Dirlist.cpp SV_Dirlist.h
         SV_CursorTracker.cpp SV_CursorTracker.h
-        SV_Header.cpp SV_Header.h
-        read_header.h)
+        SV_Header.cpp SV_Header.h)
 
 include_directories(/usr/include/freetype2)
 

@@ -3,8 +3,8 @@
 
 #include <vector>
 #include <string>
-#include <regex>
 #include <algorithm>
+#include <cmath>
 #include "SV_Window.h"
 #include "SV_Widget.h"
 
@@ -24,6 +24,7 @@ private:
     std::string pattern;
     int display_start = 0;
     const int spacing = 20;
+    bool shift = false;
 };
 
 

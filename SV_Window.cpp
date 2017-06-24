@@ -127,7 +127,7 @@ void SV_Window::run() {
         else {
             for (const auto& widget : widgets) {
                 bool was_handled;
-                if (event.type() == key_press || (widget->x() < event.x() && event.x() < widget->x() + widget->w() &&
+                if ((event.type() == key_press || event.type() == key_release) || (widget->x() < event.x() && event.x() < widget->x() + widget->w() &&
                      widget->y() < event.y() && event.y() < widget->y() + widget->h())) {
                     was_handled = widget->handle(event);
                     if (was_handled && event.type() == mouse_push) {
@@ -191,12 +191,12 @@ void SV_Window::flush() {
 }
 
 
-void SV_Window::draw_point(int x, int y, unsigned char r, unsigned char g, unsigned char b) {
+void SV_Window::draw_point(int x, int y, uint8_t r, uint8_t g, uint8_t b) {
     drawing_buffer.insert(x, y, r, g, b);
 }
 
 
-void SV_Window::draw_point(int x, int y, unsigned char color) {
+void SV_Window::draw_point(int x, int y, uint8_t color) {
     draw_point(x, y, color, color, color);
 }
 
@@ -210,16 +210,15 @@ void SV_Window::draw_text(std::string text, int x, int y, int pt) {
                       0, 0x10000L};
     FT_Vector pen {0, 0};
 
-    auto slot = face->glyph;
     for (const auto& chr : text) {
         FT_Set_Transform(face, &matrix, &pen);
 
         FT_Load_Char(face, chr, FT_LOAD_RENDER);
 
-        draw_bitmap(slot->bitmap, slot->bitmap_left+x, y-slot->bitmap_top);
+        draw_bitmap(face->glyph->bitmap, face->glyph->bitmap_left+x, y-face->glyph->bitmap_top);
 
-        pen.x += slot->advance.x;
-        pen.y += slot->advance.y;
+        pen.x += face->glyph->advance.x;
+        pen.y += face->glyph->advance.y;
     }
 }
 

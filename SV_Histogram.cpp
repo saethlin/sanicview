@@ -2,8 +2,6 @@
 #include "SV_Event.h"
 #include "SV_Display.h"
 #include "SV_Window.h"
-#include <vector>
-#include <algorithm>
 
 
 SV_Histogram::SV_Histogram(SV_Window* window) : SV_Widget(window, 0, window->h()-50, window->w()-200, 50) {}
@@ -29,7 +27,7 @@ void SV_Histogram::set_image(SV_Image<double>& image) {
     auto max_count = *std::max_element(bincount.begin(), bincount.end());
 
     // Drop all the zero values
-    std::vector<unsigned char> data;
+    std::vector<uint8_t> data;
     data.reserve(bincount.size());
 
     auto black = -1;
@@ -57,7 +55,7 @@ void SV_Histogram::set_image(SV_Image<double>& image) {
     imagedisplay->set_white(white);
 
     // Create actual histogram image
-    histogram = SV_Image<unsigned char>(data.size(), 50);
+    histogram = SV_Image<uint8_t>(data.size(), 50);
     for (auto x = 0; x < data.size(); x++) {
         for (auto y = 0; y < 50-data[x]; y++) {
             histogram(x, y) = 255;
@@ -76,7 +74,7 @@ void SV_Histogram::draw() {
         return;
     }
     if (scaled.width() != w()) {
-        scaled = SV_Image<unsigned char>(w(), h());
+        scaled = SV_Image<uint8_t>(w(), h());
         for (auto y = 0; y < h(); y++) {
             for (auto x = 0; x < w(); x++) {
                 scaled(x, y) = histogram(x * histogram.width() / w(), y * histogram.height() / h());
@@ -86,7 +84,7 @@ void SV_Histogram::draw() {
 
     for (auto y = 0; y < h(); y++) {
         for (auto x = 0; x < w(); x++) {
-            draw_point(x, y, scaled(x, y));
+            draw_point(x, y, scaled(x, y), scaled(x,y), scaled(x,y));
         }
     }
 

@@ -17,12 +17,13 @@ class SV_PixelTable {
 public:
     SV_PixelTable() {}
     SV_PixelTable(int x_max, int y_max);
-    void insert(int x, int y, unsigned char r, unsigned char g, unsigned char b);
+    void insert(int x, int y, uint8_t r, uint8_t g, uint8_t b);
     void downsize(int width, int height);
     bool empty() const;
     std::vector<xcb_pixel>& get_changed();
 
 private:
+    std::vector<bool> damaged_rows;
     std::vector<uint32_t> current;
     std::vector<uint32_t> changes;
     std::vector<xcb_pixel> changed;

@@ -17,7 +17,7 @@ void SV_MiniMap::set_image(SV_Image<double>& image) {
     original_width = image.width();
     original_height = image.height();
     this->image = SV_Image<double>(w(), h());
-    this->clipped = SV_Image<unsigned char>(w(), h());
+    this->clipped = SV_Image<uint8_t>(w(), h());
     for (auto y = 0; y < h(); y++) {
         for (auto x = 0; x < w(); x++) {
             this->image(x, y) = image(x*image.width()/200, y*image.height()/200);
@@ -59,7 +59,7 @@ void SV_MiniMap::draw() {
 
     if (clip) {
         for (auto i = 0; i < image.size(); i++) {
-            clipped[i] = (unsigned char)((clamp(black, image[i], white) - black) * (255/(white-black)));
+            clipped[i] = (uint8_t)((clamp(black, image[i], white) - black) * (255/(white-black)));
         }
     }
 
@@ -87,12 +87,16 @@ void SV_MiniMap::draw() {
         y1_border = floor(y0_border + ((window()->h() - 50) * 200 / original_height)) - 1;
 
         for (auto x = x0_border; x < x1_border; x++) {
-            draw_point(x, y0_border, 255, 0, 0);
-            draw_point(x, y1_border, 255, 0, 0);
+            //draw_point(x, y0_border, 255, 0, 0);
+            //draw_point(x, y1_border, 255, 0, 0);
+            draw_point(x, y0_border, 255 - clipped(x ,y0_border));
+            draw_point(x, y1_border, 255 - clipped(x, y1_border));
         }
         for (auto y = y0_border; y < y1_border; y++) {
-            draw_point(x0_border, y, 255, 0, 0);
-            draw_point(x1_border, y, 255, 0, 0);
+            //draw_point(x0_border, y, 255, 0, 0);
+            //draw_point(x1_border, y, 255, 0, 0);
+            draw_point(x0_border, y, 255-clipped(x0_border, y));
+            draw_point(x1_border, y, 255-clipped(x1_border, y));
         }
     }
     clip = false;

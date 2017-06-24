@@ -5,6 +5,7 @@
 #include "SV_Image.h"
 #include "SV_CursorTracker.h"
 #include "SV_Header.h"
+#include <fitsio.h>
 
 class SV_Window;
 class SV_Event;
@@ -19,7 +20,6 @@ public:
     void draw() override;
     bool handle(const SV_Event& event) override;
     void resize() override;
-    void set_image(SV_Image<double>&);
     void set_white(const double white);
     void set_black(const double black);
     void set_origin(const int x, const int  y);
@@ -30,14 +30,15 @@ public:
     double get_white();
     double get_black();
     void set_zoom(int zoom);
-
+    void open(std::string filename, int hdu);
+    std::vector<std::string> cards;
 
 private:
     SV_Image<double> image;
-    SV_Image<unsigned char> clipped;
+    SV_Image<uint8_t> clipped;
     int x_view = 0, y_view = 0;
     int zoom = 1;
-    bool clip, move;
+    bool clip;
     double black = 0, white = 0;
     SV_MiniMap* minimap = NULL;
     SV_Histogram* histogram = NULL;
@@ -46,4 +47,4 @@ private:
 };
 
 
-#endif //SANICVIEW_SV_IMAGEWIDGET_H
+#endif

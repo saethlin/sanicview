@@ -12,7 +12,7 @@
 #include <ratio>
 #include <algorithm>
 #include <xcb/xcb_icccm.h>
-#include <ft2build.h>
+#include <freetype2/ft2build.h>
 #include FT_FREETYPE_H
 
 
@@ -28,8 +28,8 @@ public:
     int h() const {return height;}
     void w(int width) {this->width = width;}
     void h(int height) {this->height = height;}
-    void draw_point(int x, int y, unsigned char r, unsigned char g, unsigned char b);
-    void draw_point(int x, int y, unsigned char color);
+    void draw_point(int x, int y, uint8_t r, uint8_t g, uint8_t b);
+    void draw_point(int x, int y, uint8_t color);
     void draw_text(std::string text, int x, int y, int pt);
     void draw_bitmap(const FT_Bitmap& bitmap, FT_Int x_min, FT_Int y_min);
     void draw_loop();

@@ -28,7 +28,7 @@ public:
 
 private:
     SV_Image<double> image;
-    SV_Image<unsigned char> clipped;
+    SV_Image<uint8_t> clipped;
     double black, white;
     bool clicked = false;
     int view_x = 0, view_y = 0, last_x = 0, last_y = 0;
@@ -39,4 +39,4 @@ private:
 };
 
 
-#endif //SANICVIEW_SV_MINIMAP_H
+#endif
