@@ -8,8 +8,6 @@
 
 #include <cstring>
 #include <valarray>
-#include <CCfits/CCfits>
-using namespace CCfits;
 
 
 int main(int argc, char* argv[]) {

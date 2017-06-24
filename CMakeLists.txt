@@ -20,7 +20,7 @@ set(SOURCE_FILES main.cpp
 
 include_directories(/usr/include/freetype2)
 
-link_libraries(X11 xcb xcb-icccm cfitsio CCfits pthread stdc++fs freetype)
+link_libraries(X11 xcb xcb-icccm cfitsio pthread stdc++fs freetype)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wno-sign-compare -O3 -fno-omit-frame-pointer -s")
 
