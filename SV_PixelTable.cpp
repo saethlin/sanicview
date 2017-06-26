@@ -3,7 +3,7 @@
 
 SV_PixelTable::SV_PixelTable(int x_max, int y_max) {
     current = std::vector<uint32_t>(x_max*y_max, 0);
-    changes = std::vector<uint32_t>(x_max*y_max, (uint32_t)(125 << 16)|(125<<8)|(125));
+    changes = std::vector<uint32_t>(x_max*y_max, 0);
     damaged_rows = std::vector<bool>(y_max, false);
     this->x_max = x_max;
 }

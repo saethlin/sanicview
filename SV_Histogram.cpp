@@ -103,11 +103,11 @@ void SV_Histogram::draw() {
 bool SV_Histogram::handle(const SV_Event& event) {
     switch (event.type()) {
         case mouse_push: {
-            if (abs(event.x() - white_pos) < 4) {
+            if (abs((event.x()-x()) - white_pos) < 4) {
                 clicked = WHITE;
                 return true;
             }
-            else if (abs(event.x() - black_pos) < 4) {
+            else if (abs((event.x()-x()) - black_pos) < 4) {
                 clicked = BLACK;
                 return true;
             }

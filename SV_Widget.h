@@ -34,7 +34,7 @@ public:
 private:
     SV_Window* parent_window = NULL;
     int x_impl = 0, y_impl = 0, width = 0, height = 0;
-    bool do_redraw = true;
+    bool do_redraw = false;
     int border = 1;
 };
 

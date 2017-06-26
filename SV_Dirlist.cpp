@@ -3,7 +3,7 @@
 #include "SV_Display.h"
 
 
-SV_Dirlist::SV_Dirlist(SV_Window* window) : SV_Widget(window, window->w()-200, 246, 200, window->h()-246) {
+SV_Dirlist::SV_Dirlist(SV_Window* window) : SV_Widget(window, window->w()-200, 235, 200, window->h()-235) {
     current_dir = fs::current_path();
     change_dir(current_dir);
     redraw();
@@ -46,27 +46,27 @@ void SV_Dirlist::draw() {
         }
 
         for (int x = 0; x < w(); x++) {
-            draw_point(x, (spacing * (selection_index - display_start)) + 5, 0, 0, 255); // top bar
-            draw_point(x, spacing * (selection_index + 1 - display_start) + 5, 0, 0, 255); // bottom bar
+            draw_point(x, (spacing * (selection_index - display_start)), 0, 0, 255); // top bar
+            draw_point(x, spacing * (selection_index + 1 - display_start), 0, 0, 255); // bottom bar
         }
 
         for (int i = 0; i < entries.size(); i++) {
             if ((spacing * (i + 1)) > h()) {
                 break;
             }
-            draw_text(entries[i + display_start].path().filename().generic_string(), 0, spacing * (i + 1), 12);
+            draw_text(entries[i + display_start].path().filename().generic_string(), 1, spacing * (i + 1)-5, 12);
         }
         first = false;
     }
     else {
-        for (int y = 5; y < h(); y += spacing) {
+        for (int y = 0; y < h(); y += spacing) {
             for (int x = 0; x < w(); x++) {
                 draw_point(x, y, 0, 0, 0);
             }
         }
         for (int x = 0; x < w(); x++) {
-            draw_point(x, (spacing * (selection_index - display_start)) + 5, 0, 0, 255); // top bar
-            draw_point(x, spacing * (selection_index + 1 - display_start) + 5, 0, 0, 255); // bottom bar
+            draw_point(x, (spacing * (selection_index - display_start)), 0, 0, 255); // top bar
+            draw_point(x, spacing * (selection_index + 1 - display_start), 0, 0, 255); // bottom bar
         }
     }
 }

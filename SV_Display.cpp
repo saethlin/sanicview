@@ -65,7 +65,6 @@ double SV_Display::get_white() {
 
 
 void SV_Display::set_origin(const int x, const int y) {
-
     auto try_x = std::min(image.width() - w(), std::max(x, 0));
     auto try_y = std::min(image.height() - h(), std::max(y, 0));
 

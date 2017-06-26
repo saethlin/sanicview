@@ -1,7 +1,7 @@
 #include "SV_Widget.h"
 #include "SV_Window.h"
 #include "colormaps.h"
-
+#include <iostream>
 
 SV_Widget::SV_Widget(SV_Window *window, int x, int y, int width, int height) {
     this->parent_window = window;
@@ -10,6 +10,14 @@ SV_Widget::SV_Widget(SV_Window *window, int x, int y, int width, int height) {
     this->y(y);
     this->w(width);
     this->h(height);
+    for (int x_border = x; x_border < x+width; x_border++) {
+        if (y != 0) window->draw_point(x_border, y, 125, 125, 125); // Top
+        if (y+height != window->h()) window->draw_point(x_border, y+height-1, 125, 125, 125); // Bottom
+    }
+    for (int y_border = y; y_border < y+height; y_border++) {
+        if (x != 0) window->draw_point(x, y_border, 125, 125, 125); // Left
+        if (x+width != window->w()) window->draw_point(x+width-1, y_border, 125, 125, 125); // Right
+    }
 }
 
 
