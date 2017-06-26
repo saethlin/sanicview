@@ -3,7 +3,7 @@
 #include "SV_Display.h"
 
 
-SV_Dirlist::SV_Dirlist(SV_Window* window) : SV_Widget(window, window->w()-200, 250, 200, window->h()-250) {
+SV_Dirlist::SV_Dirlist(SV_Window* window) : SV_Widget(window, window->w()-200, 246, 200, window->h()-246) {
     current_dir = fs::current_path();
     change_dir(current_dir);
     redraw();

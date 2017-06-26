@@ -14,7 +14,7 @@ void SV_CursorTracker::draw() {
     if (first) {
         for (int y = 0; y < h(); y++) {
             for (int x = 0; x < w(); x++) {
-                draw_point(x, y, 0);
+                draw_point(x, y, 0, 0, 0);
             }
         }
 

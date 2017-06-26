@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <vector>
+#include <string>
 #include <algorithm>
 #include <xcb/xcb_icccm.h>
 #include <freetype2/ft2build.h>

@@ -20,7 +20,7 @@ void SV_MiniMap::set_image(SV_Image<float>& image) {
     this->clipped = SV_Image<uint8_t>(w(), h());
     for (auto y = 0; y < h(); y++) {
         for (auto x = 0; x < w(); x++) {
-            this->image(x, y) = image(x*image.width()/200, y*image.height()/200);
+            this->image(x, y) = image(x*image.width()/w(), y*image.height()/h());
         }
     }
     // Copy in the appropriate pixels
@@ -81,10 +81,10 @@ void SV_MiniMap::draw() {
             draw_point(x1_border, y, clipped(x1_border, y));
         }
 
-        x0_border = floor((double) view_x * 200 / original_width);
-        y0_border = floor((double) view_y * 200 / original_height);
-        x1_border = floor(x0_border + ((window()->w() - 200.0) * 200 / original_width)) - 1;
-        y1_border = floor(y0_border + ((window()->h() - 50) * 200 / original_height)) - 1;
+        x0_border = floor((double) view_x * w() / original_width);
+        y0_border = floor((double) view_y * h() / original_height);
+        x1_border = floor(x0_border + ((window()->w() - 200.0) * w() / original_width)) - 1;
+        y1_border = floor(y0_border + ((window()->h() - 50) * h() / original_height)) - 1;
 
         for (auto x = x0_border; x < x1_border; x++) {
             //draw_point(x, y0_border, 255, 0, 0);
@@ -110,8 +110,8 @@ bool SV_MiniMap::handle(const SV_Event& event) {
         clicked = true;
     }
     if (event.type() == mouse_push or (clicked and event.type() == mouse_move) or (clicked and event.type() == mouse_release)) {
-        int map_x = (event.x() - 600) * original_width / 200.0 - imagedisplay->w() / 2;
-        int map_y = event.y() * original_height / 200.0 - imagedisplay->h() / 2;
+        int map_x = (event.x() - 600) * original_width / w() - imagedisplay->w() / 2;
+        int map_y = event.y() * original_height / h() - imagedisplay->h() / 2;
 
         map_x = std::max(0, std::min(map_x, original_width - imagedisplay->w()));
         map_y = std::max(0, std::min(map_y, original_height - imagedisplay->h()));

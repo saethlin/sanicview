@@ -20,21 +20,22 @@ public:
     void draw_text(const std::string& text, int x, int y, int pt);
     SV_Window* window() const {return parent_window;}
     int x() const {return x_impl;}
-    void x(int x) {x_impl = x;}
     int y() const {return y_impl;}
-    void y(int y) {y_impl = y;}
     int w() const {return width;}
-    void w(int width) {this->width = width;}
     int h() const {return height;}
-    void h(int height) {this->height = height;}
+    void x(int x);
+    void y(int y);
+    void w(int width);
+    void h(int height);
     void redraw() {do_redraw = true;}
     bool needsdraw() {return do_redraw;}
     void clear_draw() {do_redraw = false;}
 
 private:
-    SV_Window* parent_window;
-    int x_impl, y_impl, width, height;
+    SV_Window* parent_window = NULL;
+    int x_impl = 0, y_impl = 0, width = 0, height = 0;
     bool do_redraw = true;
+    int border = 1;
 };
 
 #endif
