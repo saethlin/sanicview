@@ -1,7 +1,7 @@
-#include "SV_PixelTable.h"
+#include "PixelTable.h"
 
 
-SV_PixelTable::SV_PixelTable(int x_max, int y_max) {
+PixelTable::PixelTable(int x_max, int y_max) {
     current = std::vector<uint32_t>(x_max*y_max, 0);
     changes = std::vector<uint32_t>(x_max*y_max, 0);
     damaged_rows = std::vector<bool>(y_max, false);
@@ -9,21 +9,21 @@ SV_PixelTable::SV_PixelTable(int x_max, int y_max) {
 }
 
 
-void SV_PixelTable::insert(int x, int y, uint8_t r, uint8_t g, uint8_t b) {
+void PixelTable::insert(int x, int y, uint8_t r, uint8_t g, uint8_t b) {
     empty_impl = false;
     changes[y*x_max + x] = (uint32_t)((r << 16) | (g << 8) | b);
     damaged_rows[y] = true;
 }
 
 
-void SV_PixelTable::insert(int x, int y, uint32_t color) {
+void PixelTable::insert(int x, int y, uint32_t color) {
     empty_impl = false;
     changes[y*x_max + x] = color;
     damaged_rows[y] = true;
 }
 
 
-std::vector<xcb_pixel>& SV_PixelTable::get_changed() {
+std::vector<xcb_pixel>& PixelTable::get_changed() {
     changed.clear();
 
     int y_max = changes.size()/x_max;
@@ -46,7 +46,7 @@ std::vector<xcb_pixel>& SV_PixelTable::get_changed() {
 }
 
 
-void SV_PixelTable::downsize(int width, int height) {
+void PixelTable::downsize(int width, int height) {
     int y_max = changes.size()/x_max;
     for (int y = 0; y < y_max; y++) {
         for (int x = width; x < x_max; x++) {
@@ -62,6 +62,6 @@ void SV_PixelTable::downsize(int width, int height) {
 }
 
 
-bool SV_PixelTable::empty() const {
+bool PixelTable::empty() const {
     return empty_impl;
 }

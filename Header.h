@@ -5,17 +5,17 @@
 #include <string>
 #include <algorithm>
 #include <cmath>
-#include "SV_Window.h"
-#include "SV_Widget.h"
+#include "Window.h"
+#include "Widget.h"
 
 char char_from_keycode(int keycode);
 
-class SV_Header : public SV_Widget {
+class Header : public Widget {
 public:
-    SV_Header(SV_Window* window, std::vector<std::string> cards);
+    Header(Window* window, std::vector<std::string> cards);
     void draw() override;
     void resize() override;
-    bool handle(const SV_Event& event) override;
+    bool handle(const Event& event) override;
 
 private:
     void update_matches();

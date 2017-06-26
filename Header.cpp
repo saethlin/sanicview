@@ -1,7 +1,7 @@
-#include "SV_Header.h"
+#include "Header.h"
 
-SV_Header::SV_Header(SV_Window* window, std::vector<std::string> cards):
-SV_Widget(window, 0, 0, window->w(), window->h()) {
+Header::Header(Window* window, std::vector<std::string> cards):
+Widget(window, 0, 0, window->w(), window->h()) {
     this->cards = cards;
     display_cards.reserve(cards.size());
     for (auto& c : this->cards) {
@@ -10,7 +10,7 @@ SV_Widget(window, 0, 0, window->w(), window->h()) {
 }
 
 
-void SV_Header::resize() {
+void Header::resize() {
     x(0);
     y(0);
     w(window()->w());
@@ -19,7 +19,7 @@ void SV_Header::resize() {
 }
 
 
-void SV_Header::draw() {
+void Header::draw() {
     for (int y = 0; y < h(); y++) {
         for (int x = 0; x < w(); x++) {
             draw_point(x, y, 0, 0, 0);
@@ -57,7 +57,7 @@ void SV_Header::draw() {
 }
 
 
-bool SV_Header::handle(const SV_Event& event) {
+bool Header::handle(const Event& event) {
     if (event.type() == key_release) {
         if (event.key() == 50 || event.key() == 62) {
             shift = false;
@@ -109,7 +109,7 @@ bool SV_Header::handle(const SV_Event& event) {
 }
 
 
-void SV_Header::update_matches() {
+void Header::update_matches() {
     display_cards.clear();
     if (pattern.empty()) {
         for (auto& c : cards) {

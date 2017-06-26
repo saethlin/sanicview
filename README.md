@@ -13,19 +13,19 @@ Astronomy data is typically stored in FITS (Flexible Image Transport System) fil
 
 # Internal Interface
 
-`SV_Window` and `SV_Event` encapsulate xcb, an implementation of X window system, and together with `SV_PixelTable`, `SV_Widget`, and `SV_Image` comprise a very small GUI library that can be extended to build applications or re-implemented to use a different window system (Mir?).
+`Window` and `Event` encapsulate xcb, an implementation of X window system, and together with `PixelTable`, `Widget`, and `Image` comprise a very small GUI library that can be extended to build applications or re-implemented to use a different window system (Mir?).
 
 ## Drawing in SanicView
 
-Drawing is only done through `SV_Window::draw_point()`, which stores a desired change to a single pixel on the window. The window collects all the changes that widgets have requested and applies them to the window. At an interval no faster than the supplied framerate (default 60 frames/second) `SV_Window` will collect all changes from its widgets and draw them on the screen.
+Drawing is only done through `Window::draw_point()`, which stores a desired change to a single pixel on the window. The window collects all the changes that widgets have requested and applies them to the window. At an interval no faster than the supplied framerate (default 60 frames/second) `Window` will collect all changes from its widgets and draw them on the screen.
 
-`SV_Window` will ensure that only pixels that were actually changed are redrawn, but at the cost of CPU usage. If they can do so at zero cost, widgets should avoid requesting changes that do not modify the current display.
+`Window` will ensure that only pixels that were actually changed are redrawn, but at the cost of CPU usage. If they can do so at zero cost, widgets should avoid requesting changes that do not modify the current display.
 
 Widgets are limited to drawing within the rectangular region defined by their position and dimensions. Only the most recent request to change a pixel will be honored, and younger widgets will overwrite changes by older widgets.
 
 ## Events in SanicView
 
-When an event of any kind is produced, an `SV_Event` is passed to every widget's `handle()` method in the order the widgets were constructed. If a widget returns `true` from its `handle()`, the event will not be passed to any other widgets.
+When an event of any kind is produced, an `Event` is passed to every widget's `handle()` method in the order the widgets were constructed. If a widget returns `true` from its `handle()`, the event will not be passed to any other widgets.
 
 ## Command line options
 

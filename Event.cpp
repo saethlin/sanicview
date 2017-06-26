@@ -1,8 +1,8 @@
-#include "SV_Event.h"
+#include "Event.h"
 #include <xcb/xcb.h>
 
 
-SV_Event::SV_Event(const xcb_generic_event_t *event) {
+Event::Event(const xcb_generic_event_t *event) {
     switch (event->response_type) {
         case XCB_EXPOSE: {
             event_type = expose;
@@ -49,16 +49,16 @@ SV_Event::SV_Event(const xcb_generic_event_t *event) {
 }
 
 
-SV_event_type SV_Event::type() const {return event_type;}
+SV_event_type Event::type() const {return event_type;}
 
 
-int SV_Event::time() const {return event_time;}
+int Event::time() const {return event_time;}
 
 
-int SV_Event::x() const {return event_x;}
+int Event::x() const {return event_x;}
 
 
-int SV_Event::y() const {return event_y;}
+int Event::y() const {return event_y;}
 
 
-int SV_Event::key() const {return event_key;}
+int Event::key() const {return event_key;}

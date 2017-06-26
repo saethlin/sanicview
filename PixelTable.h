@@ -13,10 +13,10 @@ struct xcb_pixel {
 };
 
 
-class SV_PixelTable {
+class PixelTable {
 public:
-    SV_PixelTable() {}
-    SV_PixelTable(int x_max, int y_max);
+    PixelTable() {}
+    PixelTable(int x_max, int y_max);
     void insert(int x, int y, uint8_t r, uint8_t g, uint8_t b);
     void insert(int x, int y, uint32_t color);
     void downsize(int width, int height);

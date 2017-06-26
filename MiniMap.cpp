@@ -1,23 +1,23 @@
-#include "SV_MiniMap.h"
-#include "SV_Event.h"
-#include "SV_Display.h"
-#include "SV_Image.h"
+#include "MiniMap.h"
+#include "Event.h"
+#include "Display.h"
+#include "Image.h"
 #include <cmath>
 
 
-SV_MiniMap::SV_MiniMap(SV_Window* window) : SV_Widget(window, window->w()-200, 0, 200, 200) {}
+MiniMap::MiniMap(Window* window) : Widget(window, window->w()-200, 0, 200, 200) {}
 
 
-void SV_MiniMap::set_imagedisplay(SV_Display* imagedisplay) {
+void MiniMap::set_imagedisplay(Display* imagedisplay) {
     this->imagedisplay = imagedisplay;
 }
 
 
-void SV_MiniMap::set_image(SV_Image<float>& image) {
+void MiniMap::set_image(Image<float>& image) {
     original_width = image.width();
     original_height = image.height();
-    this->image = SV_Image<float>(w(), h());
-    this->clipped = SV_Image<uint8_t>(w(), h());
+    this->image = Image<float>(w(), h());
+    this->clipped = Image<uint8_t>(w(), h());
     for (auto y = 0; y < h(); y++) {
         for (auto x = 0; x < w(); x++) {
             this->image(x, y) = image(x*image.width()/w(), y*image.height()/h());
@@ -30,21 +30,21 @@ void SV_MiniMap::set_image(SV_Image<float>& image) {
 }
 
 
-void SV_MiniMap::set_white(double white) {
+void MiniMap::set_white(double white) {
     this->white = white;
     clip = true;
     redraw();
 }
 
 
-void SV_MiniMap::set_black(double black) {
+void MiniMap::set_black(double black) {
     this->black = black;
     clip = true;
     redraw();
 }
 
 
-void SV_MiniMap::set_origin(int new_x, int new_y) {
+void MiniMap::set_origin(int new_x, int new_y) {
     if (new_x != view_x or new_y != view_y) {
         view_x = new_x;
         view_y = new_y;
@@ -54,7 +54,7 @@ void SV_MiniMap::set_origin(int new_x, int new_y) {
 }
 
 
-void SV_MiniMap::draw() {
+void MiniMap::draw() {
     if (this->image.size() == 0) {return;}
 
     if (clip) {
@@ -105,7 +105,7 @@ void SV_MiniMap::draw() {
 }
 
 
-bool SV_MiniMap::handle(const SV_Event& event) {
+bool MiniMap::handle(const Event& event) {
     if (event.type() == mouse_push) {
         clicked = true;
     }
@@ -127,7 +127,7 @@ bool SV_MiniMap::handle(const SV_Event& event) {
 }
 
 
-void SV_MiniMap::resize() {
+void MiniMap::resize() {
     x(window()->w()-200);
     do_resize = true;
     redraw();

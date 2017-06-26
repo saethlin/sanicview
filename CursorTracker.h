@@ -3,12 +3,12 @@
 
 #include <string>
 #include <sstream>
-#include "SV_Window.h"
-#include "SV_Widget.h"
+#include "Window.h"
+#include "Widget.h"
 
-class SV_CursorTracker : public SV_Widget {
+class CursorTracker : public Widget {
 public:
-    SV_CursorTracker(SV_Window* window);
+    CursorTracker(Window* window);
     void draw() override;
     void resize() override;
     void set_location(int x, int y, double value);

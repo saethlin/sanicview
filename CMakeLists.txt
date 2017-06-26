@@ -5,18 +5,18 @@ set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_COMPILER /usr/bin/g++)
 
 set(SOURCE_FILES main.cpp
-        SV_Event.cpp SV_Event.h
-        SV_PixelTable.cpp SV_PixelTable.h
-        SV_Window.cpp SV_Window.h
-        SV_Widget.cpp SV_Widget.h
-        SV_Display.cpp SV_Display.h
-        SV_Histogram.cpp SV_Histogram.h
-        SV_MiniMap.cpp SV_MiniMap.h
-        SV_Image.h
-        SV_Display.cpp SV_Display.h
-        SV_Dirlist.cpp SV_Dirlist.h
-        SV_CursorTracker.cpp SV_CursorTracker.h
-        SV_Header.cpp SV_Header.h colormaps.h)
+        Event.cpp Event.h
+        PixelTable.cpp PixelTable.h
+        Window.cpp Window.h
+        Widget.cpp Widget.h
+        Display.cpp Display.h
+        Histogram.cpp Histogram.h
+        MiniMap.cpp MiniMap.h
+        Image.h
+        Display.cpp Display.h
+        DirList.cpp DirList.h
+        CursorTracker.cpp CursorTracker.h
+        Header.cpp Header.h colormaps.h)
 
 include_directories(/usr/include/freetype2)
 

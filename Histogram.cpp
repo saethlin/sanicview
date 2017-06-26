@@ -1,18 +1,18 @@
-#include "SV_Histogram.h"
-#include "SV_Event.h"
-#include "SV_Display.h"
-#include "SV_Window.h"
+#include "Histogram.h"
+#include "Event.h"
+#include "Display.h"
+#include "Window.h"
 
 
-SV_Histogram::SV_Histogram(SV_Window* window) : SV_Widget(window, 0, window->h()-50, window->w()-200, 50) {}
+Histogram::Histogram(Window* window) : Widget(window, 0, window->h()-50, window->w()-200, 50) {}
 
 
-void SV_Histogram::set_imagedisplay(SV_Display* imagedisplay) {
+void Histogram::set_imagedisplay(Display* imagedisplay) {
     this->imagedisplay = imagedisplay;
 }
 
 
-void SV_Histogram::set_image(SV_Image<float>& image) {
+void Histogram::set_image(Image<float>& image) {
     histogram_to_value.clear();
     // Find the max of the image so that we can know how many bins are required
     auto image_max = std::max_element(image.begin(), image.end());
@@ -55,7 +55,7 @@ void SV_Histogram::set_image(SV_Image<float>& image) {
     imagedisplay->set_white(white);
 
     // Create actual histogram image
-    histogram = SV_Image<uint8_t>(data.size(), 50);
+    histogram = Image<uint8_t>(data.size(), 50);
     for (auto x = 0; x < data.size(); x++) {
         for (auto y = 0; y < 50-data[x]; y++) {
             histogram(x, y) = 255;
@@ -69,12 +69,12 @@ void SV_Histogram::set_image(SV_Image<float>& image) {
 }
 
 
-void SV_Histogram::draw() {
+void Histogram::draw() {
     if (histogram.size() == 0) {
         return;
     }
     if (scaled.width() != w()) {
-        scaled = SV_Image<uint8_t>(w(), h());
+        scaled = Image<uint8_t>(w(), h());
         for (auto y = 0; y < h(); y++) {
             for (auto x = 0; x < w(); x++) {
                 scaled(x, y) = histogram(x * histogram.width() / w(), y * histogram.height() / h());
@@ -100,7 +100,7 @@ void SV_Histogram::draw() {
 }
 
 
-bool SV_Histogram::handle(const SV_Event& event) {
+bool Histogram::handle(const Event& event) {
     switch (event.type()) {
         case mouse_push: {
             if (abs((event.x()-x()) - white_pos) < 4) {
@@ -147,7 +147,7 @@ bool SV_Histogram::handle(const SV_Event& event) {
 }
 
 
-void SV_Histogram::resize() {
+void Histogram::resize() {
     y(window()->h()-50);
     w(window()->w()-200);
     redraw();

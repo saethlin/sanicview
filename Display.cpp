@@ -1,15 +1,15 @@
-#include "SV_Display.h"
-#include "SV_Event.h"
-#include "SV_Window.h"
-#include "SV_Histogram.h"
-#include "SV_MiniMap.h"
-#include "SV_Image.h"
-#include "SV_Dirlist.h"
+#include "Display.h"
+#include "Event.h"
+#include "Window.h"
+#include "Histogram.h"
+#include "MiniMap.h"
+#include "Image.h"
+#include "DirList.h"
 
-SV_Display::SV_Display(SV_Window* window) : SV_Widget(window, 0, 0, window->w()-200, window->h()-50) {}
+Display::Display(Window* window) : Widget(window, 0, 0, window->w()-200, window->h()-50) {}
 
 
-void SV_Display::draw() {
+void Display::draw() {
     if (image.size() == 0) {
         return;
     }
@@ -30,7 +30,7 @@ void SV_Display::draw() {
 }
 
 
-void SV_Display::set_black(const double black) {
+void Display::set_black(const double black) {
     if (black != this->black) {
         this->black = black;
         clip = true;
@@ -42,7 +42,7 @@ void SV_Display::set_black(const double black) {
 }
 
 
-void SV_Display::set_white(const double white) {
+void Display::set_white(const double white) {
     if (white != this->white) {
         this->white = white;
         clip = true;
@@ -54,17 +54,17 @@ void SV_Display::set_white(const double white) {
 }
 
 
-double SV_Display::get_black() {
+double Display::get_black() {
     return black;
 }
 
 
-double SV_Display::get_white() {
+double Display::get_white() {
     return white;
 }
 
 
-void SV_Display::set_origin(const int x, const int y) {
+void Display::set_origin(const int x, const int y) {
     auto try_x = std::min(image.width() - w(), std::max(x, 0));
     auto try_y = std::min(image.height() - h(), std::max(y, 0));
 
@@ -76,7 +76,7 @@ void SV_Display::set_origin(const int x, const int y) {
 }
 
 
-bool SV_Display::handle(const SV_Event& event) {
+bool Display::handle(const Event& event) {
 
     if (image.size() == 0) {
         return false;
@@ -107,8 +107,8 @@ bool SV_Display::handle(const SV_Event& event) {
         }
         // h key
         if (event.key() == 43) {
-            SV_Window header_window(800, 486);
-            SV_Header header(&header_window, cards);
+            Window header_window(800, 486);
+            Header header(&header_window, cards);
             header_window.run();
         }
     }
@@ -116,7 +116,7 @@ bool SV_Display::handle(const SV_Event& event) {
 }
 
 
-void SV_Display::set_zoom(int zoom) {
+void Display::set_zoom(int zoom) {
     if (this->zoom != zoom || zoom >= 1 || zoom <= 8 || zoom % 2 == 0) {
         this->zoom = zoom;
         redraw();
@@ -124,7 +124,7 @@ void SV_Display::set_zoom(int zoom) {
 }
 
 
-void SV_Display::resize() {
+void Display::resize() {
     int new_w = window()->w()-200;
     int new_h = window()->h()-50;
     if (new_w > w() || new_h > h()) {
@@ -135,29 +135,29 @@ void SV_Display::resize() {
 }
 
 
-void SV_Display::add(SV_Histogram* histogram) {
+void Display::add(Histogram* histogram) {
     this->histogram = histogram;
     histogram->set_imagedisplay(this);
 }
 
 
-void SV_Display::add(SV_MiniMap* minimap) {
+void Display::add(MiniMap* minimap) {
     this->minimap = minimap;
     minimap->set_imagedisplay(this);
 }
 
 
-void SV_Display::add(SV_Dirlist* dirlist) {
+void Display::add(DirList* dirlist) {
     dirlist->set_imagedisplay(this);
 }
 
 
-void SV_Display::add(SV_CursorTracker* cursortracker) {
+void Display::add(CursorTracker* cursortracker) {
     this->cursortracker = cursortracker;
 }
 
 
-void SV_Display::open(std::string filename, int hdu) {
+void Display::open(std::string filename, int hdu) {
     fitsfile *fptr;
     char card[FLEN_CARD];
     int status = 0, nkeys;   // CFITSIO status value MUST be initialized to zero
@@ -183,7 +183,7 @@ void SV_Display::open(std::string filename, int hdu) {
                 n_elements *= naxes[i];
             }
 
-            image = SV_Image<float>(naxes[0], naxes[1]);
+            image = Image<float>(naxes[0], naxes[1]);
             int anynul;
             long fpixel[2] {1, 1};
             fits_read_pix(fptr, TFLOAT, fpixel, n_elements, NULL, &(*image.begin()), &anynul, &status);
@@ -200,7 +200,7 @@ void SV_Display::open(std::string filename, int hdu) {
     if (image.size() == 0) {
         return;
     }
-    clipped = SV_Image<uint8_t>(image.width(), image.height());
+    clipped = Image<uint8_t>(image.width(), image.height());
     set_origin((image.width()-w())/2, (image.height()-h())/2);
 
     histogram->set_image(image);

@@ -8,9 +8,9 @@ enum SV_event_type {expose,
     key_press, key_release};
 
 
-class SV_Event {
+class Event {
 public:
-    SV_Event(const xcb_generic_event_t* event);
+    Event(const xcb_generic_event_t* event);
     SV_event_type type() const;
     int time() const;
     int x() const;

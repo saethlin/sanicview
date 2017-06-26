@@ -6,24 +6,24 @@
 #include <algorithm>
 #include <sstream>
 #include <experimental/filesystem>
-#include "SV_Widget.h"
+#include "Widget.h"
 
-class SV_Window;
-class SV_Display;
+class Window;
+class Display;
 
 namespace fs = std::experimental::filesystem;
 
-class SV_Dirlist : public SV_Widget {
+class DirList : public Widget {
 public:
-    SV_Dirlist(SV_Window* window);
+    DirList(Window* window);
     void draw() override;
     void resize() override;
-    bool handle(const SV_Event& event) override;
-    void set_imagedisplay(SV_Display*);
+    bool handle(const Event& event) override;
+    void set_imagedisplay(Display*);
 
 private:
     void change_dir(const fs::path& target_path);
-    SV_Display* imagedisplay;
+    Display* imagedisplay;
     std::vector<fs::directory_entry> entries;
     int selection_index = 0;
     int display_start = 0;

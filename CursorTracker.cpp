@@ -1,16 +1,16 @@
-#include "SV_CursorTracker.h"
+#include "CursorTracker.h"
 
 
-SV_CursorTracker::SV_CursorTracker(SV_Window* window) : SV_Widget(window, window->w()-200, 200, 200, 35) {}
+CursorTracker::CursorTracker(Window* window) : Widget(window, window->w()-200, 200, 200, 35) {}
 
 
-void SV_CursorTracker::resize() {
+void CursorTracker::resize() {
     x(window()->w()-200);
     redraw();
 }
 
 
-void SV_CursorTracker::draw() {
+void CursorTracker::draw() {
     if (first) {
         for (int y = 0; y < h()-1; y++) {
             for (int x = 0; x < w(); x++) {
@@ -49,7 +49,7 @@ void SV_CursorTracker::draw() {
 }
 
 
-void SV_CursorTracker::set_location(int x, int y, double value) {
+void CursorTracker::set_location(int x, int y, double value) {
     if (x != image_x || x != image_y || value != image_value) {
         this->image_x = x;
         this->image_y = y;

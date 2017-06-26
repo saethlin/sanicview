@@ -1,16 +1,16 @@
-#include "SV_Dirlist.h"
-#include "SV_Window.h"
-#include "SV_Display.h"
+#include "DirList.h"
+#include "Window.h"
+#include "Display.h"
 
 
-SV_Dirlist::SV_Dirlist(SV_Window* window) : SV_Widget(window, window->w()-200, 235, 200, window->h()-235) {
+DirList::DirList(Window* window) : Widget(window, window->w()-200, 235, 200, window->h()-235) {
     current_dir = fs::current_path();
     change_dir(current_dir);
     redraw();
 }
 
 
-void SV_Dirlist::resize() {
+void DirList::resize() {
     x(window()->w()-200);
     y(250);
     w(200);
@@ -26,7 +26,7 @@ bool sorted_lower(const fs::directory_entry& lhs, const fs::directory_entry& rhs
 }
 
 
-void SV_Dirlist::draw() {
+void DirList::draw() {
     int spacing = 20;
 
     auto old_display_start = display_start;
@@ -72,7 +72,7 @@ void SV_Dirlist::draw() {
 }
 
 
-void SV_Dirlist::change_dir(const fs::path& target_path) {
+void DirList::change_dir(const fs::path& target_path) {
     current_dir = target_path;
     entries.clear();
     for (const auto& entry : fs::directory_iterator(current_dir)) {
@@ -83,7 +83,7 @@ void SV_Dirlist::change_dir(const fs::path& target_path) {
 }
 
 
-bool SV_Dirlist::handle(const SV_Event& event) {
+bool DirList::handle(const Event& event) {
     if (event.type() == key_press) {
         // left arrow
         if (event.key() == 113 || event.key() == 22) {
@@ -131,6 +131,6 @@ bool SV_Dirlist::handle(const SV_Event& event) {
 }
 
 
-void SV_Dirlist::set_imagedisplay(SV_Display* display) {
+void DirList::set_imagedisplay(Display* display) {
     this->imagedisplay = display;
 }

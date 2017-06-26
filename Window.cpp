@@ -1,12 +1,12 @@
-#include "SV_Window.h"
-#include "SV_Widget.h"
-#include "SV_PixelTable.h"
+#include "Window.h"
+#include "Widget.h"
+#include "PixelTable.h"
 #include <algorithm>
 #include <iostream>
 #include <xcb/xcb.h>
 
 
-SV_Window::SV_Window(int width, int height) {
+Window::Window(int width, int height) {
     this->width = width;
     this->height = height;
     // Open the connection to the X server
@@ -80,7 +80,7 @@ SV_Window::SV_Window(int width, int height) {
     xcb_icccm_size_hints_set_max_size(&hints, width, height);
     xcb_icccm_set_wm_size_hints(connection, xcb_window, XCB_ATOM_WM_NORMAL_HINTS, &hints);
 
-    drawing_buffer = SV_PixelTable(width, height);
+    drawing_buffer = PixelTable(width, height);
 
     // Load font
     auto filename = "/usr/share/fonts/truetype/ubuntu-font-family/UbuntuMono-B.ttf";
@@ -103,7 +103,7 @@ SV_Window::SV_Window(int width, int height) {
         FT_Load_Char(face, chr, FT_LOAD_RENDER);
 
         auto g = face->glyph;
-        glyphs.push_back({SV_Image<uint8_t>(g->bitmap.buffer, g->bitmap.width, g->bitmap.rows), g->bitmap_top, g->bitmap_left});
+        glyphs.push_back({Image<uint8_t>(g->bitmap.buffer, g->bitmap.width, g->bitmap.rows), g->bitmap_top, g->bitmap_left});
 
         pen.x = 0;
         pen.y = 0;
@@ -113,15 +113,15 @@ SV_Window::SV_Window(int width, int height) {
 }
 
 
-void SV_Window::run() {
+void Window::run() {
     // Map the window on the screen and flush
     xcb_map_window(connection, xcb_window);
     xcb_flush(connection);
 
-    SV_Widget* has_mouse = NULL;
+    Widget* has_mouse = NULL;
     xcb_generic_event_t* xcb_event_ptr;
     while ((xcb_event_ptr = xcb_wait_for_event(connection))) {
-        SV_Event event(xcb_event_ptr);
+        Event event(xcb_event_ptr);
 
         // Special case for mouse events; redirect them to any widget that has grabbed the mouse focus
         if (has_mouse && (event.type() == mouse_move || event.type() == mouse_release)) {
@@ -164,12 +164,12 @@ void SV_Window::run() {
 }
 
 
-void SV_Window::add(SV_Widget* widget) {
+void Window::add(Widget* widget) {
     this->widgets.push_back(widget);
 }
 
 
-void SV_Window::flush() {
+void Window::flush() {
     if (drawing_buffer.empty()) {return;}
 
     auto& changed_pixels = drawing_buffer.get_changed();
@@ -196,17 +196,17 @@ void SV_Window::flush() {
 }
 
 
-void SV_Window::draw_point(int x, int y, uint8_t r, uint8_t g, uint8_t b) {
+void Window::draw_point(int x, int y, uint8_t r, uint8_t g, uint8_t b) {
     drawing_buffer.insert(x, y, r, g, b);
 }
 
 
-void SV_Window::draw_point(int x, int y, uint32_t color) {
+void Window::draw_point(int x, int y, uint32_t color) {
     drawing_buffer.insert(x, y, color);
 }
 
 
-void SV_Window::draw_text(std::string text, int x, int y, int pt) {
+void Window::draw_text(std::string text, int x, int y, int pt) {
     int pen_x = 0;
     for (const auto& chr : text) {
         auto glyph = glyphs[chr];
@@ -216,7 +216,7 @@ void SV_Window::draw_text(std::string text, int x, int y, int pt) {
 }
 
 
-void SV_Window::draw_bitmap(const SV_Image<uint8_t>& bitmap, int x_min, int y_min) {
+void Window::draw_bitmap(const Image<uint8_t>& bitmap, int x_min, int y_min) {
     for (int y = 0; y < bitmap.height(); y++) {
         for (int x = 0; x < bitmap.width(); x++) {
             if (x+x_min < width && y+y_min < height) {
@@ -227,6 +227,6 @@ void SV_Window::draw_bitmap(const SV_Image<uint8_t>& bitmap, int x_min, int y_mi
 }
 
 
-SV_Window::~SV_Window() {
+Window::~Window() {
     xcb_disconnect(connection);
 }

@@ -1,8 +1,8 @@
 #ifndef SANICVIEW_WINDOW_H
 #define SANICVIEW_WINDOW_H
 
-#include "SV_PixelTable.h"
-#include "SV_Image.h"
+#include "PixelTable.h"
+#include "Image.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <vector>
@@ -14,18 +14,18 @@
 
 
 struct glyph {
-    SV_Image<uint8_t> bitmap;
+    Image<uint8_t> bitmap;
     int top, left;
 };
 
 
-class SV_Widget;
+class Widget;
 
-class SV_Window {
+class Window {
 public:
-    SV_Window(int width, int height);
-    ~SV_Window();
-    void add(SV_Widget*);
+    Window(int width, int height);
+    ~Window();
+    void add(Widget*);
     void run();
     int w() const {return width;}
     int h() const {return height;}
@@ -34,15 +34,15 @@ public:
     void draw_point(int x, int y, uint8_t r, uint8_t g, uint8_t b);
     void draw_point(int x, int y, uint32_t color);
     void draw_text(std::string text, int x, int y, int pt);
-    void draw_bitmap(const SV_Image<uint8_t>& bitmap, int x_min, int y_min);
+    void draw_bitmap(const Image<uint8_t>& bitmap, int x_min, int y_min);
 private:
     void flush();
     int width, height;
     xcb_connection_t* connection;
     xcb_drawable_t xcb_window;
     xcb_gcontext_t foreground;
-    std::vector<SV_Widget*> widgets;
-    SV_PixelTable drawing_buffer;
+    std::vector<Widget*> widgets;
+    PixelTable drawing_buffer;
     std::vector<xcb_point_t> color_run;
     std::vector<glyph> glyphs;
 };

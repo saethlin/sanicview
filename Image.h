@@ -5,16 +5,16 @@
 
 
 template <typename T>
-class SV_Image {
+class Image {
 public:
     typedef typename std::vector<T>::iterator iterator;
     typedef typename std::vector<T>::const_iterator const_iterator;
-    SV_Image() {};
-    SV_Image(T* data_ptr, int width, int height) :
+    Image() {};
+    Image(T* data_ptr, int width, int height) :
             data(std::vector<T>(data_ptr, data_ptr+(width*height))),
             width_impl(width),
             height_impl(height) {};
-    SV_Image(int width, int height) :
+    Image(int width, int height) :
             data(std::vector<T>(width*height)),
             width_impl(width),
             height_impl(height) {};

@@ -1,10 +1,10 @@
-#include "SV_Window.h"
-#include "SV_Display.h"
-#include "SV_Histogram.h"
-#include "SV_MiniMap.h"
-#include "SV_Image.h"
-#include "SV_Dirlist.h"
-#include "SV_CursorTracker.h"
+#include "Window.h"
+#include "Display.h"
+#include "Histogram.h"
+#include "MiniMap.h"
+#include "Image.h"
+#include "DirList.h"
+#include "CursorTracker.h"
 
 #include <cstring>
 #include <valarray>
@@ -23,13 +23,13 @@ int main(int argc, char* argv[]) {
         }
     }
 
-    SV_Window window(width, height);
+    Window window(width, height);
 
-    SV_Display imagedisplay(&window);
-    SV_Histogram histogram(&window);
-    SV_MiniMap minimap(&window);
-    SV_Dirlist dirlist(&window);
-    SV_CursorTracker cursordisplay(&window);
+    Display imagedisplay(&window);
+    Histogram histogram(&window);
+    MiniMap minimap(&window);
+    DirList dirlist(&window);
+    CursorTracker cursordisplay(&window);
 
     imagedisplay.add(&histogram);
     imagedisplay.add(&minimap);
