@@ -16,11 +16,11 @@ set(SOURCE_FILES main.cpp
         SV_Display.cpp SV_Display.h
         SV_Dirlist.cpp SV_Dirlist.h
         SV_CursorTracker.cpp SV_CursorTracker.h
-        SV_Header.cpp SV_Header.h)
+        SV_Header.cpp SV_Header.h colormaps.h)
 
 include_directories(/usr/include/freetype2)
 
-link_libraries(X11 xcb xcb-icccm cfitsio pthread stdc++fs freetype)
+link_libraries(X11 xcb xcb-icccm cfitsio stdc++fs freetype)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wno-sign-compare -O3 -fno-omit-frame-pointer -s")
 

@@ -13,10 +13,10 @@ void SV_MiniMap::set_imagedisplay(SV_Display* imagedisplay) {
 }
 
 
-void SV_MiniMap::set_image(SV_Image<double>& image) {
+void SV_MiniMap::set_image(SV_Image<float>& image) {
     original_width = image.width();
     original_height = image.height();
-    this->image = SV_Image<double>(w(), h());
+    this->image = SV_Image<float>(w(), h());
     this->clipped = SV_Image<uint8_t>(w(), h());
     for (auto y = 0; y < h(); y++) {
         for (auto x = 0; x < w(); x++) {

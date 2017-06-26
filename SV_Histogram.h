@@ -20,18 +20,18 @@ public:
     void draw() override;
     bool handle(const SV_Event& event) override;
     void resize() override;
-    void set_image(SV_Image<double>& image);
+    void set_image(SV_Image<float>& image);
     void set_imagedisplay(SV_Display* imagedisplay);
 private:
     SV_Image<uint8_t> histogram;
     SV_Image<uint8_t> scaled;
-    std::vector<double> histogram_to_value;
+    std::vector<float> histogram_to_value;
     SV_Display* imagedisplay;
-    double black_slider, white_slider;
+    double black_level, white_level;
     int black_pos, white_pos;
-    int new_black_pos, new_white_pos;
+    int last_black = 0, last_white = 0;
     int clicked = NONE;
 };
 
 
-#endif //SANICVIEW_SV_HISTOGRAM_H
+#endif

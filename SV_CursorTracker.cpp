@@ -11,19 +11,41 @@ void SV_CursorTracker::resize() {
 
 
 void SV_CursorTracker::draw() {
-    for (int y = 0; y < h(); y++) {
-        for (int x = 0; x < w(); x++) {
-            draw_point(x, y, 0);
+    if (first) {
+        for (int y = 0; y < h(); y++) {
+            for (int x = 0; x < w(); x++) {
+                draw_point(x, y, 0);
+            }
         }
+
+        buf << "Cursor x,y: " << image_x << "," << image_y;
+        std::string s(std::istreambuf_iterator<char>(buf), {});
+        draw_text(s, 0, 15, 12);
+
+        buf << "Value: " << image_value;
+        std::string ss(std::istreambuf_iterator<char>(buf), {});
+        draw_text(ss, 0, 33, 12);
     }
+    else {
+        for (int y = 0; y < 18; y++) {
+            for (int x = 9*12; x < w(); x++) {
+                draw_point(x, y, 0);
+            }
+        }
+        buf << image_x << "," << image_y;
+        std::string s(std::istreambuf_iterator<char>(buf), {});
+        draw_text(s, 9*12, 15, 12);
 
-    buf << "Cursor x,y: " << image_x << "," << image_y;
-    std::string s(std::istreambuf_iterator<char>(buf), {});
-    draw_text(s, 0, 15, 12);
-
-    buf << "Value: " << image_value;
-    std::string ss(std::istreambuf_iterator<char>(buf), {});
-    draw_text(ss, 0, 33, 12);
+        for (int y = 20; y < 33; y++) {
+            for (int x = 9*7; x < w(); x++) {
+                draw_point(x, y, 0);
+            }
+        }
+        buf << image_value;
+        std::string ss(std::istreambuf_iterator<char>(buf), {});
+        draw_text(ss, 9*7, 33, 12);
+    }
+    first = false;
 }
 
 

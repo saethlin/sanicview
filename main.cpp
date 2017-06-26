@@ -13,7 +13,6 @@
 int main(int argc, char* argv[]) {
     int width = 800;
     int height = 500;
-    int framerate = 60;
 
     for (auto i = 2; i < argc-1; i++) {
         if (std::strcmp(argv[i], "-w") == 0) {
@@ -22,12 +21,9 @@ int main(int argc, char* argv[]) {
         else if (std::strcmp(argv[i], "-h") == 0) {
             height = std::stoi(argv[i+1]);
         }
-        else if (std::strcmp(argv[i], "-f") == 0) {
-            framerate = std::stoi(argv[i+1]);
-        }
     }
 
-    SV_Window window(width, height, framerate);
+    SV_Window window(width, height);
 
     SV_Display imagedisplay(&window);
     SV_Histogram histogram(&window);

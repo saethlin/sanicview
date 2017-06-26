@@ -14,10 +14,10 @@ public:
     void set_location(int x, int y, double value);
 
 private:
-    int image_x, image_y;
-    double image_value;
+    int image_x = 0, image_y = 0;
+    double image_value = 0.0;
+    bool first = true;
     std::stringstream buf;
-    std::string display_string;
 };
 
 

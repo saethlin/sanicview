@@ -12,7 +12,7 @@ void SV_Histogram::set_imagedisplay(SV_Display* imagedisplay) {
 }
 
 
-void SV_Histogram::set_image(SV_Image<double>& image) {
+void SV_Histogram::set_image(SV_Image<float>& image) {
     histogram_to_value.clear();
     // Find the max of the image so that we can know how many bins are required
     auto image_max = std::max_element(image.begin(), image.end());
@@ -42,11 +42,11 @@ void SV_Histogram::set_image(SV_Image<double>& image) {
             num_seen += val;
             if (black == -1 and num_seen > image.size()/2.) {
                 black = i;
-                black_slider = data.size();
+                black_level = data.size();
             }
             if (white == -1 and num_seen > 0.997*image.size()) {
                 white = i;
-                white_slider = data.size();
+                white_level = data.size();
             }
         }
     }
@@ -62,8 +62,8 @@ void SV_Histogram::set_image(SV_Image<double>& image) {
         }
     }
 
-    black_pos = black_slider * w() / histogram.width();
-    white_pos = white_slider * w() / histogram.width();
+    black_pos = black_level * w() / histogram.width();
+    white_pos = white_level * w() / histogram.width();
 
     redraw();
 }
@@ -80,18 +80,23 @@ void SV_Histogram::draw() {
                 scaled(x, y) = histogram(x * histogram.width() / w(), y * histogram.height() / h());
             }
         }
-    }
-
-    for (auto y = 0; y < h(); y++) {
-        for (auto x = 0; x < w(); x++) {
-            draw_point(x, y, scaled(x, y), scaled(x,y), scaled(x,y));
+        for (auto y = 0; y < h(); y++) {
+            for (auto x = 0; x < w(); x++) {
+                draw_point(x, y, scaled(x, y), scaled(x, y), scaled(x, y));
+            }
         }
     }
 
     for (auto y = 0; y < h(); y++) {
+        draw_point(last_black, y, scaled(last_black, y), scaled(last_black,y), scaled(last_black,y));
+        draw_point(last_white, y, scaled(last_white, y), scaled(last_white,y), scaled(last_white,y));
+    }
+    for (auto y = 0; y < h(); y++) {
         draw_point(black_pos, y, 255, 0, 0);
         draw_point(white_pos, y, 255, 0, 0);
     }
+    last_black = black_pos;
+    last_white = white_pos;
 }
 
 
@@ -123,13 +128,13 @@ bool SV_Histogram::handle(const SV_Event& event) {
         }
         case mouse_release: {
             if (clicked == BLACK) {
-                black_slider = (double) black_pos * (double) histogram.width() / (double) scaled.width();
-                imagedisplay->set_black(histogram_to_value[(int) black_slider]);
+                black_level = (double) black_pos * (double) histogram.width() / (double) scaled.width();
+                imagedisplay->set_black(histogram_to_value[(int) black_level]);
                 clicked = NONE;
                 return true;
             } else if (clicked == WHITE) {
-                white_slider = (double) white_pos * (double) histogram.width() / (double) scaled.width();
-                imagedisplay->set_white(histogram_to_value[(int) white_slider]);
+                white_level = (double) white_pos * (double) histogram.width() / (double) scaled.width();
+                imagedisplay->set_white(histogram_to_value[(int) white_level]);
                 clicked = NONE;
                 return true;
             }

@@ -16,6 +16,13 @@ void SV_PixelTable::insert(int x, int y, uint8_t r, uint8_t g, uint8_t b) {
 }
 
 
+void SV_PixelTable::insert(int x, int y, uint32_t color) {
+    empty_impl = false;
+    changes[y*x_max + x] = color;
+    damaged_rows[y] = true;
+}
+
+
 std::vector<xcb_pixel>& SV_PixelTable::get_changed() {
     changed.clear();
 

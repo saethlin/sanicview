@@ -9,11 +9,6 @@
 
 class SV_Window;
 
-struct color {
-    uint8_t r, g, b;
-};
-
-
 class SV_Widget {
 public:
     SV_Widget(SV_Window* window, int x0, int y0, int width, int height);
@@ -22,7 +17,7 @@ public:
     virtual void resize() {};
     void draw_point(int pixel_x, int pixel_y, uint8_t value);
     void draw_point(int pixel_x, int pixel_y, uint8_t r, uint8_t g, uint8_t b);
-    void draw_text(std::string text, int x, int y, int pt);
+    void draw_text(const std::string& text, int x, int y, int pt);
     SV_Window* window() const {return parent_window;}
     int x() const {return x_impl;}
     void x(int x) {x_impl = x;}

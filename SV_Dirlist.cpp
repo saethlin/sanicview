@@ -41,13 +41,13 @@ void SV_Dirlist::draw() {
     if (display_start != old_display_start || first) {
         for (int y = 0; y < h(); y++) {
             for (int x = 0; x < w(); x++) {
-                draw_point(x, y, 0);
+                draw_point(x, y, 0, 0, 0);
             }
         }
 
         for (int x = 0; x < w(); x++) {
-            draw_point(x, (spacing * (selection_index - display_start)) + 5, 0, 255, 255); // top bar
-            draw_point(x, spacing * (selection_index + 1 - display_start) + 5, 0, 255, 255); // bottom bar
+            draw_point(x, (spacing * (selection_index - display_start)) + 5, 0, 0, 255); // top bar
+            draw_point(x, spacing * (selection_index + 1 - display_start) + 5, 0, 0, 255); // bottom bar
         }
 
         for (int i = 0; i < entries.size(); i++) {
@@ -65,8 +65,8 @@ void SV_Dirlist::draw() {
             }
         }
         for (int x = 0; x < w(); x++) {
-            draw_point(x, (spacing * (selection_index - display_start)) + 5, 0, 255, 255); // top bar
-            draw_point(x, spacing * (selection_index + 1 - display_start) + 5, 0, 255, 255); // bottom bar
+            draw_point(x, (spacing * (selection_index - display_start)) + 5, 0, 0, 255); // top bar
+            draw_point(x, spacing * (selection_index + 1 - display_start) + 5, 0, 0, 255); // bottom bar
         }
     }
 }

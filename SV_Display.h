@@ -34,7 +34,7 @@ public:
     std::vector<std::string> cards;
 
 private:
-    SV_Image<double> image;
+    SV_Image<float> image;
     SV_Image<uint8_t> clipped;
     int x_view = 0, y_view = 0;
     int zoom = 1;

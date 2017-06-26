@@ -18,7 +18,7 @@ public:
     void draw() override;
     bool handle(const SV_Event& event) override;
     void resize() override;
-    void set_image(SV_Image<double>& image);
+    void set_image(SV_Image<float>& image);
     void set_black(double black);
     void set_white(double white);
     void set_width(int width);
@@ -27,7 +27,7 @@ public:
     void set_zoom(double zoom);
 
 private:
-    SV_Image<double> image;
+    SV_Image<float> image;
     SV_Image<uint8_t> clipped;
     double black, white;
     bool clicked = false;

@@ -108,7 +108,7 @@ bool SV_Display::handle(const SV_Event& event) {
         }
         // h key
         if (event.key() == 43) {
-            SV_Window header_window(800, 486, 60);
+            SV_Window header_window(800, 486);
             SV_Header header(&header_window, cards);
             header_window.run();
         }
@@ -184,10 +184,10 @@ void SV_Display::open(std::string filename, int hdu) {
                 n_elements *= naxes[i];
             }
 
-            image = SV_Image<double>(naxes[0], naxes[1]);
+            image = SV_Image<float>(naxes[0], naxes[1]);
             int anynul;
             long fpixel[2] {1, 1};
-            fits_read_pix(fptr, TDOUBLE, fpixel, n_elements, NULL, &(*image.begin()), &anynul, &status);
+            fits_read_pix(fptr, TFLOAT, fpixel, n_elements, NULL, &(*image.begin()), &anynul, &status);
         }
         if (status == END_OF_FILE) {
             status = 0;

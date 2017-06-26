@@ -6,10 +6,9 @@
 #include <xcb/xcb.h>
 
 
-SV_Window::SV_Window(int width, int height, int framerate) {
+SV_Window::SV_Window(int width, int height) {
     this->width = width;
     this->height = height;
-    this->framerate = std::chrono::duration<float, std::milli>(1/(double)framerate);
     // Open the connection to the X server
     connection = xcb_connect(NULL, NULL);
     if (!connection) {
@@ -84,25 +83,33 @@ SV_Window::SV_Window(int width, int height, int framerate) {
     drawing_buffer = SV_PixelTable(width, height);
 
     // Load font
-    auto filename = "/usr/share/fonts/truetype/ubuntu-font-family/UbuntuMono-R.ttf";
+    auto filename = "/usr/share/fonts/truetype/ubuntu-font-family/UbuntuMono-B.ttf";
+    FT_Library library;
+    FT_Face face;
     FT_Init_FreeType(&library);
     FT_New_Face(library, filename, 0, &face);
-}
 
+    int pt = 12;
+    int dpi = 100;
+    FT_Set_Char_Size(face, pt*64, 0, dpi, 0);
 
-void SV_Window::draw_loop() {
-    { // Special scope for the lock guard
-        std::lock_guard<std::mutex> guard(lock);
-        for (const auto& widget : widgets) {
-            if (widget->needsdraw()) {
-                widget->draw();
-                widget->clear_draw();
-            }
-        }
-        flush();
+    FT_Matrix matrix {0x10000L, 0,
+                      0, 0x10000L};
+    FT_Vector pen {0, 0};
+
+    for (FT_ULong chr = 0; chr < 256; chr++) {
+        FT_Set_Transform(face, &matrix, &pen);
+
+        FT_Load_Char(face, chr, FT_LOAD_RENDER);
+
+        auto g = face->glyph;
+        glyphs.push_back({SV_Image<uint8_t>(g->bitmap.buffer, g->bitmap.width, g->bitmap.rows), g->bitmap_top, g->bitmap_left});
+
+        pen.x = 0;
+        pen.y = 0;
     }
-    std::this_thread::sleep_for(framerate);
-    thread_alive = false;
+    FT_Done_Face(face);
+    FT_Done_FreeType(library);
 }
 
 
@@ -115,7 +122,6 @@ void SV_Window::run() {
     xcb_generic_event_t* xcb_event_ptr;
     while ((xcb_event_ptr = xcb_wait_for_event(connection))) {
         SV_Event event(xcb_event_ptr);
-        lock.lock();
 
         // Special case for mouse events; redirect them to any widget that has grabbed the mouse focus
         if (has_mouse && (event.type() == mouse_move || event.type() == mouse_release)) {
@@ -142,19 +148,18 @@ void SV_Window::run() {
         if (event.type() == key_press) {
             if ((int)((xcb_key_press_event_t*)xcb_event_ptr)->detail == 9) {
                 free(xcb_event_ptr);
-                lock.unlock();
                 return;
             }
         }
 
-        // If no thread is alive, check if any widgets need to be redrawn and launch one to draw them
-        if (event.type() == expose || (!thread_alive && std::any_of(widgets.begin(), widgets.end(), [](SV_Widget* w){return w->needsdraw();}))) {
-            thread_alive = true;
-            std::thread draw_thread(&SV_Window::draw_loop, this);
-            draw_thread.detach();
+        for (const auto& widget : widgets) {
+            if (widget->needsdraw()) {
+                widget->draw();
+                widget->clear_draw();
+            }
         }
+        flush();
         free(xcb_event_ptr);
-        lock.unlock();
     }
 }
 
@@ -196,38 +201,26 @@ void SV_Window::draw_point(int x, int y, uint8_t r, uint8_t g, uint8_t b) {
 }
 
 
-void SV_Window::draw_point(int x, int y, uint8_t color) {
-    draw_point(x, y, color, color, color);
+void SV_Window::draw_point(int x, int y, uint32_t color) {
+    drawing_buffer.insert(x, y, color);
 }
 
 
 void SV_Window::draw_text(std::string text, int x, int y, int pt) {
-    int dpi = 100;
-    FT_Set_Char_Size(face, pt*64, 0, dpi, 0);
-
-    // Identity matrix transformation, does this even do anything?
-    FT_Matrix matrix {0x10000L, 0,
-                      0, 0x10000L};
-    FT_Vector pen {0, 0};
-
+    int pen_x = 0;
     for (const auto& chr : text) {
-        FT_Set_Transform(face, &matrix, &pen);
-
-        FT_Load_Char(face, chr, FT_LOAD_RENDER);
-
-        draw_bitmap(face->glyph->bitmap, face->glyph->bitmap_left+x, y-face->glyph->bitmap_top);
-
-        pen.x += face->glyph->advance.x;
-        pen.y += face->glyph->advance.y;
+        auto glyph = glyphs[chr];
+        draw_bitmap(glyph.bitmap, pen_x+x+glyph.left, y-glyph.top);
+        pen_x += 9;
     }
 }
 
 
-void SV_Window::draw_bitmap(const FT_Bitmap& bitmap, FT_Int x_min, FT_Int y_min) {
-    for (FT_Int x = 0; x < bitmap.width; x++) {
-        for (FT_Int y = 0; y < bitmap.rows; y++) {
+void SV_Window::draw_bitmap(const SV_Image<uint8_t>& bitmap, int x_min, int y_min) {
+    for (int y = 0; y < bitmap.height(); y++) {
+        for (int x = 0; x < bitmap.width(); x++) {
             if (x+x_min < width && y+y_min < height) {
-                draw_point(x+x_min, y+y_min, bitmap.buffer[y * bitmap.width + x]);
+                draw_point(x+x_min, y+y_min, bitmap(x, y), bitmap(x, y), bitmap(x, y));
             }
         }
     }
@@ -236,6 +229,4 @@ void SV_Window::draw_bitmap(const FT_Bitmap& bitmap, FT_Int x_min, FT_Int y_min)
 
 SV_Window::~SV_Window() {
     xcb_disconnect(connection);
-    FT_Done_Face(face);
-    FT_Done_FreeType(library);
 }
