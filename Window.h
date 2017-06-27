@@ -3,7 +3,6 @@
 
 #include "PixelTable.h"
 #include "Image.h"
-#include "fonts.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <vector>
@@ -36,7 +35,6 @@ private:
     std::vector<Widget*> widgets;
     PixelTable drawing_buffer;
     std::vector<xcb_point_t> color_run;
-    std::array<glyph, 256> glyphs = ubuntu_mono_bold;
 };
 
 

@@ -5,7 +5,7 @@
 #include <iostream>
 #include <xcb/xcb.h>
 #include <cstring>
-
+#include "fonts.h"
 
 Window::Window(int width, int height) {
     this->width = width;
