@@ -36,7 +36,7 @@ private:
     std::vector<Widget*> widgets;
     PixelTable drawing_buffer;
     std::vector<xcb_point_t> color_run;
-    std::vector<glyph> glyphs = ubuntu_mono_bold;
+    std::array<glyph, 256> glyphs = ubuntu_mono_bold;
 };
 
 

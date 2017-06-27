@@ -9,7 +9,7 @@ struct xcb_pixel {
     int x;
     int y;
     uint32_t color;
-    const bool operator<(const xcb_pixel& other) const {return color < other.color;}
+    bool operator<(const xcb_pixel& other) const {return color < other.color;}
 };
 
 
