@@ -3,21 +3,13 @@
 
 #include "PixelTable.h"
 #include "Image.h"
+#include "fonts.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <vector>
 #include <string>
 #include <algorithm>
 #include <xcb/xcb_icccm.h>
-#include <freetype2/ft2build.h>
-#include FT_FREETYPE_H
-
-
-struct glyph {
-    Image<uint8_t> bitmap;
-    int top, left;
-};
-
 
 class Widget;
 
@@ -33,7 +25,7 @@ public:
     void h(int height) {this->height = height;}
     void draw_point(int x, int y, uint8_t r, uint8_t g, uint8_t b);
     void draw_point(int x, int y, uint32_t color);
-    void draw_text(std::string text, int x, int y, int pt);
+    void draw_text(std::string text, int x, int y);
     void draw_bitmap(const Image<uint8_t>& bitmap, int x_min, int y_min);
 private:
     void flush();
@@ -44,7 +36,7 @@ private:
     std::vector<Widget*> widgets;
     PixelTable drawing_buffer;
     std::vector<xcb_point_t> color_run;
-    std::vector<glyph> glyphs;
+    std::vector<glyph> glyphs = ubuntu_mono_bold;
 };
 
 

@@ -7,6 +7,7 @@ Widget(window, 0, 0, window->w(), window->h()) {
     for (auto& c : this->cards) {
         display_cards.push_back(&c);
     }
+    redraw();
 }
 
 
@@ -28,12 +29,11 @@ void Header::draw() {
 
     int displayable_cards = (h()-spacing-3)/spacing;
     for (int i = 0; i < std::min(displayable_cards, (int)display_cards.size()); i++) {
-        draw_text(*(display_cards[i+display_start]), 0, spacing*(i+1) - 3, 12);
+        draw_text(*(display_cards[i+display_start]), 0, spacing*(i+1) - 3);
     }
-    // Scroll bar
-    double segment_size = h()/(double)display_cards.size();
+    double segment_size = h()/((double)cards.size());
     int bar_start = floor(segment_size * display_start);
-    int bar_end = ceil(segment_size * displayable_cards + bar_start);
+    int bar_end = ceil(segment_size * displayable_cards) + bar_start;
     if (display_cards.size() == 0 || displayable_cards >= display_cards.size()) {
         bar_start = 0;
         bar_end = h();
@@ -48,7 +48,7 @@ void Header::draw() {
         draw_point(x, h()-spacing-4, 255, 255, 255);
     }
     // Current search term
-    draw_text("search> "+pattern, 0, h()-5, 12);
+    draw_text("search: "+pattern, 0, h()-5);
     // Cursor
     for (int y = h()-spacing-3+1; y < h()-1; y++) {
         draw_point((pattern.size()+8)*9, y, 255, 255, 255);

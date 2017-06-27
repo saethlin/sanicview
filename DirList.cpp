@@ -54,7 +54,7 @@ void DirList::draw() {
             if ((spacing * (i + 1)) > h()) {
                 break;
             }
-            draw_text(entries[i + display_start].path().filename().generic_string(), 1, spacing * (i + 1)-5, 12);
+            draw_text(entries[i + display_start].path().filename().generic_string(), 1, spacing * (i + 1)-5);
         }
         first = false;
     }
@@ -89,6 +89,7 @@ bool DirList::handle(const Event& event) {
         if (event.key() == 113 || event.key() == 22) {
             if (current_dir != current_dir.root_name()) {
                 change_dir(current_dir.parent_path());
+                first = true;
                 redraw();
             }
             return true;
@@ -97,6 +98,7 @@ bool DirList::handle(const Event& event) {
         else if (event.key() == 114 || event.key() == 36) {
             if (fs::is_directory(entries[selection_index])) {
                 change_dir(entries[selection_index].path());
+                first = true;
                 redraw();
             }
             else if (fs::is_regular_file(entries[selection_index])) {

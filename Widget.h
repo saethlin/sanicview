@@ -17,7 +17,7 @@ public:
     virtual void resize() {};
     void draw_point(int pixel_x, int pixel_y, uint8_t value);
     void draw_point(int pixel_x, int pixel_y, uint8_t r, uint8_t g, uint8_t b);
-    void draw_text(const std::string& text, int x, int y, int pt);
+    void draw_text(const std::string& text, int x, int y);
     Window* window() const {return parent_window;}
     int x() const {return x_impl;}
     int y() const {return y_impl;}
@@ -36,6 +36,7 @@ private:
     int x_impl = 0, y_impl = 0, width = 0, height = 0;
     bool do_redraw = false;
     int border = 1;
+    uint32_t border_color = (uint32_t)((125 << 16) | (125 << 8) | 125);
 };
 
 #endif

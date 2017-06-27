@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <iostream>
 #include <xcb/xcb.h>
+#include <cstring>
 
 
 Window::Window(int width, int height) {
@@ -81,35 +82,6 @@ Window::Window(int width, int height) {
     xcb_icccm_set_wm_size_hints(connection, xcb_window, XCB_ATOM_WM_NORMAL_HINTS, &hints);
 
     drawing_buffer = PixelTable(width, height);
-
-    // Load font
-    auto filename = "/usr/share/fonts/truetype/ubuntu-font-family/UbuntuMono-B.ttf";
-    FT_Library library;
-    FT_Face face;
-    FT_Init_FreeType(&library);
-    FT_New_Face(library, filename, 0, &face);
-
-    int pt = 12;
-    int dpi = 100;
-    FT_Set_Char_Size(face, pt*64, 0, dpi, 0);
-
-    FT_Matrix matrix {0x10000L, 0,
-                      0, 0x10000L};
-    FT_Vector pen {0, 0};
-
-    for (FT_ULong chr = 0; chr < 256; chr++) {
-        FT_Set_Transform(face, &matrix, &pen);
-
-        FT_Load_Char(face, chr, FT_LOAD_RENDER);
-
-        auto g = face->glyph;
-        glyphs.push_back({Image<uint8_t>(g->bitmap.buffer, g->bitmap.width, g->bitmap.rows), g->bitmap_top, g->bitmap_left});
-
-        pen.x = 0;
-        pen.y = 0;
-    }
-    FT_Done_Face(face);
-    FT_Done_FreeType(library);
 }
 
 
@@ -206,7 +178,7 @@ void Window::draw_point(int x, int y, uint32_t color) {
 }
 
 
-void Window::draw_text(std::string text, int x, int y, int pt) {
+void Window::draw_text(std::string text, int x, int y) {
     int pen_x = 0;
     for (const auto& chr : text) {
         auto glyph = glyphs[chr];

@@ -14,6 +14,10 @@ public:
             data(std::vector<T>(data_ptr, data_ptr+(width*height))),
             width_impl(width),
             height_impl(height) {};
+    Image(std::vector<T> data, int width, int height) :
+            data(data.begin(), data.begin()+(width*height)),
+            width_impl(width),
+            height_impl(height) {};
     Image(int width, int height) :
             data(std::vector<T>(width*height)),
             width_impl(width),

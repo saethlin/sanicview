@@ -20,7 +20,7 @@ void CursorTracker::draw() {
 
         buf << "Cursor x,y: " << image_x << "," << image_y;
         std::string s(std::istreambuf_iterator<char>(buf), {});
-        draw_text(s, 1, 13, 12);
+        draw_text(s, 1, 13);
 
         buf << "Value: " << image_value;
         std::string ss(std::istreambuf_iterator<char>(buf), {});
