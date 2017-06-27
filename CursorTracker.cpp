@@ -24,7 +24,7 @@ void CursorTracker::draw() {
 
         buf << "Value: " << image_value;
         std::string ss(std::istreambuf_iterator<char>(buf), {});
-        draw_text(ss, 1, 31, 12);
+        draw_text(ss, 1, 31);
     }
     else {
         for (int y = 0; y < 16; y++) {
@@ -34,7 +34,7 @@ void CursorTracker::draw() {
         }
         buf << image_x << "," << image_y;
         std::string s(std::istreambuf_iterator<char>(buf), {});
-        draw_text(s, 9*12+1, 13, 12);
+        draw_text(s, 9*12+1, 13);
 
         for (int y = 17; y < 31; y++) {
             for (int x = 9*7+1; x < w(); x++) {
@@ -43,7 +43,7 @@ void CursorTracker::draw() {
         }
         buf << image_value;
         std::string ss(std::istreambuf_iterator<char>(buf), {});
-        draw_text(ss, 9*7+1, 31, 12);
+        draw_text(ss, 9*7+1, 31);
     }
     first = false;
 }
