@@ -6,6 +6,7 @@
 #include <xcb/xcb.h>
 #include <cstring>
 #include "fonts.h"
+#include "Event.h"
 
 Window::Window(int width, int height) {
     this->width = width;

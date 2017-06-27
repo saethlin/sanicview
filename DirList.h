@@ -1,15 +1,15 @@
 #ifndef SANICVIEW_SV_DIRLIST_H
 #define SANICVIEW_SV_DIRLIST_H
 
+#include "Widget.h"
 #include <vector>
-#include <string>
-#include <algorithm>
 #include <sstream>
 #include <experimental/filesystem>
-#include "Widget.h"
+
 
 class Window;
 class Display;
+class Event;
 
 namespace fs = std::experimental::filesystem;
 

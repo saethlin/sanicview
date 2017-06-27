@@ -5,6 +5,10 @@
 #include "MiniMap.h"
 #include "Image.h"
 #include "DirList.h"
+#include "Header.h"
+#include "CursorTracker.h"
+
+#include <fitsio.h>
 
 Display::Display(Window* window) : Widget(window, 0, 0, window->w()-200, window->h()-50) {}
 

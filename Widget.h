@@ -1,13 +1,11 @@
 #ifndef SANICVIEW_WIDGET_H
 #define SANICVIEW_WIDGET_H
 
-#include "PixelTable.h"
-#include "Event.h"
 #include <string>
-#include <xcb/xcb.h>
-#include <array>
+#include <cstdint>
 
 class Window;
+class Event;
 
 class Widget {
 public:

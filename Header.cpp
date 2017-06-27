@@ -1,4 +1,7 @@
 #include "Header.h"
+#include "Window.h"
+#include "Event.h"
+#include <algorithm>
 
 Header::Header(Window* window, std::vector<std::string> cards):
 Widget(window, 0, 0, window->w(), window->h()) {

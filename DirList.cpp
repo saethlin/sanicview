@@ -1,6 +1,8 @@
 #include "DirList.h"
 #include "Window.h"
 #include "Display.h"
+#include "Event.h"
+#include <algorithm>
 
 
 DirList::DirList(Window* window) : Widget(window, window->w()-200, 235, 200, window->h()-235) {

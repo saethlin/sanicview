@@ -2,6 +2,7 @@
 #include "Event.h"
 #include "Display.h"
 #include "Window.h"
+#include <algorithm>
 
 
 Histogram::Histogram(Window* window) : Widget(window, 0, window->h()-50, window->w()-200, 50) {}

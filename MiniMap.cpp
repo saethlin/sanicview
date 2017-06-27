@@ -2,6 +2,7 @@
 #include "Event.h"
 #include "Display.h"
 #include "Image.h"
+#include "Window.h"
 #include <cmath>
 
 

@@ -1,15 +1,14 @@
 #ifndef SANICVIEW_SV_MINIMAP_H
 #define SANICVIEW_SV_MINIMAP_H
 
-#include "Window.h"
 #include "Widget.h"
-#include "Event.h"
 #include "Image.h"
 
 class Display;
 class Histogram;
 class SV_DirList;
 class CursorTracker;
+class Window;
 
 class MiniMap : public Widget {
 public:

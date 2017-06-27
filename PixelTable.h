@@ -2,7 +2,6 @@
 #define SANICVIEW_SV_PIXELTABLE_H
 
 #include <vector>
-#include <algorithm>
 #include <cstdint>
 
 struct xcb_pixel {

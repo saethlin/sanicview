@@ -3,9 +3,6 @@
 
 #include "Widget.h"
 #include "Image.h"
-#include "CursorTracker.h"
-#include "Header.h"
-#include <fitsio.h>
 
 class Window;
 class Event;

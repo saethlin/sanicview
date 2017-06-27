@@ -1,4 +1,6 @@
 #include "CursorTracker.h"
+#include "Widget.h"
+#include "Window.h"
 
 
 CursorTracker::CursorTracker(Window* window) : Widget(window, window->w()-200, 200, 200, 35) {}

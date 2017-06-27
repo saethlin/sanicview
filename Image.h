@@ -2,7 +2,7 @@
 #define SANICVIEW_SV_IMAGE_H
 
 #include <vector>
-
+#include <stddef.h>
 
 template <typename T>
 class Image {

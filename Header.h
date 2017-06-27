@@ -1,12 +1,8 @@
 #ifndef SANICVIEW_SV_HEADER_H
 #define SANICVIEW_SV_HEADER_H
 
-#include <vector>
-#include <string>
-#include <algorithm>
-#include <cmath>
-#include "Window.h"
 #include "Widget.h"
+#include <vector>
 
 char char_from_keycode(int keycode);
 

@@ -2,17 +2,13 @@
 #define SANICVIEW_SV_HISTOGRAM_H
 
 #include "Widget.h"
-#include "Event.h"
 #include "Image.h"
-#include <algorithm>
-#include <vector>
-#include <cmath>
-
 
 enum ClickState {BLACK, WHITE, NONE};
 
 class Window;
 class Display;
+class Event;
 
 class Histogram : public Widget {
 public:

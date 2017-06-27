@@ -1,4 +1,5 @@
 #include "PixelTable.h"
+#include <algorithm>
 
 
 PixelTable::PixelTable(int x_max, int y_max) {

@@ -1,10 +1,10 @@
 #ifndef SANICVIEW_SV_CURSORTRACKER_H
 #define SANICVIEW_SV_CURSORTRACKER_H
 
-#include <string>
 #include <sstream>
-#include "Window.h"
 #include "Widget.h"
+
+class Window;
 
 class CursorTracker : public Widget {
 public:
