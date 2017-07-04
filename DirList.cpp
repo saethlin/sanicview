@@ -5,7 +5,7 @@
 #include <algorithm>
 
 
-DirList::DirList(Window* window) : Widget(window, window->w()-200, 235, 200, window->h()-235) {
+DirList::DirList(Window* window) : Widget(window, window->w()-200, 237, 200, window->h()-237) {
     current_dir = fs::current_path();
     change_dir(current_dir);
     redraw();
@@ -31,8 +31,6 @@ bool sorted_lower(const fs::directory_entry& lhs, const fs::directory_entry& rhs
 void DirList::draw() {
     int spacing = 20;
 
-    auto old_display_start = display_start;
-
     if (selection_index >= (display_start + h()/spacing)) {
         display_start = selection_index - h()/spacing + 1;
     }
@@ -40,35 +38,17 @@ void DirList::draw() {
         display_start = selection_index;
     }
 
-    if (display_start != old_display_start || first) {
-        for (int y = 0; y < h(); y++) {
-            for (int x = 0; x < w(); x++) {
-                draw_point(x, y, 0, 0, 0);
-            }
-        }
+    draw_rectangle(0, 0, w(), h(), 0);
 
-        for (int x = 0; x < w(); x++) {
-            draw_point(x, (spacing * (selection_index - display_start)), 0, 0, 255); // top bar
-            draw_point(x, spacing * (selection_index + 1 - display_start), 0, 0, 255); // bottom bar
+    for (int i = 0; i < std::min((int)entries.size(), 13); i++) {
+        if (i+display_start == selection_index) {
+            uint32_t blue = 255;
+            xcb_change_gc(window()->connection, window()->text_gc, XCB_GC_FOREGROUND, &blue);
         }
-
-        for (int i = 0; i < entries.size(); i++) {
-            if ((spacing * (i + 1)) > h()) {
-                break;
-            }
-            draw_text(entries[i + display_start].path().filename().generic_string(), 1, spacing * (i + 1)-5);
-        }
-        first = false;
-    }
-    else {
-        for (int y = 0; y < h(); y += spacing) {
-            for (int x = 0; x < w(); x++) {
-                draw_point(x, y, 0, 0, 0);
-            }
-        }
-        for (int x = 0; x < w(); x++) {
-            draw_point(x, (spacing * (selection_index - display_start)), 0, 0, 255); // top bar
-            draw_point(x, spacing * (selection_index + 1 - display_start), 0, 0, 255); // bottom bar
+        draw_text(entries[i + display_start].path().filename().generic_string(), 1, spacing * (i + 1)-5);
+        if (i+display_start == selection_index) {
+            uint32_t white = 16777215;
+            xcb_change_gc(window()->connection, window()->text_gc, XCB_GC_FOREGROUND, &white);
         }
     }
 }
@@ -81,7 +61,6 @@ void DirList::change_dir(const fs::path& target_path) {
         entries.push_back(entry);
     }
     std::sort(entries.begin(), entries.end(), sorted_lower);
-    selection_index = 0;
 }
 
 

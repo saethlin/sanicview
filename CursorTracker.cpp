@@ -3,7 +3,22 @@
 #include "Window.h"
 
 
-CursorTracker::CursorTracker(Window* window) : Widget(window, window->w()-200, 200, 200, 35) {}
+CursorTracker::CursorTracker(Window* window) : Widget(window, window->w()-200, 200, 200, 37) {
+    uint32_t black = 0;
+    xcb_change_gc(window->connection, window->foreground, XCB_GC_FOREGROUND, &black);
+    xcb_rectangle_t rectangles[] = {
+            {x(), y(), w(), h()}
+    };
+    xcb_poly_fill_rectangle(window->connection, window->xcb_window, window->foreground, 1, rectangles);
+
+    buf << "Cursor x,y: " << image_x << "," << image_y;
+    std::string s(std::istreambuf_iterator<char>(buf), {});
+    draw_text(s, 1, 13);
+
+    buf << "Value: " << image_value;
+    std::string ss(std::istreambuf_iterator<char>(buf), {});
+    draw_text(ss, 1, 31);
+}
 
 
 void CursorTracker::resize() {
@@ -13,41 +28,23 @@ void CursorTracker::resize() {
 
 
 void CursorTracker::draw() {
-    if (first) {
-        for (int y = 0; y < h()-1; y++) {
-            for (int x = 0; x < w(); x++) {
-                draw_point(x, y, 0, 0, 0);
-            }
-        }
+    int char_width = 9;
 
-        buf << "Cursor x,y: " << image_x << "," << image_y;
-        std::string s(std::istreambuf_iterator<char>(buf), {});
-        draw_text(s, 1, 13);
+    uint32_t black = 0;
+    xcb_change_gc(window()->connection, window()->foreground, XCB_GC_FOREGROUND, &black);
+    xcb_rectangle_t rectangles[] = {
+        {x()+char_width*12+1, y(), w(), 17},
+        {x()+char_width*7+1, y()+31-13, w(), 17}
+    };
+    xcb_poly_fill_rectangle(window()->connection, window()->xcb_window, window()->foreground, 2, rectangles);
 
-        buf << "Value: " << image_value;
-        std::string ss(std::istreambuf_iterator<char>(buf), {});
-        draw_text(ss, 1, 31);
-    }
-    else {
-        for (int y = 0; y < 16; y++) {
-            for (int x = 9*12+1; x < w(); x++) {
-                draw_point(x, y, 0);
-            }
-        }
-        buf << image_x << "," << image_y;
-        std::string s(std::istreambuf_iterator<char>(buf), {});
-        draw_text(s, 9*12+1, 13);
+    buf << image_x << "," << image_y;
+    std::string s(std::istreambuf_iterator<char>(buf), {});
+    draw_text(s, char_width*12+1, 13);
 
-        for (int y = 17; y < 31; y++) {
-            for (int x = 9*7+1; x < w(); x++) {
-                draw_point(x, y, 0);
-            }
-        }
-        buf << image_value;
-        std::string ss(std::istreambuf_iterator<char>(buf), {});
-        draw_text(ss, 9*7+1, 31);
-    }
-    first = false;
+    buf << image_value;
+    std::string ss(std::istreambuf_iterator<char>(buf), {});
+    draw_text(ss, char_width*7+1, 31);
 }
 
 

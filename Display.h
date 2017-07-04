@@ -4,6 +4,10 @@
 #include "Widget.h"
 #include "Image.h"
 
+struct HDU {
+    std::string type;
+};
+
 class Window;
 class Event;
 class MiniMap;
@@ -24,15 +28,15 @@ public:
     void add(Histogram* histogramdisplay);
     void add(DirList* dirlist);
     void add(CursorTracker* cursordisplay);
-    double get_white();
-    double get_black();
     void set_zoom(int zoom);
-    void open(std::string filename, int hdu);
-    std::vector<std::string> cards;
+    void open(const std::string& filename, int hdu);
 
 private:
     Image<float> image;
     Image<uint8_t> clipped;
+    std::vector<std::string> cards;
+    std::vector<HDU> hdulist;
+    std::string current_file;
     int x_view = 0, y_view = 0;
     int zoom = 1;
     bool clip;

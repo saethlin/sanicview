@@ -13,8 +13,9 @@ void Histogram::set_imagedisplay(Display* imagedisplay) {
 }
 
 
-void Histogram::set_image(Image<float>& image) {
+void Histogram::set_image(const Image<float>& image) {
     histogram_to_value.clear();
+    data.clear();
     // Find the max of the image so that we can know how many bins are required
     auto image_max = std::max_element(image.begin(), image.end());
 
@@ -28,7 +29,6 @@ void Histogram::set_image(Image<float>& image) {
     auto max_count = *std::max_element(bincount.begin(), bincount.end());
 
     // Drop all the zero values
-    std::vector<uint8_t> data;
     data.reserve(bincount.size());
 
     auto black = -1;
@@ -41,61 +41,52 @@ void Histogram::set_image(Image<float>& image) {
             data.push_back(50*(double)val/(double)max_count);
 
             num_seen += val;
-            if (black == -1 and num_seen > image.size()/2.) {
+            if (black == -1 && num_seen > image.size()/2.) {
                 black = i;
                 black_level = data.size();
             }
-            if (white == -1 and num_seen > 0.997*image.size()) {
+            if (white == -1 && num_seen > 0.997*image.size()) {
                 white = i;
                 white_level = data.size();
             }
         }
     }
+    data.shrink_to_fit();
 
     imagedisplay->set_black(black);
     imagedisplay->set_white(white);
 
-    // Create actual histogram image
-    histogram = Image<uint8_t>(data.size(), 50);
-    for (auto x = 0; x < data.size(); x++) {
-        for (auto y = 0; y < 50-data[x]; y++) {
-            histogram(x, y) = 255;
+    black_pos = black_level * w() / data.size();
+    white_pos = white_level * w() / data.size();
+
+    draw_rectangle(0, 0, w(), h(), 16777215);
+    for (int x = 0; x < w(); x++) {
+        int data_x = x * data.size() / w();
+        if (data[data_x] != 0) {
+            draw_line(x, h()-data[data_x], x, h(), 0);
         }
     }
-
-    black_pos = black_level * w() / histogram.width();
-    white_pos = white_level * w() / histogram.width();
-
-    redraw();
+    draw_line(black_pos, 0, black_pos, h(), 16711680);
+    draw_line(white_pos, 0, white_pos, h(), 16711680);
 }
 
 
 void Histogram::draw() {
-    if (histogram.size() == 0) {
+    if (data.empty()) {
         return;
     }
-    if (scaled.width() != w()) {
-        scaled = Image<uint8_t>(w(), h());
-        for (auto y = 0; y < h(); y++) {
-            for (auto x = 0; x < w(); x++) {
-                scaled(x, y) = histogram(x * histogram.width() / w(), y * histogram.height() / h());
-            }
-        }
-        for (auto y = 0; y < h(); y++) {
-            for (auto x = 0; x < w(); x++) {
-                draw_point(x, y, scaled(x, y), scaled(x, y), scaled(x, y));
-            }
-        }
+
+    if (black_pos != last_black) {
+        draw_line(last_black, 0, last_black, h(), 16777215);
+        draw_line(last_black, h()-data[last_black * data.size() / w()], last_black, h(), 0);
+        draw_line(black_pos, 0, black_pos, h(), 16711680);
+    }
+    if (white_pos != last_white) {
+        draw_line(last_white, 0, last_white, h(), 16777215);
+        draw_line(last_white, h()-data[last_white * data.size() / w()], last_white, h(), 0);
+        draw_line(white_pos, 0, white_pos, h(), 16711680);
     }
 
-    for (auto y = 0; y < h(); y++) {
-        draw_point(last_black, y, scaled(last_black, y), scaled(last_black,y), scaled(last_black,y));
-        draw_point(last_white, y, scaled(last_white, y), scaled(last_white,y), scaled(last_white,y));
-    }
-    for (auto y = 0; y < h(); y++) {
-        draw_point(black_pos, y, 255, 0, 0);
-        draw_point(white_pos, y, 255, 0, 0);
-    }
     last_black = black_pos;
     last_white = white_pos;
 }
@@ -104,47 +95,38 @@ void Histogram::draw() {
 bool Histogram::handle(const Event& event) {
     switch (event.type()) {
         case mouse_push: {
-            if (abs((event.x()-x()) - white_pos) < 4) {
+            if (abs(event.x() - white_pos) < 4) {
                 clicked = WHITE;
-                return true;
             }
-            else if (abs((event.x()-x()) - black_pos) < 4) {
+            else if (abs(event.x() - black_pos) < 4) {
                 clicked = BLACK;
-                return true;
             }
-            break;
+            return true;
         }
         case mouse_move: {
-            auto cursor_pos = event.x();
             if (clicked == WHITE) {
-                white_pos = std::min(w()-1, std::max(black_pos+1, cursor_pos));
+                white_pos = std::min(w()-1, std::max(black_pos+1, event.x()));
                 redraw();
-                return true;
             } else if (clicked == BLACK) {
-                black_pos = std::min(white_pos-1, std::max(1, cursor_pos));
+                black_pos = std::min(white_pos-1, std::max(1, event.x()));
                 redraw();
-                return true;
             }
-            break;
+            return true;
         }
         case mouse_release: {
             if (clicked == BLACK) {
-                black_level = (double) black_pos * (double) histogram.width() / (double) scaled.width();
+                black_level = (double) black_pos * data.size() / w();
                 imagedisplay->set_black(histogram_to_value[(int) black_level]);
-                clicked = NONE;
-                return true;
             } else if (clicked == WHITE) {
-                white_level = (double) white_pos * (double) histogram.width() / (double) scaled.width();
+                white_level = (double) white_pos * data.size() / w();
                 imagedisplay->set_white(histogram_to_value[(int) white_level]);
-                clicked = NONE;
-                return true;
             }
-            break;
+            clicked = NONE;
+            return true;
         }
         default:
-            break;
+            return false;
     }
-    return false;
 }
 
 

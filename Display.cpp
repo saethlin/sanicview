@@ -19,14 +19,14 @@ void Display::draw() {
     }
     else {
         if (clip) {
-            for (auto i = 0; i < image.size(); i++) {
+            for (int i = 0; i < image.size(); i++) {
                 clipped[i] = (uint8_t)((clamp(black, image[i], white) - black) * (255/(white-black)));
             }
             clip = false;
         }
 
-        for (auto y = 0; y < h(); y++) {
-            for (auto x = 0; x < w(); x++) {
+        for (int y = 0; y < h(); y++) {
+            for (int x = 0; x < w(); x++) {
                 draw_point(x, y, clipped(x+x_view, y+y_view));
             }
         }
@@ -55,16 +55,6 @@ void Display::set_white(const double white) {
             minimap->set_white(white);
         }
     }
-}
-
-
-double Display::get_black() {
-    return black;
-}
-
-
-double Display::get_white() {
-    return white;
 }
 
 
@@ -121,7 +111,7 @@ bool Display::handle(const Event& event) {
 
 
 void Display::set_zoom(int zoom) {
-    if (this->zoom != zoom || zoom >= 1 || zoom <= 8 || zoom % 2 == 0) {
+    if (this->zoom != zoom && zoom >= 1 && zoom <= 8 && zoom % 2 == 0) {
         this->zoom = zoom;
         redraw();
     }
@@ -161,16 +151,37 @@ void Display::add(CursorTracker* cursortracker) {
 }
 
 
-void Display::open(std::string filename, int hdu) {
+void Display::open(const std::string& filename, int hdu) {
     fitsfile *fptr;
     char card[FLEN_CARD];
-    int status = 0, nkeys;   // CFITSIO status value MUST be initialized to zero
+    int status = 0, nkeys;
 
     if (!fits_open_file(&fptr, filename.c_str(), READONLY, &status)) {
-        fits_movrel_hdu(fptr, hdu, NULL, &status);
+        if (current_file != filename) {
+            current_file = filename;
+            hdulist.clear();
+            int hdu_type;
+            while ((fits_movrel_hdu(fptr, 1, NULL, &status), !status)) {
+                fits_get_hdu_type(fptr, &hdu_type, &status);
+                if (status) break;
+                switch (hdu_type) {
+                    case IMAGE_HDU:
+                        hdulist.push_back({"image"});
+                    case ASCII_TBL:
+                        hdulist.push_back({"ascii"});
+                    case BINARY_TBL:
+                        hdulist.push_back({"binary"});
+                    default:
+                        break;
+                }
+            }
+        }
+
+        status = 0; // reset status
+        fits_movabs_hdu(fptr, 1, NULL, &status);
         if (!status) {
-            fits_get_hdrspace(fptr, &nkeys, NULL, &status); // get # of keywords
-            for (int i = 1; i <= nkeys; i++) { // Read each keywords
+            fits_get_hdrspace(fptr, &nkeys, NULL, &status);
+            for (int i = 1; i <= nkeys; i++) {
                 if (!fits_read_record(fptr, i, card, &status)) {
                     cards.push_back({card});
                 }
@@ -198,6 +209,12 @@ void Display::open(std::string filename, int hdu) {
         fits_close_file(fptr, &status);
         if (status != 0) {
             throw status;
+        }
+    }
+
+    for (auto& card: cards) {
+        while (card.size() < 80) {
+            card.push_back(' ');
         }
     }
 

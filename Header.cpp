@@ -24,11 +24,7 @@ void Header::resize() {
 
 
 void Header::draw() {
-    for (int y = 0; y < h(); y++) {
-        for (int x = 0; x < w(); x++) {
-            draw_point(x, y, 0, 0, 0);
-        }
-    }
+    draw_rectangle(0, 0, w(), h(), 0);
 
     int displayable_cards = (h()-spacing-3)/spacing;
     for (int i = 0; i < std::min(displayable_cards, (int)display_cards.size()); i++) {
@@ -41,22 +37,16 @@ void Header::draw() {
         bar_start = 0;
         bar_end = h();
     }
-    for (int y = bar_start; y < bar_end; y++) {
-        draw_point(w()-1, y, 255, 255, 255);
-        draw_point(w()-2, y, 255, 255, 255);
-        draw_point(w()-3, y, 255, 255, 255);
-    }
+    // scrollbar
+    draw_rectangle(w()-3, bar_start, w(), bar_end, 16777215);
     // Horizontal bar
-    for (int x = 0; x < w(); x++) {
-        draw_point(x, h()-spacing-4, 255, 255, 255);
-    }
+    draw_line(0, h()-spacing-4, w(), h()-spacing-4, 16777215);
     // Current search term
     draw_text("search: "+pattern, 0, h()-5);
     // Cursor
-    for (int y = h()-spacing-3+1; y < h()-1; y++) {
-        draw_point((pattern.size()+8)*9, y, 255, 255, 255);
-        draw_point((pattern.size()+8)*9+1, y, 255, 255, 255);
-    }
+    auto cursor_x = (uint16_t)(pattern.size()+8)*9;
+    draw_line(cursor_x, h()-spacing-3-1, cursor_x, h(), 16777215);
+    draw_line(cursor_x+1, h()-spacing-3-1, cursor_x+1, h(), 16777215);
 }
 
 

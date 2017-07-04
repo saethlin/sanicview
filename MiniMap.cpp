@@ -59,25 +59,25 @@ void MiniMap::draw() {
     if (this->image.size() == 0) {return;}
 
     if (clip) {
-        for (auto i = 0; i < image.size(); i++) {
+        for (int i = 0; i < image.size(); i++) {
             clipped[i] = (uint8_t)((clamp(black, image[i], white) - black) * (255/(white-black)));
         }
     }
 
     if (clip || do_resize) {
-        for (auto y = 0; y < h(); y++) {
-            for (auto x = 0; x < w(); x++) {
+        for (int y = 0; y < h(); y++) {
+            for (int x = 0; x < w(); x++) {
                 draw_point(x, y, clipped(x, y));
             }
         }
     }
 
     if (clip || move || do_resize) {
-        for (auto x = x0_border; x < x1_border; x++) {
+        for (int x = x0_border; x < x1_border; x++) {
             draw_point(x, y0_border, clipped(x, y0_border));
             draw_point(x, y1_border, clipped(x, y1_border));
         }
-        for (auto y = y0_border; y < y1_border; y++) {
+        for (int y = y0_border; y < y1_border; y++) {
             draw_point(x0_border, y, clipped(x0_border, y));
             draw_point(x1_border, y, clipped(x1_border, y));
         }
@@ -87,13 +87,13 @@ void MiniMap::draw() {
         x1_border = floor(x0_border + ((window()->w() - 200.0) * w() / original_width)) - 1;
         y1_border = floor(y0_border + ((window()->h() - 50) * h() / original_height)) - 1;
 
-        for (auto x = x0_border; x < x1_border; x++) {
+        for (int x = x0_border; x < x1_border; x++) {
             //draw_point(x, y0_border, 255, 0, 0);
             //draw_point(x, y1_border, 255, 0, 0);
             draw_point(x, y0_border, 255 - clipped(x ,y0_border));
             draw_point(x, y1_border, 255 - clipped(x, y1_border));
         }
-        for (auto y = y0_border; y < y1_border; y++) {
+        for (int y = y0_border; y < y1_border; y++) {
             //draw_point(x0_border, y, 255, 0, 0);
             //draw_point(x1_border, y, 255, 0, 0);
             draw_point(x0_border, y, 255-clipped(x0_border, y));
