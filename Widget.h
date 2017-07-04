@@ -15,7 +15,7 @@ public:
     virtual void resize() {};
     void draw_point(int pixel_x, int pixel_y, uint8_t value);
     void draw_point(int pixel_x, int pixel_y, uint8_t r, uint8_t g, uint8_t b);
-    void draw_text(const std::string& text, int x, int y);
+    void draw_text(const std::string& text, int x, int y, uint32_t color);
     void draw_line(int x1, int y1, int x2, int y2, uint32_t color);
     void draw_rectangle(int x1, int y1, int x2, int y2, uint32_t color);
     Window* window() const {return parent_window;}

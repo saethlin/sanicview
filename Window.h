@@ -21,12 +21,12 @@ public:
     void h(int height) {this->height = height;}
     void draw_point(int x, int y, uint8_t r, uint8_t g, uint8_t b);
     void draw_point(int x, int y, uint32_t color);
-    void draw_text(const std::string& text, int x, int y);
+    void draw_text(const std::string& text, int x, int y, uint32_t color);
     void draw_bitmap(const Image<uint8_t>& bitmap, int x_min, int y_min);
     void draw_line(int x1, int y1, int x2, int y2, uint32_t color);
     void draw_rectangle(int x1, int y1, int x2, int y2, uint32_t color);
 
-//private:
+private:
     void flush();
     int width, height;
     xcb_connection_t* connection;

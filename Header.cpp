@@ -28,21 +28,21 @@ void Header::draw() {
 
     int displayable_cards = (h()-spacing-3)/spacing;
     for (int i = 0; i < std::min(displayable_cards, (int)display_cards.size()); i++) {
-        draw_text(*(display_cards[i+display_start]), 0, spacing*(i+1) - 3);
+        draw_text(*(display_cards[i+display_start]), 0, spacing*(i+1) - 3, 16777215);
     }
     double segment_size = h()/((double)cards.size());
     int bar_start = floor(segment_size * display_start);
-    int bar_end = ceil(segment_size * displayable_cards) + bar_start;
+    int bar_length = ceil(segment_size * displayable_cards);
     if (display_cards.size() == 0 || displayable_cards >= display_cards.size()) {
         bar_start = 0;
-        bar_end = h();
+        bar_length = h();
     }
     // scrollbar
-    draw_rectangle(w()-3, bar_start, w(), bar_end, 16777215);
+    draw_rectangle(w()-3, bar_start, 3, bar_length, 16777215);
     // Horizontal bar
     draw_line(0, h()-spacing-4, w(), h()-spacing-4, 16777215);
     // Current search term
-    draw_text("search: "+pattern, 0, h()-5);
+    draw_text("search: "+pattern, 0, h()-5, 16777215);
     // Cursor
     auto cursor_x = (uint16_t)(pattern.size()+8)*9;
     draw_line(cursor_x, h()-spacing-3-1, cursor_x, h(), 16777215);

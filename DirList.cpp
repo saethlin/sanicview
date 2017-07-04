@@ -40,16 +40,11 @@ void DirList::draw() {
 
     draw_rectangle(0, 0, w(), h(), 0);
 
+    uint32_t color;
     for (int i = 0; i < std::min((int)entries.size(), 13); i++) {
-        if (i+display_start == selection_index) {
-            uint32_t blue = 255;
-            xcb_change_gc(window()->connection, window()->text_gc, XCB_GC_FOREGROUND, &blue);
-        }
-        draw_text(entries[i + display_start].path().filename().generic_string(), 1, spacing * (i + 1)-5);
-        if (i+display_start == selection_index) {
-            uint32_t white = 16777215;
-            xcb_change_gc(window()->connection, window()->text_gc, XCB_GC_FOREGROUND, &white);
-        }
+        if (i+display_start == selection_index) color = 255;
+        else color = 16777215;
+        draw_text(entries[i + display_start].path().filename().generic_string(), 1, spacing * (i + 1)-5, color);
     }
 }
 

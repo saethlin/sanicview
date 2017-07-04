@@ -23,8 +23,8 @@ void Widget::draw_point(int pixel_x, int pixel_y, uint8_t r, uint8_t g, uint8_t 
 }
 
 
-void Widget::draw_text(const std::string& text, int text_x, int text_y) {
-    window()->draw_text(text, x()+text_x, y()+text_y);
+void Widget::draw_text(const std::string& text, int text_x, int text_y, uint32_t color) {
+    window()->draw_text(text, x()+text_x, y()+text_y, color);
 }
 
 
@@ -38,8 +38,8 @@ void Widget::draw_line(int x1, int y1, int x2, int y2, uint32_t color) {
 }
 
 
-void Widget::draw_rectangle(int x1, int y1, int x2, int y2, uint32_t color) {
-    window()->draw_rectangle(x()+x1, y()+y1, x()+x2, y()+y2, color);
+void Widget::draw_rectangle(int x1, int y1, int width, int height, uint32_t color) {
+    window()->draw_rectangle(x()+x1, y()+y1, width, height, color);
 }
 
 

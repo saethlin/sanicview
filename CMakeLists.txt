@@ -24,6 +24,6 @@ include_directories(/usr/include/freetype2)
 
 link_libraries(X11 xcb xcb-icccm cfitsio stdc++fs pthread Xau Xdmcp)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -L/usr/local/lib -Wall -Wno-sign-compare -O3 -static -fuse-linker-plugin -fuse-ld=gold -flto -s")
+#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -L/usr/local/lib -Wall -Wno-sign-compare -O3 -static -fuse-linker-plugin -fuse-ld=gold -flto -s")
 
 add_executable(sanicview ${SOURCE_FILES})

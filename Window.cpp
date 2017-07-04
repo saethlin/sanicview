@@ -190,7 +190,8 @@ void Window::draw_point(int x, int y, uint32_t color) {
 }
 
 
-void Window::draw_text(const std::string &text, int x, int y) {
+void Window::draw_text(const std::string &text, int x, int y, uint32_t color) {
+    xcb_change_gc(connection, text_gc, XCB_GC_FOREGROUND, &color);
     xcb_image_text_8(connection, text.size(), xcb_window, text_gc, x, y, text.c_str());
 }
 
@@ -202,9 +203,9 @@ void Window::draw_line(int x1, int y1, int x2, int y2, uint32_t color) {
 }
 
 
-void Window::draw_rectangle(int x1, int y1, int x2, int y2, uint32_t color) {
+void Window::draw_rectangle(int x, int y, int width, int height, uint32_t color) {
     xcb_change_gc(connection, foreground, XCB_GC_FOREGROUND, &color);
-    xcb_rectangle_t rectangle[] = {{x1, y1, x2, y2}};
+    xcb_rectangle_t rectangle[] = {{x, y, width, height}};
     xcb_poly_fill_rectangle(connection, xcb_window, foreground, 1, rectangle);
 }
 
